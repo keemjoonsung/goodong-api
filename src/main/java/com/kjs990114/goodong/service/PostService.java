@@ -22,7 +22,7 @@ public class PostService {
 
     @Transactional
     public void savePost(PostDTO post) throws Exception {
-
+        System.out.println(post.getContent() + " ," + post.getFileUrl());
         if(postRepository.existsByUserIdAndTitle(post.getUserId(), post.getTitle())){
             throw new Exception("Title already Exists!");
         }
