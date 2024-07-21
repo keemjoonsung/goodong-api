@@ -114,6 +114,7 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<Resource> downloadModelFile(@PathVariable("id") Long id)  {
         String fileName = postService.getPostByPostId(id).getFileUrl();
+        System.out.println(fileName);
         Blob blob = storage.get(bucketName, fileName);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         blob.downloadTo(outputStream);

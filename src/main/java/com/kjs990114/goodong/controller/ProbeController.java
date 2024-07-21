@@ -9,6 +9,6 @@ public class ProbeController {
 
     @GetMapping("/health")
     public ResponseEntity<String> probe(){
-        return ResponseEntity.ok("ci cd test");
+        return ResponseEntity.ok("ci cd test323");
     }
 }
