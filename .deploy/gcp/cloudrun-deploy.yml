@@ -77,7 +77,7 @@ options:
 
 availableSecrets:
   secretManager:
-    - versionName: 'projects/383967023652/secrets/GOOGLE_CLOUD_CREDENTIALS'
+    - versionName: 'projects/383967023652/secrets/GOOGLE_CLOUD_CREDENTIALS/versions/latest'
       env: 'GOOGLE_CLOUD_CREDENTIALS'
 
 
