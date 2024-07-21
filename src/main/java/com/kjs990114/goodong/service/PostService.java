@@ -5,7 +5,6 @@ import com.kjs990114.goodong.document.PostDocument;
 import com.kjs990114.goodong.dto.PostDTO;
 import com.kjs990114.goodong.entity.PostEntity;
 import com.kjs990114.goodong.repository.PostRepository;
-//import com.kjs990114.goodong.repository.PostSearchRepository;
 import com.kjs990114.goodong.repository.PostSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
