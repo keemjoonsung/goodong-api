@@ -68,7 +68,7 @@ steps:
       - 'SPRING_ELASTICSEARCH_URIS=${_SPRING_ELASTICSEARCH_URIS}'
 
 images:
-  - 'asia-northeast3-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+  - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
 
 options:
   logging: CLOUD_LOGGING_ONLY
