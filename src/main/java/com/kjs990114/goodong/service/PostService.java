@@ -20,8 +20,6 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostSearchRepository postSearchRepository;
-    @Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName;
 
     @Transactional
     public void savePost(PostDTO post) throws Exception {

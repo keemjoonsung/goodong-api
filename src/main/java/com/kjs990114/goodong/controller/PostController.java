@@ -40,12 +40,9 @@ import java.util.zip.ZipInputStream;
 public class PostController {
 
     private final PostService postService;
-    @Value("${model.location}")
-    String location;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
-    private final String bucketName;
-
+    private String bucketName;
 
     private final Storage storage;
     @PostMapping("/savepost")
