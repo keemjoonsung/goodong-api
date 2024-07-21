@@ -45,6 +45,8 @@ images will be uploaded soon
 
 2024.06.29 - User can search repository (implemented using Elasticsearch)
 
+2024.07.21 - deploy backend using Google Cloud Platform (cloud run, cloud build, cloud sql, cloude storage bucket), and CI / CD
+
 <br>
 
 ## Structure
