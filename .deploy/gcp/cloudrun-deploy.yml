@@ -75,9 +75,9 @@ images:
 options:
   logging: CLOUD_LOGGING_ONLY
 
-secrets:
-  - secretManagerSecretVersions:
-      - versionName: 'projects/383967023652/secrets/GOOGLE_CLOUD_CREDENTIALS/versions/latest'
-        env: 'GOOGLE_CLOUD_CREDENTIALS'
+availableSecrets:
+  secretManager:
+    - versionName: projects/383967023652/secrets/GOOGLE_CLOUD_CREDENTIALS
+      env: 'GOOGLE_CLOUD_CREDENTIALS'
 
 
