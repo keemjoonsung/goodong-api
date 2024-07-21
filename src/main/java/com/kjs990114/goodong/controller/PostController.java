@@ -1,11 +1,15 @@
 package com.kjs990114.goodong.controller;
 
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import com.kjs990114.goodong.document.PostDocument;
 import com.kjs990114.goodong.dto.PostDTO;
 import com.kjs990114.goodong.entity.PostEntity;
 import com.kjs990114.goodong.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,6 +43,11 @@ public class PostController {
     @Value("${model.location}")
     String location;
 
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private final String bucketName;
+
+
+    private final Storage storage;
     @PostMapping("/savepost")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> savePost(@RequestParam("file") MultipartFile file,
@@ -58,20 +68,14 @@ public class PostController {
             Date parsedDate = dateFormat.parse(uploadDate);
             Timestamp timestamp = new Timestamp(parsedDate.getTime());
             String uuid = UUID.randomUUID().toString();
-            String fileName = "model.glb";
-            String fileDir = location + uuid;
-            //나중에 클라우드로 할시 DIR 바꿔야함.........
+            String fileName = uuid + ".glb";
 
-            Path dir = Paths.get(fileDir);
-            Files.createDirectory(dir);
-            File newFile = new File(dir.toFile(), fileName);
-            file.transferTo(newFile);
+            PostDTO postDTO = new PostDTO(title, content, userId, timestamp ,fileName);
 
-            if(fileName.endsWith(".zip")){
-                extractZipFile(newFile, dir.toFile());
-            }
-            String fileUrl = "http://localhost:8000/models/"+ uuid+ "/" + fileName ;
-            PostDTO postDTO = new PostDTO(title, content, userId, timestamp ,fileUrl);
+            storage.create(
+                    BlobInfo.newBuilder(bucketName, fileName).build(),
+                    file.getBytes()
+            );
 
             postService.savePost(postDTO);
             return ResponseEntity.ok("success");
@@ -108,45 +112,19 @@ public class PostController {
 
     @GetMapping("/download/{id}")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<Resource> downloadModelFile(@PathVariable("id") String id)  {
-        try {
-            Resource resource = new UrlResource("file:" + location + id + "/model.glb");
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=model.glb")
-                    .body(resource);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    public ResponseEntity<Resource> downloadModelFile(@PathVariable("id") Long id)  {
+        String fileName = postService.getPostByPostId(id).getFileUrl();
+        Blob blob = storage.get(bucketName, fileName);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        blob.downloadTo(outputStream);
+
+        ByteArrayResource resource = new ByteArrayResource(outputStream.toByteArray());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .body(resource);
+
     }
 
-    public String extractZipFile(File zipFile, File destDir) throws IOException {
-        byte[] buffer = new byte[1024];
-        String gltfFileName = null;
-        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(zipFile.toPath()))) {
-            ZipEntry zipEntry;
-            while ((zipEntry = zis.getNextEntry()) != null) {
-                File newFile = new File(destDir, zipEntry.getName());
-                if (zipEntry.isDirectory()) {
-                    newFile.mkdirs();
-                } else {
-                    new File(newFile.getParent()).mkdirs();
-                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
-                        int len;
-                        while ((len = zis.read(buffer)) > 0) {
-                            fos.write(buffer, 0, len);
-                        }
-                    }
-                    System.out.println("zipEntry.getName() = " + zipEntry.getName());
-                    if (!newFile.getName().startsWith("._") && newFile.getName().toLowerCase().endsWith(".gltf")) {
-                        gltfFileName = newFile.getName();
-                    }
-                }
-                zis.closeEntry();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return gltfFileName;
-    }
 
 }

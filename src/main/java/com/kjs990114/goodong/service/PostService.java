@@ -7,6 +7,7 @@ import com.kjs990114.goodong.entity.PostEntity;
 import com.kjs990114.goodong.repository.PostRepository;
 import com.kjs990114.goodong.repository.PostSearchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostSearchRepository postSearchRepository;
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @Transactional
     public void savePost(PostDTO post) throws Exception {
