@@ -65,7 +65,7 @@ public class WebSecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers( "/repository/searchPosts","/ai/test","/models/**","/register" ,"/repository/download/**", "/auth/expired" ,"/repository/showpost*", "/repository/showpostByPostId").permitAll()
+                        .requestMatchers( "/repository/searchPosts","/ai/test","/models/**","/register" ,"/repository/download/**", "/auth/expired" ,"/repository/showpost*", "/repository/showpostByPostId", "/health").permitAll()
                         .anyRequest().authenticated());
         //세션 설정
         http

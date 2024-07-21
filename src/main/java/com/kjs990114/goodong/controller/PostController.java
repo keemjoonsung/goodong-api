@@ -90,12 +90,12 @@ public class PostController {
     }
 
 
-    @GetMapping("/searchPosts")
-    @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<List<PostDocument>> searchPostAll( @RequestParam("keyword") String keyword) {
-        List<PostDocument> post = postService.searchPosts(keyword);
-        return ResponseEntity.ok(post);
-    }
+//    @GetMapping("/searchPosts")
+//    @CrossOrigin(origins = "http://localhost:3000")
+//    public ResponseEntity<List<PostDocument>> searchPostAll( @RequestParam("keyword") String keyword) {
+////        List<PostDocument> post = postService.searchPosts(keyword);
+//        return ResponseEntity.ok(post);
+//    }
 
     @GetMapping("/showpostByPostId")
     @CrossOrigin(origins = "http://localhost:3000")

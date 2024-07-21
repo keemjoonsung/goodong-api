@@ -5,7 +5,7 @@ import com.kjs990114.goodong.document.PostDocument;
 import com.kjs990114.goodong.dto.PostDTO;
 import com.kjs990114.goodong.entity.PostEntity;
 import com.kjs990114.goodong.repository.PostRepository;
-import com.kjs990114.goodong.repository.PostSearchRepository;
+//import com.kjs990114.goodong.repository.PostSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final PostSearchRepository postSearchRepository;
+//    private final PostSearchRepository postSearchRepository;
 
     @Transactional
     public void savePost(PostDTO post) throws Exception {
@@ -41,28 +41,28 @@ public class PostService {
         postDocument.setContent(postEntity.getContent());
         postDocument.setTitle(postEntity.getTitle());
 
-        postSearchRepository.save(postDocument);
+//        postSearchRepository.save(postDocument);
 
         System.out.println("postDocument.getId() = " + postDocument.getId());
     }
-    @Transactional
-    public List<PostDocument> searchPosts(String keyword) {
-        List<PostDocument> posts = postSearchRepository.findByTitleContainingOrContentContaining(keyword, keyword);
-        return posts.stream()
-                .sorted((p1, p2) -> {
-                    boolean p1TitleContains = p1.getTitle().contains(keyword);
-                    boolean p2TitleContains = p2.getTitle().contains(keyword);
-                    if (p1TitleContains && !p2TitleContains) {
-                        return -1;
-                    } else if (!p1TitleContains && p2TitleContains) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                })
-                .limit(100)
-                .collect(Collectors.toList());
-    }
+//    @Transactional
+//    public List<PostDocument> searchPosts(String keyword) {
+////        List<PostDocument> posts = postSearchRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+//        return posts.stream()
+//                .sorted((p1, p2) -> {
+//                    boolean p1TitleContains = p1.getTitle().contains(keyword);
+//                    boolean p2TitleContains = p2.getTitle().contains(keyword);
+//                    if (p1TitleContains && !p2TitleContains) {
+//                        return -1;
+//                    } else if (!p1TitleContains && p2TitleContains) {
+//                        return 1;
+//                    } else {
+//                        return 0;
+//                    }
+//                })
+//                .limit(100)
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional
     public List<PostEntity> getPostByUserId(String username) {
