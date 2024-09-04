@@ -31,7 +31,7 @@ public class GCPConfig {
 
     @Bean
     public Storage storage() throws IOException {
-        //
+        System.out.println("크레덴셜 : " + credentialsJson);
         GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(credentialsJson.getBytes()))
                 .createScoped("https://www.googleapis.com/auth/cloud-platform");
         return StorageOptions.newBuilder().setCredentials(credentials).build().getService();
