@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.config;
 
+
 import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
