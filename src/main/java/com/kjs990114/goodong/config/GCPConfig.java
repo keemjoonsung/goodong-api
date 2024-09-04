@@ -15,21 +15,23 @@ public class GCPConfig {
 
     @Value("${google.cloud.credentials}")
     private String credentialsJson;
-//        private static final String credentialsJson = "{"
-//        + "\"type\": \"service_account\","
-//        + "\"project_id\": \"goodong-graduation-project\","
-//        + "\"private_key_id\": \"bf6dd90095938bf8382842057da1c5b894d42d8e\","
-//        + "\"private_key\": \"-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC5lFu0JQVOCo+N\\n/FuYxAcg+eUHIuBVJVtNOpVnFsH6NdFdV76F6HJP2iS74Yhy+0h7g9mlKdaUxE/G\\nEQVpK73Ke/Ryet45TFetfJSubao6y9PbxpVHiR8KRsxGmuwAjrBu8VHSis10YVy5\\nKwAkDBn+vdTvPWDRei0/TDkr//DqznM/eCnM+OoxumnAX9fG9YcuunMssbMqZsjE\\nkyXvt3qNEriz+H4jl9i4wNYg+n6PaOF8vIvErNKB2WWRilm707bM1HicZAWkkyNv\\nSXlUqO5C9PwUYJZY55dpyrPl34PklN2JspzE7zKRpjlasrgMenhe8DDcxMakH1Gi\\nghzVmxevAgMBAAECggEACVzAGEhxn3U8YVlU1W6MExP751Vttb+9cJntLmi6HxM2\\nxJgoBjMVfikIB0gJrWPFadnNLixuAaOsMtaxUz6VSvvgPrIO8P69er28vPLrR3Sj\\nV0SYS7RR2RF8hRlbLzPKwsKGQICK7mDcLhBnILGKC01eg6f4G56nsyoT4dxv0otR\\ndh7zsW856I1VMON3KjaSX+iBD9YuLoJ1Df3YNpX4eE63s6UyMXCc0dFTEwIY8z6x\\n7joYXfsFipsq3kK7FiBtPytrvylVVaiefeLIxUYWfNHtbawTJ3JSTdpKhijMYFBd\\nXPRfwOC+JZQhQJoaNYgqUALC7iXcOYoG+J3gwq3g8QKBgQDdtQ0DSgNv5HIAb3Pi\\nSBimhXvMvP2YmEoU36VtVRTUtFk1WIaCqNTYx+VoQZJ6a53/Mbpn571IxyTl1n9b\\nmGdRN8ObMhnHgezQaDsVWT7Zsu0J1q2QTir8sizT0AJQ42jfnbWgLDKlp571+G+a\\nOEuO8OWc76RZQ33JOGlrTHceEQKBgQDWSMHgSL0rV47QUmOsEQ887WHvHGkUGFYl\\nNeEWtfh24KnsaHuOqReF4EAf6kjc8FWYqzuUlrVFeY8EV06y1CciShxaMGfyCEsP\\nFod1l7KN/HaZHPbKj/RMjXmv49ibUEN5MX31My0uXuKdKmraGUE+i2TVeOE3frss\\nfcz/3gwZvwKBgAdpeSDmBY1lFsaa80XaYTCX/9aNbvD+DmP6Qh6QnJyr1tuotP6D\\nRHJm5G2C27HKDUMt12yH29UmCz6/2Awo4TNe6OQ0XZZE6rTg9zC0hhxjFfehPLY5\\nVsiR8Fu4dYtcvvHS5PKQ57SQEQlqH9kJDsWdmh+QB2+QiREEGMokiUrxAoGAD7bK\\nMO5koPcMzA4erRGbMnaeBfDpa8XVG2l2FjpF/EHBdEq9NNsFlJW7XhvKOBmPzWBR\\nQDZFGNEvQbw9UzPnosYYiiyekss05ehbCq6TM4JeGCBdoMEpwytkzxdAXTNnn02X\\n1RFpsMrYh3oC1/eeJz4FqPnyWiV7CGo5TFI2RPUCgYALBmxDjsDM0JWWf/4973tM\\nCDhBg63DJl+z9atBykwEycdE7ncM7Z6xfKeaaRMSvgUnMPG/kOgrt4N1hnsg0Xbe\\nfcYKQmvP7I2dYmrp8vgRmOIS0dHp0Yni1zno4VZUfp5JD3nAHdrjvYjc0zKvUj5r\\n7IhLAFjb4Wn8yegd/phO8A==\\n-----END PRIVATE KEY-----\\n\","
-//        + "\"client_email\": \"383967023652-compute@developer.gserviceaccount.com\","
-//        + "\"client_id\": \"102443516062425785049\","
-//        + "\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\","
-//        + "\"token_uri\": \"https://oauth2.googleapis.com/token\","
-//        + "\"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\","
-//        + "\"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/383967023652-compute%40developer.gserviceaccount.com\","
-//        + "\"universe_domain\": \"googleapis.com\""
-//        + "}";
+//    private static final String credentialsJson =  "{" +"\"type\": \"service_account\",\n" +
+//        "  \"project_id\": \"goodong\",\n" +
+//        "  \"private_key_id\": \"7ab19e6ca5d2be40ed78db83ad7721ac075d5a89\",\n" +
+//        "  \"private_key\": \"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCgrm8uLYHBbw3D\\nC9MvJKJFrcDaEFJBbfe05zf7o61ibojI7NbRxD82EW2SDyYLPGBeQMtOx+7QVDdm\\nV0yJGeEPlgSWkpEV+jmmOL3+InRmL/rhGVudaCAOnySC83l1vi5AhD1Uoh77+D+K\\nnIUvGkhyC3wZSMjrDPjP7lxCTOu9YZvcYjs5xwzzgtN4ekOV0SuDDv5G1b613IoM\\nRhA0CHmidregh7OeR0Ja/fzugCRZcVeAuLcgTE35gZtpmEbUC9kzxmQMxyHaiff/\\n0uM9goJpbv3JzLakgJXasGB4TSZdjkMmwdNKM4M3xLF+l2ZkP2YVTWuU1EhBwV6Q\\nwJxLQTlNAgMBAAECggEAInwVWe6D0tEj/biPuCYvWm92PIa0tJymhTF7gxrndwDc\\ng+zKlOX+n/rBDpAIPPCWCRx0VcHUh+sPIbx6LVF7yyXJ8cvebf5QOZOjeQOJgjXp\\nbL6NujxS5vhyNFWPO30XvZpz9DJAHpkyf+vkLI4CPtGmrmF/12xnCO8x5zvNe0z8\\ngMbxfLSjCSslQU4G2EARHECoVEccp522eyL/ObeSIP93PD//Lal6CROfEFGJbDDJ\\ns1q8EBPiDKgKnJWzwTuQfjzlbiwsa8+6NFajeb76rwSWge3nTY64eNPWDOxEZyKm\\n+J7RybIa6z5a/Kq3B73R8MMyGmUEsfRHy4CHLvhQIQKBgQDa1jQ1TDFIYR7kzGP6\\n80eqwcVyQRpOoJZJeFFPF3XAnQeN2KzORzALjUrnnpjiCI81W9YvWjQslF12MDgw\\nwjM1Q9ntb5AJDV/KOnrzIRsbUOyGup69jgW78XKMUPendJOg33UH1GLr5iHaKvIl\\nQq1nV3/ZAHQRmBJbIW+Wwp1v7QKBgQC79/YYm8rkUCwX6D/eul9vI83GYCe+UMHg\\nHbI7jLQRzvY5Ij2xCqc6wuBS0+F1KkMDnTLOj3qby5n2xe418yKzQcCYnLQmHsUw\\n3k3od/uErBdTOdppvi6yu5oLtQbRBUV0r1S5EWS0CJYeeme6L56a4E81+MrefA3x\\n19RGH8oC4QKBgCTWWgN+x+z/LEwne80Kls3PwITzIJKLxcCoWEeQE2pRBKyEBNLU\\neOn45tsGf4XNGw5IX02pSY8XioQSqeLLTgNxYIXvebeMYMuR/JBgykdW3/nuADq4\\nZY61niqwln/Bx/gUpYaj4eMD4j7va8OJ7davi/3jbaZoiu58OmSObiIhAoGBALW3\\nUM2XhzzTmNz/5Qcwi+RI67z05lchgVxluRHCw65Xs0emp5dJIkQ3c1//f/2h/qk2\\nxpBUuwZ0fYLI9LJpO8mqLkQbcjlME/xbXVv46knniKEn09PYTRLzNEhPGKjnfK8C\\ndVh4zS8TAfWzBiZDtQQrB8i4nX8a1OxRZ+DnCIdhAoGAN3tEtGQvA+3o/grdjXcm\\nykYeifz1STI5uLB8qPoxwkvo7TZ+ViCmdgpyCvhkcWSE82E5h0CmORM0z1ppTmYK\\nSpUBQob/FJylew8jQvG/e1CLqz5dnVI8kbEMGPrkMvyjwTI16GNYffs8HAdxZoO7\\nHJxZRbHoAZj/UrWw5anwZpk=\\n-----END PRIVATE KEY-----\\n\",\n" +
+//        "  \"client_email\": \"741693435028-compute@developer.gserviceaccount.com\",\n" +
+//        "  \"client_id\": \"107471245941404549967\",\n" +
+//        "  \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\n" +
+//        "  \"token_uri\": \"https://oauth2.googleapis.com/token\",\n" +
+//        "  \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\n" +
+//        "  \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/741693435028-compute%40developer.gserviceaccount.com\",\n" +
+//        "  \"universe_domain\": \"googleapis.com\"\n" +
+//        "}";
+
+
     @Bean
     public Storage storage() throws IOException {
+        System.out.println("credential: " + credentialsJson);
         GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(credentialsJson.getBytes()))
                 .createScoped("https://www.googleapis.com/auth/cloud-platform");
         return StorageOptions.newBuilder().setCredentials(credentials).build().getService();

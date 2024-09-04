@@ -28,7 +28,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/goodong/goodong-api'
       - '-f'
       - '.deploy/Dockerfile'
       - '.'
@@ -37,7 +37,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api:latest'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/goodong/goodong-api:latest'
 
   # CloudRun DEPLOY
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -47,12 +47,12 @@ steps:
       - 'deploy'
       - 'goodong-api'
       - '--image'
-      - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+      - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/goodong/goodong-api'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
       - '--region'
-      - 'asia-east1'
+      - 'asia-northeast1'
     env:
       - 'SPRING_DATASOURCE_DRIVER_CLASS_NAME=${_SPRING_DATASOURCE_DRIVER_CLASS_NAME}'
       - 'SERVER_PORT=${_SERVER_PORT}'
@@ -70,14 +70,14 @@ steps:
       - 'SPRING_ELASTICSEARCH_URIS=${_SPRING_ELASTICSEARCH_URIS}'
       - 'GOOGLE_CLOUD_CREDENTIALS=${_GOOGLE_CLOUD_CREDENTIALS}'
 images:
-  - 'asia-east1-docker.pkg.dev/goodong-graduation-project/goodong/goodong-api'
+  - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/goodong/goodong-api'
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
 availableSecrets:
   secretManager:
-    - versionName: 'projects/383967023652/secrets/GOOGLE_CLOUD_CREDENTIALS/versions/latest'
+    - versionName: 'projects/741693435028/secrets/GOOGLE_CLOUD_CREDENTIALS/versions/latest'
       env: 'GOOGLE_CLOUD_CREDENTIALS'
 
 
