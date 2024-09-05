@@ -1,10 +1,12 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
 import com.kjs990114.goodong.application.post.PostService;
+import com.kjs990114.goodong.infrastructure.post.elasticsearch.PostDocument;
 import com.kjs990114.goodong.presentation.dto.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -30,14 +32,12 @@ public class PostEndpoint {
     public CommonResponseEntity<List<PostDTO.SummaryDTO>> getUserPosts(@RequestParam("email") String email) throws IOException {
         return new CommonResponseEntity<>(postService.getUserPosts(email));
     }
-
-//
-//    //검색 elastic search
-//    @GetMapping("/search")
-//    public ResponseEntity<List<PostDocument>> searchPosts(@RequestParam("keyword") String keyword) {
-//        List<PostDocument> post = postService.searchPosts(keyword);
-//        return ResponseEntity.ok(post);
-//    }
+    
+    //검색 elastic search
+    @GetMapping("/search")
+    public CommonResponseEntity<List<PostDTO.SummaryDTO>> searchPosts(@RequestParam("keyword") String keyword) {
+        return new CommonResponseEntity<>(postService.searchPosts(keyword));
+    }
 //
 //    // 게시글 Update
 //    @PutMapping("/{postId}")

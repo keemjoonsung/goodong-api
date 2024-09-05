@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PostSearchRepository extends ElasticsearchRepository<PostDocument, Long> {
-    List<PostDocument> findByTitleContainingOrContentContaining(String title, String content);
+    List<PostDocument> findByTitleContainingOrContentContainingOrTaggingContaining(String title, String content , String tagging);
 }

@@ -25,7 +25,7 @@ public class PostDTO {
     }
 
     @Getter
-    @Setter
+    @Builder
     public static class SummaryDTO {
         private Long postId;
         private String title;

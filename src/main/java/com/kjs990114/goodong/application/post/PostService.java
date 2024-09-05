@@ -84,20 +84,21 @@ public class PostService {
         User user = userRepository.findByEmail(email).orElseThrow();
         List<Post> posts = postRepository.findAllByUser(user);
         return posts.stream().map(post -> {
-            PostDTO.SummaryDTO summaryDTO = new PostDTO.SummaryDTO();
-            summaryDTO.setPostId(post.getPostId());
-            summaryDTO.setTitle(post.getTitle());
-            summaryDTO.setOwnerEmail(user.getEmail());
-            summaryDTO.setOwnerNickname(user.getNickname());
-            summaryDTO.setLastModifiedAt(post.getLastModifiedAt());
-            summaryDTO.setTags(List.of("태그 1", " 태그 2", "태그 3"));
-            return summaryDTO;
+            List<Tag> tags = post.getTags();
+            return PostDTO.SummaryDTO.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .ownerEmail(user.getEmail())
+                    .ownerNickname(user.getNickname())
+                    .lastModifiedAt(post.getLastModifiedAt())
+                    .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
+                    .build();
         }).collect(Collectors.toList());
     }
 
     public PostDTO.DetailDTO getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow();
-        User user= post.getUser();
+        User user = post.getUser();
         List<Model> modelsEntity = post.getModels();
         List<PostDTO.ModelDTO> models = modelsEntity.stream().map(model ->
                 PostDTO.ModelDTO.builder()
@@ -116,6 +117,24 @@ public class PostService {
                 .createdAt(post.getCreatedAt())
                 .lastModifiedAt(post.getLastModifiedAt())
                 .build();
+    }
+
+    public List<PostDTO.SummaryDTO> searchPosts(String keyword) {
+        List<PostDocument> documents = postSearchRepository.findByTitleContainingOrContentContainingOrTaggingContaining(keyword, keyword, keyword);
+        return documents.stream().map(document -> {
+                    Post post = postRepository.findById(document.getPostId()).orElseThrow();
+                    List<Tag> tags = post.getTags();
+                    User user = post.getUser();
+                    return PostDTO.SummaryDTO.builder()
+                            .postId(post.getPostId())
+                            .title(post.getTitle())
+                            .ownerEmail(user.getEmail())
+                            .ownerNickname(user.getNickname())
+                            .lastModifiedAt(post.getLastModifiedAt())
+                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
+                            .build();
+                }
+        ).toList();
     }
 
     private String generateFileUrl(MultipartFile file) throws IOException {
