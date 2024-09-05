@@ -25,4 +25,7 @@ public class PostDocument {
     @Field(type = FieldType.Text, analyzer = "standard")
     private String content;
 
+    @Field(type = FieldType.Text, analyzer = "standard")
+    private String tagging;
+
 }

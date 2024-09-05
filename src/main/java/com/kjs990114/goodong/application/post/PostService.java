@@ -11,6 +11,7 @@ import com.kjs990114.goodong.domain.post.repository.PostSearchRepository;
 import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
+import com.kjs990114.goodong.infrastructure.post.elasticsearch.PostDocument;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -63,8 +64,20 @@ public class PostService {
         newPost.addModel(newModel);
         newPost.addTag(newTag);
 
+
         userRepository.save(user);
-        postRepository.save(newPost);
+        Post post = postRepository.save(newPost);
+        List<Tag> tags = post.getTags();
+        String tagging = tags.stream()
+                .map(Tag::getTag)
+                .collect(Collectors.joining(" "));
+
+        PostDocument postDocument = new PostDocument();
+        postDocument.setPostId(post.getPostId());
+        postDocument.setTitle(post.getTitle());
+        postDocument.setContent(post.getContent());
+        postDocument.setTagging(tagging);
+        postSearchRepository.save(postDocument);
     }
 
     public List<PostDTO.SummaryDTO> getUserPosts(String email) {
