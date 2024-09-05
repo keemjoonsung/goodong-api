@@ -17,7 +17,7 @@ public class Model extends BaseTimeEntity {
     @ManyToOne
     private Post post;
 
-    private Short version;
+    private Integer version;
 
     private String fileUrl;
 

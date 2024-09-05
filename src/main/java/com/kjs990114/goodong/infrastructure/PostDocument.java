@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.infrastructure.post.elasticsearch;
+package com.kjs990114.goodong.infrastructure;
 
 
 import jakarta.persistence.*;

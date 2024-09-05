@@ -6,8 +6,6 @@ import com.kjs990114.goodong.domain.post.Like;
 import com.kjs990114.goodong.domain.post.Post;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

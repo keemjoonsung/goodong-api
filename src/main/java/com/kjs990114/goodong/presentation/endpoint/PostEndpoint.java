@@ -1,12 +1,10 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
 import com.kjs990114.goodong.application.post.PostService;
-import com.kjs990114.goodong.infrastructure.post.elasticsearch.PostDocument;
-import com.kjs990114.goodong.presentation.dto.CommonResponseEntity;
+import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -21,24 +19,26 @@ public class PostEndpoint {
 
     //포스트 생성
     @PostMapping
-    public CommonResponseEntity<Void> createPost(@RequestBody PostDTO.CreateDTO createDTO,
+    public CommonResponseEntity<Void> createPost(@RequestBody PostDTO.Create create,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        postService.createPost(createDTO, token);
+        postService.createPost(create, token);
         return new CommonResponseEntity<>("Post created successfully");
     }
 
     // 유저의 post 리스트 반환
     @GetMapping
-    public CommonResponseEntity<List<PostDTO.SummaryDTO>> getUserPosts(@RequestParam("email") String email) throws IOException {
-        return new CommonResponseEntity<>(postService.getUserPosts(email));
+    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam("email") String email,
+                                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+        return new CommonResponseEntity<>(postService.getUserPosts(email, token));
     }
-    
+
     //검색 elastic search
     @GetMapping("/search")
-    public CommonResponseEntity<List<PostDTO.SummaryDTO>> searchPosts(@RequestParam("keyword") String keyword) {
+    public CommonResponseEntity<List<PostDTO.Summary>> searchPosts(@RequestParam("keyword") String keyword) {
         return new CommonResponseEntity<>(postService.searchPosts(keyword));
     }
-//
+
+    //
 //    // 게시글 Update
 //    @PutMapping("/{postId}")
 //    public ResponseEntity<String> updatePost(@PathVariable("postId") String postId, @RequestBody PostDTO postDTO) {
@@ -53,7 +53,7 @@ public class PostEndpoint {
 //
     // 해당 포스트 정보만 가져오기
     @GetMapping("/{postId}")
-    public CommonResponseEntity<PostDTO.DetailDTO> getPost(@PathVariable("postId") Long postId) {
+    public CommonResponseEntity<PostDTO.Detail> getPost(@PathVariable("postId") Long postId) {
         return new CommonResponseEntity<>(postService.getPost(postId));
     }
 //

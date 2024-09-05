@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
-import com.kjs990114.goodong.presentation.dto.CommonResponseEntity;
+import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

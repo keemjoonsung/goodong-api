@@ -11,7 +11,7 @@ import com.kjs990114.goodong.domain.post.repository.PostSearchRepository;
 import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
-import com.kjs990114.goodong.infrastructure.post.elasticsearch.PostDocument;
+import com.kjs990114.goodong.infrastructure.PostDocument;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,30 +40,33 @@ public class PostService {
     /**
      * 포스트를 완전 처음 생성하면, user의 contribution이 1 늘어난다
      **/
-    public void createPost(PostDTO.CreateDTO createDTO, String token) throws IOException {
+    public void createPost(PostDTO.Create create, String token) throws IOException {
         User user = userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow();
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
 
         Post newPost = Post.builder()
-                .title(createDTO.getTitle())
-                .content(createDTO.getContent())
+                .title(create.getTitle())
+                .content(create.getContent())
+                .status(create.getStatus())
                 .build();
-        String url = generateFileUrl(createDTO.getFile());
-        Model newModel = Model.builder()
+        String url = generateFileUrl(create.getFile());
+        Model newModel = com.kjs990114.goodong.domain.post.Model.builder()
                 .commitMessage("First Commit")
                 .post(newPost)
                 .fileUrl(url)
-                .build();
-
-        Tag newTag = Tag.builder()
-                .tag("태그 1")
+                .version(1)
                 .build();
 
         newPost.addModel(newModel);
-        newPost.addTag(newTag);
 
+        for (String tag : create.getTags()) {
+            Tag newTag = Tag.builder()
+                    .tag(tag)
+                    .build();
+            newPost.addTag(newTag);
+        }
 
         userRepository.save(user);
         Post post = postRepository.save(newPost);
@@ -80,37 +83,42 @@ public class PostService {
         postSearchRepository.save(postDocument);
     }
 
-    public List<PostDTO.SummaryDTO> getUserPosts(String email) {
+    public List<PostDTO.Summary> getUserPosts(String email, String token) {
         User user = userRepository.findByEmail(email).orElseThrow();
+        boolean isMyPosts = jwtUtil.getEmail(token).equals(email);
         List<Post> posts = postRepository.findAllByUser(user);
-        return posts.stream().map(post -> {
-            List<Tag> tags = post.getTags();
-            return PostDTO.SummaryDTO.builder()
-                    .postId(post.getPostId())
-                    .title(post.getTitle())
-                    .ownerEmail(user.getEmail())
-                    .ownerNickname(user.getNickname())
-                    .lastModifiedAt(post.getLastModifiedAt())
-                    .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                    .build();
-        }).collect(Collectors.toList());
+        return posts.stream()
+                .filter(post -> isMyPosts || post.getStatus() == Post.PostStatus.PUBLIC)
+                .map(post -> {
+                    List<Tag> tags = post.getTags();
+                    return PostDTO.Summary.builder()
+                            .postId(post.getPostId())
+                            .title(post.getTitle())
+                            .ownerEmail(user.getEmail())
+                            .ownerNickname(user.getNickname())
+                            .status(post.getStatus())
+                            .lastModifiedAt(post.getLastModifiedAt())
+                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
+                            .build();
+                }).collect(Collectors.toList());
     }
 
-    public PostDTO.DetailDTO getPost(Long postId) {
+    public PostDTO.Detail getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow();
         User user = post.getUser();
         List<Model> modelsEntity = post.getModels();
-        List<PostDTO.ModelDTO> models = modelsEntity.stream().map(model ->
-                PostDTO.ModelDTO.builder()
+        List<PostDTO.Model> models = modelsEntity.stream().map(model ->
+                PostDTO.Model.builder()
                         .version(model.getVersion())
                         .fileUrl(model.getFileUrl())
                         .commitMessage(model.getCommitMessage())
                         .build()
         ).toList();
-        return PostDTO.DetailDTO.builder()
+        return PostDTO.Detail.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .status(post.getStatus())
                 .models(models)
                 .ownerEmail(user.getEmail())
                 .ownerNickname(user.getNickname())
@@ -119,17 +127,18 @@ public class PostService {
                 .build();
     }
 
-    public List<PostDTO.SummaryDTO> searchPosts(String keyword) {
+    public List<PostDTO.Summary> searchPosts(String keyword) {
         List<PostDocument> documents = postSearchRepository.findByTitleContainingOrContentContainingOrTaggingContaining(keyword, keyword, keyword);
         return documents.stream().map(document -> {
                     Post post = postRepository.findById(document.getPostId()).orElseThrow();
                     List<Tag> tags = post.getTags();
                     User user = post.getUser();
-                    return PostDTO.SummaryDTO.builder()
+                    return PostDTO.Summary.builder()
                             .postId(post.getPostId())
                             .title(post.getTitle())
                             .ownerEmail(user.getEmail())
                             .ownerNickname(user.getNickname())
+                            .status(post.getStatus())
                             .lastModifiedAt(post.getLastModifiedAt())
                             .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
                             .build();

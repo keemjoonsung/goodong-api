@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.domain.post.repository;
 
-import com.kjs990114.goodong.infrastructure.post.elasticsearch.PostDocument;
+import com.kjs990114.goodong.infrastructure.PostDocument;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.auth;
 
-import com.kjs990114.goodong.common.jwt.details.CustomUserDetails;
+import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
@@ -28,8 +28,8 @@ public class UserAuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public UserDTO.LoginResponse login(UserDTO.LoginRequest loginRequest) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword());
+    public String login(UserDTO.Login login) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -40,26 +40,25 @@ public class UserAuthService {
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
-        String jwt = jwtUtil.createJwt(loginRequest.getEmail(),nickname, role,60*60*60*60*60*10L);
-        return new UserDTO.LoginResponse(jwt);
+        return jwtUtil.createJwt(login.getEmail(),nickname, role,60*60*60*60*60*10L);
     }
 
-    public void register(UserDTO.RegisterRequest registerRequest) {
+    public void register(UserDTO.Register register) {
 
         User user = User.builder()
-                .email(registerRequest.getEmail())
-                .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .nickname(registerRequest.getNickname())
+                .email(register.getEmail())
+                .password(passwordEncoder.encode(register.getPassword()))
+                .nickname(register.getNickname())
                 .build();
 
         userRepository.save(user);
     }
 
-    public UserDTO.UserInfo getUserInfo(String token) {
+    public UserDTO.Summary getUserInfo(String token) {
         String email = jwtUtil.getEmail(token);
         String nickname = jwtUtil.getNickname(token);
 
-        return new UserDTO.UserInfo(email,nickname);
+        return new UserDTO.Summary(email,nickname);
     }
 
 }

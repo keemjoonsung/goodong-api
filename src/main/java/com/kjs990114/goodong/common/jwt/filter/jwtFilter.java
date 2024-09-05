@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.common.jwt.filter;
 
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
-import com.kjs990114.goodong.common.jwt.details.CustomUserDetails;
+import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import com.kjs990114.goodong.domain.user.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

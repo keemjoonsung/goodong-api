@@ -1,13 +1,14 @@
 package com.kjs990114.goodong.presentation.dto;
 
 
+import com.kjs990114.goodong.domain.post.Post;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,30 +19,41 @@ public class PostDTO {
 
 
     @Getter
-    public static class CreateDTO{
+    @Builder
+    public static class Create{
         private String title;
         private String content;
         private MultipartFile file;
+        private Post.PostStatus status;
+        @Builder.Default
+        private List<String> tags = new ArrayList<>();
     }
 
     @Getter
     @Builder
-    public static class SummaryDTO {
+    public static class Update{
+
+    }
+    @Getter
+    @Builder
+    public static class Summary {
         private Long postId;
         private String title;
         private String ownerEmail;
         private String ownerNickname;
+        private Post.PostStatus status;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
     }
 
     @Getter
     @Builder
-    public static class DetailDTO {
+    public static class Detail {
         private Long postId;
         private String title;
         private String content;
-        private List<ModelDTO> models;
+        private Post.PostStatus status;
+        private List<Model> models;
         private String ownerEmail;
         private String ownerNickname;
         private LocalDateTime createdAt;
@@ -50,8 +62,8 @@ public class PostDTO {
     }
     @Getter
     @Builder
-    public static class ModelDTO {
-        private Short version;
+    public static class Model {
+        private Integer version;
         private String fileUrl;
         private String commitMessage;
     }

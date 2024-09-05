@@ -1,14 +1,9 @@
 package com.kjs990114.goodong.domain.post;
 
 import com.kjs990114.goodong.common.time.BaseTimeEntity;
-import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,17 +46,14 @@ public class Post extends BaseTimeEntity {
     @Builder.Default
     private PostStatus status = PostStatus.PUBLIC;
 
-
     public enum PostStatus {
         PUBLIC,
         PRIVATE,
     }
-
     // 게시물의 공개 상태를 변경하는 메서드
     public void changeStatus(PostStatus status) {
         this.status = status;
     }
-
     // 댓글 추가
     public void addComment(Comment comment) {
         comments.add(comment);

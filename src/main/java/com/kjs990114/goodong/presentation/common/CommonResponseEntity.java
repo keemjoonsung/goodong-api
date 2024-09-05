@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.presentation.dto;
+package com.kjs990114.goodong.presentation.common;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

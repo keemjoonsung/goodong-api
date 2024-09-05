@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.common.jwt.details;
+package com.kjs990114.goodong.common.userdetails;
 
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;

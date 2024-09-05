@@ -6,7 +6,7 @@ import lombok.Getter;
 public class UserDTO {
 
     @Getter
-    public static class RegisterRequest {
+    public static class Register {
         private String email;
         private String password;
         private String nickname;
@@ -14,26 +14,21 @@ public class UserDTO {
 
     @Getter
     @AllArgsConstructor
-    public static class UserInfo {
+    public static class Summary {
         private String email;
         private String nickname;
     }
 
     @Getter
-    public static class LoginRequest {
+    public static class Login {
         private String email;
         private String password;
     }
 
     @Getter
-    public static class UpdateRequest {
+    public static class Update {
         private String nickname;
         private String profileImage;
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class LoginResponse {
-        private String jwt;
-    }
 }
