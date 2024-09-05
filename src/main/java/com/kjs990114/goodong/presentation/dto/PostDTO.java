@@ -44,6 +44,7 @@ public class PostDTO {
         private Post.PostStatus status;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
+        private Integer likes;
     }
 
     @Getter
@@ -53,16 +54,28 @@ public class PostDTO {
         private String title;
         private String content;
         private Post.PostStatus status;
-        private List<Model> models;
+        private List<ModelInfo> models;
         private String ownerEmail;
         private String ownerNickname;
         private LocalDateTime createdAt;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
+        private List<CommentInfo> comments;
+        private Integer likes;
     }
     @Getter
     @Builder
-    public static class Model {
+    public static class CommentInfo {
+        private Long userId;
+        private String email;
+        private String nickname;
+        private String content;
+        private LocalDateTime createdAt;
+        private LocalDateTime lastModifiedAt;
+    }
+    @Getter
+    @Builder
+    public static class ModelInfo {
         private Integer version;
         private String fileUrl;
         private String commitMessage;

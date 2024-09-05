@@ -3,6 +3,7 @@ package com.kjs990114.goodong.application.post;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
+import com.kjs990114.goodong.domain.post.Comment;
 import com.kjs990114.goodong.domain.post.Model;
 import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.post.Tag;
@@ -99,6 +100,7 @@ public class PostService {
                             .status(post.getStatus())
                             .lastModifiedAt(post.getLastModifiedAt())
                             .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
+                            .likes(post.getLikes().size())
                             .build();
                 }).collect(Collectors.toList());
     }
@@ -106,14 +108,30 @@ public class PostService {
     public PostDTO.Detail getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow();
         User user = post.getUser();
+
         List<Model> modelsEntity = post.getModels();
-        List<PostDTO.Model> models = modelsEntity.stream().map(model ->
-                PostDTO.Model.builder()
+        List<PostDTO.ModelInfo> models = modelsEntity.stream().map(model ->
+                PostDTO.ModelInfo.builder()
                         .version(model.getVersion())
                         .fileUrl(model.getFileUrl())
                         .commitMessage(model.getCommitMessage())
                         .build()
         ).toList();
+
+        List<Comment> commentsEntity = post.getComments();
+        List<PostDTO.CommentInfo> comments = commentsEntity.stream()
+                .map(comment ->{
+                    User commentUser = comment.getUser();
+                    return PostDTO.CommentInfo.builder()
+                            .userId(commentUser.getUserId())
+                            .email(commentUser.getEmail())
+                            .nickname(commentUser.getNickname())
+                            .content(comment.getContent())
+                            .createdAt(comment.getCreatedAt())
+                            .lastModifiedAt(comment.getLastModifiedAt())
+                            .build();
+                }).toList();
+
         return PostDTO.Detail.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -124,6 +142,9 @@ public class PostService {
                 .ownerNickname(user.getNickname())
                 .createdAt(post.getCreatedAt())
                 .lastModifiedAt(post.getLastModifiedAt())
+                .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
+                .comments(comments)
+                .likes(post.getLikes().size())
                 .build();
     }
 
@@ -141,6 +162,7 @@ public class PostService {
                             .status(post.getStatus())
                             .lastModifiedAt(post.getLastModifiedAt())
                             .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
+                            .likes(post.getLikes().size())
                             .build();
                 }
         ).toList();
