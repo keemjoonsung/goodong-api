@@ -17,7 +17,7 @@ public class FollowEndpoint {
     private final FollowService followService;
     private final UserAuthService userAuthService;
 
-    //팔로우하기 (POST 메서드)
+    //팔로우
     @PostMapping
     public CommonResponseEntity<String> followUser(@RequestParam("userId") Long userId,
                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
@@ -26,7 +26,7 @@ public class FollowEndpoint {
         return new CommonResponseEntity<>("User followed successfully");
     }
 
-    // 언팔로우하기 (DELETE 메서드)
+    // 언팔로우
     @DeleteMapping()
     public CommonResponseEntity<String> unfollowUser(@RequestParam("userId") Long userId,
                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
