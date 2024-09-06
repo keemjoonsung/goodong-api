@@ -19,12 +19,13 @@ public class UserDTO {
     }
     //간단한 유저 정보
     @Getter
-    @Setter
+    @Builder
     @AllArgsConstructor
     public static class UserSummary {
         private Long userId;
         private String email;
         private String nickname;
+        private String profileImage;
     }
     //유저 상세 정보
     @Getter

@@ -15,6 +15,7 @@ public class Model extends BaseTimeEntity {
     private Long modelId;
 
     @ManyToOne
+    @JoinColumn(name = "post_id")
     private Post post;
 
     private Integer version;

@@ -25,6 +25,7 @@ public class Post extends BaseTimeEntity {
     private String content;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "post")

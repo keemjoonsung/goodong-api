@@ -56,7 +56,7 @@ public class User extends BaseTimeEntity {
     private Set<Follow> followings = new HashSet<>();
 
     //나의 팔로워니까, following 테이블에서 , following 을 FK로 가지면된다.
-    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<Follow> followers = new HashSet<>();
 
@@ -69,16 +69,16 @@ public class User extends BaseTimeEntity {
         this.followings.add(follow);
     }
     //내가 팔로우하는 사람 삭제
-    public void unfollow(Follow follow) {
-        this.followings.remove(follow);
+    public void unfollow(Long followeeId) {
+        this.followings.removeIf(f -> f.getFollowee().getUserId().equals(followeeId));
     }
     //나의 팔로워 추가
     public void addFollower(Follow follower) {
         this.followers.add(follower);
     }
     //나의 팔로워 삭제
-    public void deleteFollower(Follow follower) {
-        this.followers.remove(follower);
+    public void deleteFollower(Long followerId) {
+        this.followings.removeIf(f -> f.getFollower().getUserId().equals(followerId));
     }
     //댓글 추가
     public void addComment(Comment comment) {

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"follower_id", "followee_id"})})
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,8 +16,10 @@ public class Follow {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "follower_id")
     private User follower;
 
     @ManyToOne
-    private User following;
+    @JoinColumn(name = "followee_id")
+    private User followee;
 }

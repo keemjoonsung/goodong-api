@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity(name = "contribution")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"contId", "date"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"cont_id", "date"})})
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +20,7 @@ public class Contribution {
     private LocalDate date = LocalDate.now();
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     private Integer count = 1;

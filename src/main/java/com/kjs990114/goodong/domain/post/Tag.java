@@ -15,6 +15,7 @@ public class Tag extends BaseTimeEntity {
     private Long tagId;
 
     @ManyToOne
+    @JoinColumn(name = "post_id")
     private Post post;
 
     private String tag;

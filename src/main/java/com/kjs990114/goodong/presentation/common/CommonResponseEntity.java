@@ -9,9 +9,9 @@ public class CommonResponseEntity<T> {
     private final String message;
     private final T data;
 
-    public CommonResponseEntity(Integer status) {
+    public CommonResponseEntity(Integer status, String message) {
         this.status = status;
-        this.message = "";
+        this.message = message;
         this.data = null;
     }
     public CommonResponseEntity(String message) {
