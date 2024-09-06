@@ -38,7 +38,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostSearchRepository postSearchRepository;
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
 
     /**
      * 포스트를 완전 처음 생성하면, user의 contribution이 1 늘어난다

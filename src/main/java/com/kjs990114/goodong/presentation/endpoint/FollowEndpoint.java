@@ -1,14 +1,11 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
-import com.google.api.Http;
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.user.FollowService;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
