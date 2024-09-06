@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.application.auth;
 
+import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.user.User;
@@ -55,10 +56,15 @@ public class UserAuthService {
     }
 
     public UserDTO.Summary getUserInfo(String token) {
-        String email = jwtUtil.getEmail(token);
-        String nickname = jwtUtil.getNickname(token);
-
-        return new UserDTO.Summary(email,nickname);
+        User user =userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(()-> new GlobalException("User does not exists"));
+        return new UserDTO.Summary(user.getUserId(),user.getEmail(),user.getNickname());
     }
+
+    public void changePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+        user.changePassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
 
 }

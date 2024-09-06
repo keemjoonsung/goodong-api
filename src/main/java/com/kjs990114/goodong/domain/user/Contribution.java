@@ -22,6 +22,6 @@ public class Contribution {
     @ManyToOne
     private User user;
 
-    private Short count = 1;
+    private Integer count = 1;
 
 }

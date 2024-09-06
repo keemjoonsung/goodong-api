@@ -1,12 +1,11 @@
 package com.kjs990114.goodong.application.post;
 
+import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
-import com.kjs990114.goodong.domain.post.Comment;
-import com.kjs990114.goodong.domain.post.Model;
-import com.kjs990114.goodong.domain.post.Post;
-import com.kjs990114.goodong.domain.post.Tag;
+import com.kjs990114.goodong.domain.post.*;
 import com.kjs990114.goodong.domain.post.repository.PostRepository;
 import com.kjs990114.goodong.domain.post.repository.PostSearchRepository;
 import com.kjs990114.goodong.domain.user.Contribution;
@@ -17,9 +16,12 @@ import com.kjs990114.goodong.presentation.dto.PostDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +43,8 @@ public class PostService {
     /**
      * 포스트를 완전 처음 생성하면, user의 contribution이 1 늘어난다
      **/
-    public void createPost(PostDTO.Create create, String token) throws IOException {
-        User user = userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow();
+    public void createPost(PostDTO.Create create, String email) throws IOException {
+        User user = userRepository.findByEmail(email).orElseThrow();
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
@@ -61,15 +63,9 @@ public class PostService {
                 .build();
 
         newPost.addModel(newModel);
-
-        for (String tag : create.getTags()) {
-            Tag newTag = Tag.builder()
-                    .tag(tag)
-                    .build();
-            newPost.addTag(newTag);
-        }
-
+        newPost.addTagAll(create.getTags());
         userRepository.save(user);
+
         Post post = postRepository.save(newPost);
         List<Tag> tags = post.getTags();
         String tagging = tags.stream()
@@ -84,9 +80,8 @@ public class PostService {
         postSearchRepository.save(postDocument);
     }
 
-    public List<PostDTO.Summary> getUserPosts(String email, String token) {
+    public List<PostDTO.Summary> getUserPosts(String email, boolean isMyPosts) {
         User user = userRepository.findByEmail(email).orElseThrow();
-        boolean isMyPosts = jwtUtil.getEmail(token).equals(email);
         List<Post> posts = postRepository.findAllByUser(user);
         return posts.stream()
                 .filter(post -> isMyPosts || post.getStatus() == Post.PostStatus.PUBLIC)
@@ -95,8 +90,9 @@ public class PostService {
                     return PostDTO.Summary.builder()
                             .postId(post.getPostId())
                             .title(post.getTitle())
-                            .ownerEmail(user.getEmail())
-                            .ownerNickname(user.getNickname())
+                            .userId(user.getUserId())
+                            .email(user.getEmail())
+                            .nickname(user.getNickname())
                             .status(post.getStatus())
                             .lastModifiedAt(post.getLastModifiedAt())
                             .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
@@ -120,9 +116,10 @@ public class PostService {
 
         List<Comment> commentsEntity = post.getComments();
         List<PostDTO.CommentInfo> comments = commentsEntity.stream()
-                .map(comment ->{
+                .map(comment -> {
                     User commentUser = comment.getUser();
                     return PostDTO.CommentInfo.builder()
+                            .commentId(comment.getCommentId())
                             .userId(commentUser.getUserId())
                             .email(commentUser.getEmail())
                             .nickname(commentUser.getNickname())
@@ -138,8 +135,9 @@ public class PostService {
                 .content(post.getContent())
                 .status(post.getStatus())
                 .models(models)
-                .ownerEmail(user.getEmail())
-                .ownerNickname(user.getNickname())
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
                 .createdAt(post.getCreatedAt())
                 .lastModifiedAt(post.getLastModifiedAt())
                 .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
@@ -157,8 +155,9 @@ public class PostService {
                     return PostDTO.Summary.builder()
                             .postId(post.getPostId())
                             .title(post.getTitle())
-                            .ownerEmail(user.getEmail())
-                            .ownerNickname(user.getNickname())
+                            .userId(user.getUserId())
+                            .email(user.getEmail())
+                            .nickname(user.getNickname())
                             .status(post.getStatus())
                             .lastModifiedAt(post.getLastModifiedAt())
                             .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
@@ -166,6 +165,58 @@ public class PostService {
                             .build();
                 }
         ).toList();
+    }
+
+    public void deletePost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+        PostDocument postDocument = postSearchRepository.findById(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
+
+        postRepository.delete(post);
+        postSearchRepository.delete(postDocument);
+
+    }
+
+    public void updatePost(Long postId, PostDTO.Update update) throws IOException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+        User user = post.getUser();
+        PostDocument postDocument = postSearchRepository.findByPostId(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
+        post.updatePost(update.getTitle(), update.getContent());
+        post.removeTagAll();
+        post.addTagAll(update.getTags());
+        post.updateStatus(update.getStatus());
+        if (update.getFile() != null) {
+            int nextVersion = post.getNextModelVersion();
+            String newFileUrl = generateFileUrl(update.getFile());
+            Model newModel = Model.builder()
+                    .post(post)
+                    .version(nextVersion)
+                    .fileUrl(newFileUrl)
+                    .commitMessage(update.getCommitMessage())
+                    .build();
+            post.addModel(newModel);
+        }
+
+        postDocument.setContent(update.getContent());
+        postDocument.setTitle(update.getTitle());
+        postDocument.setTagging(String.join(" ", update.getTags()));
+
+        Contribution contribution = new Contribution();
+        contribution.setUser(user);
+        user.updateContribution(contribution);
+
+        postRepository.save(post);
+        postSearchRepository.save(postDocument);
+        userRepository.save(user);
+
+    }
+
+
+    public Resource getFileResource(String fileUrl) {
+        Blob blob = storage.get(bucketName, fileUrl);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        blob.downloadTo(outputStream);
+
+        return new ByteArrayResource(outputStream.toByteArray());
     }
 
     private String generateFileUrl(MultipartFile file) throws IOException {
@@ -177,7 +228,7 @@ public class PostService {
                 file.getBytes()
         );
 
-        return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+        return String.format("%s/%s", bucketName, fileName);
 
     }
 

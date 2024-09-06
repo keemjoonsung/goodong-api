@@ -32,15 +32,23 @@ public class PostDTO {
     @Getter
     @Builder
     public static class Update{
-
+        private String title;
+        private String content;
+        private MultipartFile file;
+        private String commitMessage;
+        private Post.PostStatus status;
+        @Builder.Default
+        private List<String> tags = new ArrayList<>();
     }
+
     @Getter
     @Builder
     public static class Summary {
         private Long postId;
         private String title;
-        private String ownerEmail;
-        private String ownerNickname;
+        private Long userId;
+        private String email;
+        private String nickname;
         private Post.PostStatus status;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
@@ -55,8 +63,9 @@ public class PostDTO {
         private String content;
         private Post.PostStatus status;
         private List<ModelInfo> models;
-        private String ownerEmail;
-        private String ownerNickname;
+        private Long userId;
+        private String email;
+        private String nickname;
         private LocalDateTime createdAt;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
@@ -66,12 +75,18 @@ public class PostDTO {
     @Getter
     @Builder
     public static class CommentInfo {
+        private Long commentId;
         private Long userId;
         private String email;
         private String nickname;
         private String content;
         private LocalDateTime createdAt;
         private LocalDateTime lastModifiedAt;
+    }
+    @Getter
+    @Builder
+    public static class Comment{
+        private String content;
     }
     @Getter
     @Builder

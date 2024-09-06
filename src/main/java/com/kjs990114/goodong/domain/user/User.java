@@ -85,33 +85,32 @@ public class User extends BaseTimeEntity {
         comments.add(comment);
     }
     // 댓글 삭제
-    public void removeComment(Comment comment) {
+    public void deleteComment(Comment comment) {
         comments.remove(comment);
     }
     // 좋아요 추가
-    public void addLike(Like like) {
+    public void like(Like like) {
         this.likes.add(like);  // 좋아요 리스트에 추가
     }
     //좋아요 삭제
-    public void deleteLike(Like like) {
+    public void unlike(Like like) {
         this.likes.remove(like);
     }
-    //: 유저 정보 업데이트
+    //유저 정보 업데이트
     public void updateProfile(String nickname, String profileImage) {
         if(nickname != null) this.nickname = nickname;
         if(profileImage != null) this.profileImage = profileImage;
     }
     // 비밀번호 변경
     public void changePassword(String newPassword) {
-        this.password = newPassword;
+        if(newPassword!= null) this.password = newPassword;
     }
-
     //Contribution 추가 또는 count 증가
     public void updateContribution(Contribution contribution) {
         Contribution existedCont = contributions.stream().filter(cont -> cont.getDate().equals(contribution.getDate())).findFirst().orElse(null);
 
         if(existedCont != null) {
-            existedCont.setCount((short)(existedCont.getCount() + 1));
+            existedCont.setCount(existedCont.getCount() + 1);
         }else{
             contributions.add(contribution);
         }

@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
+import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +29,16 @@ public class AuthEndpoint {
     @GetMapping
     public CommonResponseEntity<UserDTO.Summary> getAuth(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return new CommonResponseEntity<>("Token validation successful",userAuthService.getUserInfo(token));
+    }
+
+    @PutMapping("/password")
+    public CommonResponseEntity<Void> changePassword(@RequestParam("userId") Long userId,
+                                                     @RequestBody UserDTO.Password password,
+                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        if(!userAuthService.getUserInfo(token).getUserId().equals(userId)){
+            throw new GlobalException("User Authorization failed");
+        }
+        userAuthService.changePassword(userId,password.getPassword());
+        return new CommonResponseEntity<>("Password change success");
     }
 }

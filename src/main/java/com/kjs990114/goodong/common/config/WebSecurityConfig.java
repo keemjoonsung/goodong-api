@@ -65,7 +65,7 @@ public class WebSecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers( "/api/auth/**","/api/auth/login","/api/posts","/api/posts/**","/api/user/me" ,"/api/user/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
+                        .requestMatchers( "/api/**","/api/auth/**","/api/auth/login","/api/posts","/api/posts/**","/api/user/me" ,"/api/user/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated());
         //세션 설정
         http

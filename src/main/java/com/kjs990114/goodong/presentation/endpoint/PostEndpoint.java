@@ -1,10 +1,14 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
 import com.kjs990114.goodong.application.post.PostService;
+import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -16,12 +20,14 @@ import java.util.List;
 public class PostEndpoint {
 
     private final PostService postService;
+    private final JwtUtil jwtUtil;
 
     //포스트 생성
     @PostMapping
     public CommonResponseEntity<Void> createPost(@RequestBody PostDTO.Create create,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        postService.createPost(create, token);
+        String email = jwtUtil.getEmail(token);
+        postService.createPost(create, email);
         return new CommonResponseEntity<>("Post created successfully");
     }
 
@@ -29,65 +35,52 @@ public class PostEndpoint {
     @GetMapping
     public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam("email") String email,
                                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        return new CommonResponseEntity<>(postService.getUserPosts(email, token));
+        boolean isMyPosts = jwtUtil.getEmail(token).equals(email);
+        return new CommonResponseEntity<>(postService.getUserPosts(email, isMyPosts));
     }
 
-    //검색 elastic search
+    //검색 -> elastic search
     @GetMapping("/search")
     public CommonResponseEntity<List<PostDTO.Summary>> searchPosts(@RequestParam("keyword") String keyword) {
         return new CommonResponseEntity<>(postService.searchPosts(keyword));
     }
 
-    //
-//    // 게시글 Update
-//    @PutMapping("/{postId}")
-//    public ResponseEntity<String> updatePost(@PathVariable("postId") String postId, @RequestBody PostDTO postDTO) {
-//        return ResponseEntity.ok("success");
-//    }
-//
-//    // 게시글 Delete
-//    @DeleteMapping("/{postId}")
-//    public ResponseEntity<String> deletePost(@PathVariable("postId") String postId) {
-//        return ResponseEntity.ok("success");
-//    }
-//
-    // 해당 포스트 정보만 가져오기
+
+    // 게시글 Update
+    @PatchMapping("/{postId}")
+    public CommonResponseEntity<Void> updatePost(@PathVariable("postId") Long postId,
+                                                 @RequestBody PostDTO.Update postDTO,
+                                                 @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+        if (!jwtUtil.getEmail(token).equals(postService.getPost(postId).getEmail())) {
+            throw new GlobalException("UnAuthorized Exception");
+        }
+        postService.updatePost(postId, postDTO);
+        return new CommonResponseEntity<>("Update success");
+    }
+
+    // 게시글 Delete
+    @DeleteMapping("/{postId}")
+    public CommonResponseEntity<Void> deletePost(@PathVariable("postId") Long postId,
+                                                 @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        if (!jwtUtil.getEmail(token).equals(postService.getPost(postId).getEmail())) {
+            throw new GlobalException("UnAuthorized Exception");
+        }
+        postService.deletePost(postId);
+        return new CommonResponseEntity<>("Delete success");
+    }
+
+    // 특정 게시글 정보 가져오기
     @GetMapping("/{postId}")
     public CommonResponseEntity<PostDTO.Detail> getPost(@PathVariable("postId") Long postId) {
         return new CommonResponseEntity<>(postService.getPost(postId));
     }
-//
-//    //댓글달기
-//    @PostMapping("/{postId}/comments")  // 댓글 달
-//    public ResponseEntity<String> addComment(@PathVariable("postId") Long postId,
-//                                             @RequestParam("userId") Long userId,
-//                                             @RequestParam("comment") String comment) {
-//        return ResponseEntity.ok("Comment added successfully");
-//    }
-//
-//    // 좋아요 달기
-//    @PostMapping("/{postId}/likes")
-//    public ResponseEntity<String> addLike(@PathVariable("postId") Long postId,
-//                                          @RequestParam("userId") Long userId) {
-//        return ResponseEntity.ok("Like added successfully");
-//    }
-//
-//    //해당 포스트 다운로드 (glb로)
-//    @GetMapping("/download/{postId}")
-//    public ResponseEntity<Resource> downloadModel(@PathVariable("postId") Long postId) {
-//        String fileName = postService.getPostByPostId(postId).getFileUrl();
-//        System.out.println(fileName);
-//        Blob blob = storage.get(bucketName, fileName);
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        blob.downloadTo(outputStream);
-//
-//        ByteArrayResource resource = new ByteArrayResource(outputStream.toByteArray());
-//
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
-//                .body(resource);
-//
-//    }
-
+    // 파일 url로 다운로드
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadModel(@RequestParam("fileUrl") String fileUrl) {
+        Resource resource = postService.getFileResource(fileUrl);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "model.glb")
+                .body(resource);
+    }
 
 }
