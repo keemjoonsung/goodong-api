@@ -5,6 +5,7 @@ import com.kjs990114.goodong.domain.post.Post;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -94,6 +95,18 @@ public class PostDTO {
         private Integer version;
         private String fileUrl;
         private String commitMessage;
+    }
+
+    @Getter
+    @Setter
+    public static class ImageRequest {
+        private String ImageUrl;
+    }
+    @Getter
+    @Setter
+    public static class AiResponse {
+        private List<String> tags;
+        public AiResponse(List<String> tags) {}
     }
 
 }
