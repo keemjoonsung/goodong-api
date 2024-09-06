@@ -11,7 +11,7 @@ import java.util.List;
 @RequestMapping("/api/ai")
 public class AIEndpoint {
 
-    @GetMapping("/description")
+    @GetMapping("/tags")
     public CommonResponseEntity<PostDTO.AiResponse> aiService(
             @RequestParam("imageUrl") String image
     ) {
