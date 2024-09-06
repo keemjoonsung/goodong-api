@@ -3,12 +3,10 @@ package com.kjs990114.goodong.presentation.endpoint;
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.user.UserService;
 import com.kjs990114.goodong.common.exception.GlobalException;
-import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +19,7 @@ public class UserEndpoint {
 
     // 정보 반환
     @GetMapping
-    public CommonResponseEntity<UserDTO.Detail> getUserProfile(@RequestParam("userId") Long userId) {
+    public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@RequestParam("userId") Long userId) {
         return new CommonResponseEntity<>(userService.getUserInfo(userId));
     }
     // 내 정보 수정

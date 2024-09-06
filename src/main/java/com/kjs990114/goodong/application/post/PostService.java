@@ -101,7 +101,7 @@ public class PostService {
                 }).collect(Collectors.toList());
     }
 
-    public PostDTO.Detail getPost(Long postId) {
+    public PostDTO.PostDetail getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow();
         User user = post.getUser();
 
@@ -129,7 +129,7 @@ public class PostService {
                             .build();
                 }).toList();
 
-        return PostDTO.Detail.builder()
+        return PostDTO.PostDetail.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())

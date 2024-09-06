@@ -57,7 +57,7 @@ public class PostDTO {
 
     @Getter
     @Builder
-    public static class Detail {
+    public static class PostDetail {
         private Long postId;
         private String title;
         private String content;
@@ -85,7 +85,7 @@ public class PostDTO {
     }
     @Getter
     @Builder
-    public static class Comment{
+    public static class PostComment {
         private String content;
     }
     @Getter

@@ -8,10 +8,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -19,21 +15,21 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserDTO.Detail getUserInfo(Long userId) {
+    public UserDTO.UserDetail getUserInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
         int followingCount = user.getFollowings().size();
         int followerCount = user.getFollowers().size();
 
-        return UserDTO.Detail.builder()
+        return UserDTO.UserDetail.builder()
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
                 .followerCount(followerCount)
                 .followingCount(followingCount)
-                .contributions(user.getContributions().stream()
+                .userContributions(user.getContributions().stream()
                         .map(cont ->
-                                new UserDTO.Contribution(cont.getDate(), cont.getCount())
+                                new UserDTO.UserContribution(cont.getDate(), cont.getCount())
                         ).toList())
                 .build();
     }

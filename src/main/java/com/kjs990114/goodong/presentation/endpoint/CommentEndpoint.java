@@ -18,9 +18,9 @@ public class CommentEndpoint {
     @PostMapping  // 댓글 달
     public CommonResponseEntity<Void> addComment(@RequestParam("postId") Long postId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                                 @RequestBody PostDTO.Comment comment) {
+                                                 @RequestBody PostDTO.PostComment postComment) {
         String email = jwtUtil.getEmail(token);
-        String content = comment.getContent();
+        String content = postComment.getContent();
         commentService.addComment(postId, email, content);
 
         return new CommonResponseEntity<>("Comment added successfully");
@@ -38,10 +38,10 @@ public class CommentEndpoint {
     //댓글 업데이트 하기
     @PatchMapping
     public CommonResponseEntity<Void> updateComment(@RequestParam("commentId") Long commentId,
-                                                    @RequestBody PostDTO.Comment comment,
+                                                    @RequestBody PostDTO.PostComment postComment,
                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         String email = jwtUtil.getEmail(token);
-        String content = comment.getContent();
+        String content = postComment.getContent();
         commentService.updateComment(commentId,email,content);
         return new CommonResponseEntity<>("Comment updated successfully");
 

@@ -27,7 +27,7 @@ public class AuthEndpoint {
     }
 
     @GetMapping
-    public CommonResponseEntity<UserDTO.Summary> getAuth(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+    public CommonResponseEntity<UserDTO.UserSummary> getAuth(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return new CommonResponseEntity<>("Token validation successful",userAuthService.getUserInfo(token));
     }
 

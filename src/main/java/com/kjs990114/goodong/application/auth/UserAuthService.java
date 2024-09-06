@@ -55,9 +55,9 @@ public class UserAuthService {
         userRepository.save(user);
     }
 
-    public UserDTO.Summary getUserInfo(String token) {
+    public UserDTO.UserSummary getUserInfo(String token) {
         User user =userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(()-> new GlobalException("User does not exists"));
-        return new UserDTO.Summary(user.getUserId(),user.getEmail(),user.getNickname());
+        return new UserDTO.UserSummary(user.getUserId(),user.getEmail(),user.getNickname());
     }
 
     public void changePassword(Long userId, String newPassword) {

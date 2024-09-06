@@ -71,7 +71,7 @@ public class PostEndpoint {
 
     // 특정 게시글 정보 가져오기
     @GetMapping("/{postId}")
-    public CommonResponseEntity<PostDTO.Detail> getPost(@PathVariable("postId") Long postId) {
+    public CommonResponseEntity<PostDTO.PostDetail> getPost(@PathVariable("postId") Long postId) {
         return new CommonResponseEntity<>(postService.getPost(postId));
     }
     // 파일 url로 다운로드

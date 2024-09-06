@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.presentation.dto;
 
-import com.kjs990114.goodong.domain.user.Contribution;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +21,7 @@ public class UserDTO {
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class Summary {
+    public static class UserSummary {
         private Long userId;
         private String email;
         private String nickname;
@@ -30,14 +29,14 @@ public class UserDTO {
     //유저 상세 정보
     @Getter
     @Builder
-    public static class Detail {
+    public static class UserDetail {
         private Long userId;
         private String email;
         private String nickname;
         private String profileImage;
         private int followerCount;
         private int followingCount;
-        private List<Contribution> contributions;
+        private List<UserContribution> userContributions;
     }
 
     @Getter
@@ -50,7 +49,7 @@ public class UserDTO {
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class Contribution {
+    public static class UserContribution {
         LocalDate date;
         int count;
     }
