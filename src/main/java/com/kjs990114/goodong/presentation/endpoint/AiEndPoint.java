@@ -22,7 +22,7 @@ public class AiEndPoint {
     }
 
     public static class ImageRequest {
-
+        private String ImageUrl;
     }
     public static class AiResponse {
         private List<String> tags;
