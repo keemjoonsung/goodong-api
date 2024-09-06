@@ -99,11 +99,6 @@ public class PostDTO {
 
     @Getter
     @Setter
-    public static class ImageRequest {
-        private String ImageUrl;
-    }
-    @Getter
-    @Setter
     public static class AiResponse {
         private List<String> tags;
         public AiResponse(List<String> tags) {}
