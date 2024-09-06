@@ -1,8 +1,6 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
-import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ai")
-public class AiEndPoint {
+public class AIEndpoint {
 
     @PostMapping("/description")
     public CommonResponseEntity<AiResponse> aiService(
