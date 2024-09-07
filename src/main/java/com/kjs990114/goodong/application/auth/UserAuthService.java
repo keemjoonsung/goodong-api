@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -28,6 +30,8 @@ public class UserAuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+
+    private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$";
 
     public String login(UserDTO.Login login) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
@@ -65,6 +69,21 @@ public class UserAuthService {
         user.changePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    public boolean isEmailDuplicated(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    public boolean isNicknameDuplicated(String nickname) {
+        return userRepository.findByNickname(nickname).isPresent();
+    }
+
+    public boolean isPasswordValid(String password) {
+        Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
+    }
+
 
 
 }

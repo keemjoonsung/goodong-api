@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/likes")
 @RequiredArgsConstructor
 public class LikeEndpoint {
-    private final JwtUtil jwtUtil;
     private final LikeService likeService;
     private final UserAuthService userAuthService;
 
@@ -30,7 +29,6 @@ public class LikeEndpoint {
     public CommonResponseEntity<Void> unlikePost(@RequestParam("postId") Long postId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long likerId = userAuthService.getUserInfo(token).getUserId();
-
         likeService.unlikePost(postId, likerId);
         return new CommonResponseEntity<>("Unlike successfully");
     }

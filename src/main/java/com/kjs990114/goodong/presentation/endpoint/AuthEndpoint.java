@@ -4,6 +4,7 @@ import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/register")
-    public CommonResponseEntity<Void> register(@RequestBody UserDTO.Register register) {
+    public CommonResponseEntity<Void> register(@Valid @RequestBody UserDTO.Register register) {
         userAuthService.register(register);
         return new CommonResponseEntity<>("Register Success");
     }
@@ -40,5 +41,27 @@ public class AuthEndpoint {
         }
         userAuthService.changePassword(userId,password.getPassword());
         return new CommonResponseEntity<>("Password change success");
+    }
+
+    @GetMapping("/duplicate")
+    public CommonResponseEntity<Boolean> duplicate(@RequestParam(required = false, name="email") String email,
+                                                     @RequestParam(required = false, name="nickname") String nickname){
+        if(email == null && nickname == null) {
+            throw new GlobalException("Email and Nickname cannot be null");
+        }
+        if(email != null && nickname != null) {
+            throw new GlobalException("Choose one query parameter, either 'email' or 'nickname'.");
+        }
+        if (email != null) {
+            return new CommonResponseEntity<>(userAuthService.isEmailDuplicated(email));
+        }
+
+        return new CommonResponseEntity<>(userAuthService.isNicknameDuplicated(nickname));
+    }
+
+
+    @PostMapping("/valid")
+    public CommonResponseEntity<Boolean> validPassword(@RequestBody UserDTO.Password password){
+        return new CommonResponseEntity<>(userAuthService.isPasswordValid(password.getPassword()));
     }
 }
