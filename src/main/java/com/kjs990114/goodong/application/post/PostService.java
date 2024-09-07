@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final JwtUtil jwtUtil;
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
     private final Storage storage;
@@ -79,6 +80,13 @@ public class PostService {
         postDocument.setContent(post.getContent());
         postDocument.setTagging(tagging);
         postSearchRepository.save(postDocument);
+    }
+
+    public Boolean checkDuplicatedTitle(String title, String token) {
+        String email = jwtUtil.getEmail(token);
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return user.getPosts().stream()
+                .anyMatch(post -> post.getTitle().equalsIgnoreCase(title));
     }
 
     public List<PostDTO.Summary> getUserPosts(Long userId, boolean isMyPosts) {

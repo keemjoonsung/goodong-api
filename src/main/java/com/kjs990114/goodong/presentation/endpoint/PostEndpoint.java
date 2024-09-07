@@ -36,7 +36,7 @@ public class PostEndpoint {
     // 유저의 post 리스트 반환
     @GetMapping
     public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam("userId") Long userId,
-                                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+                                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         boolean isMyPosts = userAuthService.getUserInfo(token).getUserId().equals(userId);
         return new CommonResponseEntity<>(postService.getUserPosts(userId, isMyPosts));
     }
@@ -79,9 +79,14 @@ public class PostEndpoint {
     @GetMapping("/{postId}")
     public CommonResponseEntity<PostDTO.PostDetail> getPost(@PathVariable("postId") Long postId,
                                                             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token
-    ) throws IOException {
+    ) {
         Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
         return new CommonResponseEntity<>(postService.getPost(postId, viewerId));
+    }
+    @GetMapping("/duplicated")
+    public CommonResponseEntity<Boolean> isDuplicateTitle(@RequestParam("title") String title,
+                                                          @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token){
+        return new CommonResponseEntity<>(postService.checkDuplicatedTitle(title,token));
     }
     // 파일 url로 다운로드
     @GetMapping("/download")

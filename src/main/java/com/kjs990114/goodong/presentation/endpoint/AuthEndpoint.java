@@ -43,7 +43,7 @@ public class AuthEndpoint {
         return new CommonResponseEntity<>("Password change success");
     }
 
-    @GetMapping("/duplicate")
+    @GetMapping("/duplicated")
     public CommonResponseEntity<Boolean> duplicate(@RequestParam(required = false, name="email") String email,
                                                      @RequestParam(required = false, name="nickname") String nickname){
         if(email == null && nickname == null) {

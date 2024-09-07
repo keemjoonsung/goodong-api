@@ -2,7 +2,6 @@ package com.kjs990114.goodong.presentation.endpoint;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.post.LikeService;
-import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

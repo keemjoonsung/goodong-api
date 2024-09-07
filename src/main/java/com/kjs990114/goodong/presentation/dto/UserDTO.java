@@ -46,6 +46,7 @@ public class UserDTO {
     //유저 상세 정보
     @Getter
     @Builder
+    @AllArgsConstructor
     public static class UserDetail {
         private Long userId;
         private String email;
