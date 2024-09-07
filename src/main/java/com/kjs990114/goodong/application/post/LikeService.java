@@ -17,9 +17,15 @@ public class LikeService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public void likePost(Long postId, String email) {
+    public void likePost(Long postId, Long likerId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
+        User user = userRepository.findById(likerId).orElseThrow(() -> new GlobalException("User does not exist"));
+
+        if(post.getStatus().equals(Post.PostStatus.PRIVATE)){
+            if(!post.getUser().getUserId().equals(user.getUserId())){
+                throw new GlobalException("User Authorization failed");
+            }
+        }
 
         Like like = Like.builder()
                 .post(post)
@@ -31,9 +37,15 @@ public class LikeService {
         userRepository.save(user);
     }
 
-    public void unlikePost(Long postId, String email) {
+    public void unlikePost(Long postId, Long likerId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
+        User user = userRepository.findById(likerId).orElseThrow(() -> new GlobalException("User does not exist"));
+
+        if(post.getStatus().equals(Post.PostStatus.PRIVATE)){
+            if(!post.getUser().getUserId().equals(user.getUserId())){
+                throw new GlobalException("User Authorization failed");
+            }
+        }
 
         Like like = post.getLikes().stream().filter(l ->
                 l.getUser().getUserId().equals(user.getUserId())

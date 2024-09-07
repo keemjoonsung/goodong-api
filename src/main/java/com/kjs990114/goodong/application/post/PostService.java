@@ -81,8 +81,8 @@ public class PostService {
         postSearchRepository.save(postDocument);
     }
 
-    public List<PostDTO.Summary> getUserPosts(String email, boolean isMyPosts) {
-        User user = userRepository.findByEmail(email).orElseThrow();
+    public List<PostDTO.Summary> getUserPosts(Long userId, boolean isMyPosts) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
         List<Post> posts = postRepository.findAllByUser(user);
         return posts.stream()
                 .filter(post -> isMyPosts || post.getStatus() == Post.PostStatus.PUBLIC)
@@ -102,10 +102,14 @@ public class PostService {
                 }).collect(Collectors.toList());
     }
 
-    public PostDTO.PostDetail getPost(Long postId) {
+    public PostDTO.PostDetail getPost(Long postId, Long viewerId) {
         Post post = postRepository.findById(postId).orElseThrow();
         User user = post.getUser();
-
+        if(post.getStatus().equals(Post.PostStatus.PRIVATE)) {
+            if(!user.getUserId().equals(viewerId)) {
+                throw new GlobalException("User Authorization Failed");
+            }
+        }
         List<Model> modelsEntity = post.getModels();
         List<PostDTO.ModelInfo> models = modelsEntity.stream().map(model ->
                 PostDTO.ModelInfo.builder()

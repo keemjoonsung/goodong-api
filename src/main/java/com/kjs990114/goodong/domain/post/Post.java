@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "post")
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "user_id"})})
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

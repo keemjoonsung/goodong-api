@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
+import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.post.PostService;
 import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
@@ -21,6 +22,7 @@ public class PostEndpoint {
 
     private final PostService postService;
     private final JwtUtil jwtUtil;
+    private final UserAuthService userAuthService;
 
     //포스트 생성
     @PostMapping
@@ -33,10 +35,10 @@ public class PostEndpoint {
 
     // 유저의 post 리스트 반환
     @GetMapping
-    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam("email") String email,
+    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam("userId") Long userId,
                                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        boolean isMyPosts = jwtUtil.getEmail(token).equals(email);
-        return new CommonResponseEntity<>(postService.getUserPosts(email, isMyPosts));
+        boolean isMyPosts = userAuthService.getUserInfo(token).getUserId().equals(userId);
+        return new CommonResponseEntity<>(postService.getUserPosts(userId, isMyPosts));
     }
 
     //검색 -> elastic search
@@ -51,7 +53,9 @@ public class PostEndpoint {
     public CommonResponseEntity<Void> updatePost(@PathVariable("postId") Long postId,
                                                  @RequestBody PostDTO.Update postDTO,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        if (!jwtUtil.getEmail(token).equals(postService.getPost(postId).getEmail())) {
+        Long viewerId = userAuthService.getUserInfo(token).getUserId();
+
+        if (!jwtUtil.getEmail(token).equals(postService.getPost(postId, viewerId).getEmail())) {
             throw new GlobalException("UnAuthorized Exception");
         }
         postService.updatePost(postId, postDTO);
@@ -62,7 +66,9 @@ public class PostEndpoint {
     @DeleteMapping("/{postId}")
     public CommonResponseEntity<Void> deletePost(@PathVariable("postId") Long postId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if (!jwtUtil.getEmail(token).equals(postService.getPost(postId).getEmail())) {
+        Long viewerId = userAuthService.getUserInfo(token).getUserId();
+
+        if (!jwtUtil.getEmail(token).equals(postService.getPost(postId , viewerId).getEmail())) {
             throw new GlobalException("UnAuthorized Exception");
         }
         postService.deletePost(postId);
@@ -71,8 +77,11 @@ public class PostEndpoint {
 
     // 특정 게시글 정보 가져오기
     @GetMapping("/{postId}")
-    public CommonResponseEntity<PostDTO.PostDetail> getPost(@PathVariable("postId") Long postId) {
-        return new CommonResponseEntity<>(postService.getPost(postId));
+    public CommonResponseEntity<PostDTO.PostDetail> getPost(@PathVariable("postId") Long postId,
+                                                            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token
+    ) throws IOException {
+        Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
+        return new CommonResponseEntity<>(postService.getPost(postId, viewerId));
     }
     // 파일 url로 다운로드
     @GetMapping("/download")

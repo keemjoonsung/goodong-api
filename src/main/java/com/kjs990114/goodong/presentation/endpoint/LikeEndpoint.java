@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
+import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.post.LikeService;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
@@ -13,13 +14,14 @@ import org.springframework.web.bind.annotation.*;
 public class LikeEndpoint {
     private final JwtUtil jwtUtil;
     private final LikeService likeService;
+    private final UserAuthService userAuthService;
 
     //좋아요 추가
     @PostMapping
     public CommonResponseEntity<Void> likePost(@RequestParam("postId") Long postId,
                                                @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        String email = jwtUtil.getEmail(token);
-        likeService.likePost(postId, email);
+        Long likerId = userAuthService.getUserInfo(token).getUserId();
+        likeService.likePost(postId, likerId);
         return new CommonResponseEntity<>("Like successfully");
     }
 
@@ -27,8 +29,9 @@ public class LikeEndpoint {
     @DeleteMapping
     public CommonResponseEntity<Void> unlikePost(@RequestParam("postId") Long postId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        String email = jwtUtil.getEmail(token);
-        likeService.unlikePost(postId, email);
+        Long likerId = userAuthService.getUserInfo(token).getUserId();
+
+        likeService.unlikePost(postId, likerId);
         return new CommonResponseEntity<>("Unlike successfully");
     }
 

@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity(name = "likes")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"like_id", "user_id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "post_id"})})
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
