@@ -34,11 +34,17 @@ public class UserService {
                 .build();
     }
 
-    public void updateUser(Long userId, UserDTO.Update update) {
+    public void updateUserNickname(Long userId, UserDTO.UpdateNickname update) {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        user.updateProfile(update.getNickname(), update.getProfileImage());
+        user.updateNickname(update.getNickname());
         userRepository.save(user);
 
+    }
+
+    public void updateProfileImage(Long userId, UserDTO.UpdateProfileImage update) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        user.updateProfileImage(update.getProfileImage());
+        userRepository.save(user);
     }
 
     public void deleteUser(Long userId) {

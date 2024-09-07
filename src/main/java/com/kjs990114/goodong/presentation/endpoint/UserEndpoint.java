@@ -22,17 +22,29 @@ public class UserEndpoint {
     public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@RequestParam("userId") Long userId) {
         return new CommonResponseEntity<>(userService.getUserInfo(userId));
     }
-    // 내 정보 수정
-    @PatchMapping
-    public CommonResponseEntity<Void> updateUserProfile(@RequestParam("userId") Long userId,
-                                                    @RequestBody UserDTO.Update update,
+    // 닉네임 변경
+    @PatchMapping("/nickname")
+    public CommonResponseEntity<Void> updateUserNickname(@RequestParam("userId") Long userId,
+                                                    @RequestBody UserDTO.UpdateNickname update,
                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
             throw new GlobalException("User authorization failed");
         }
-        userService.updateUser(userId, update);
+        userService.updateUserNickname(userId, update);
         return new CommonResponseEntity<>("User profile updated successfully");
     }
+    //프로필 이미지 변경
+    @PatchMapping("/profileImage")
+    public CommonResponseEntity<Void> updateUserProfileImage(@RequestParam("userId") Long userId,
+                                                        @RequestBody UserDTO.UpdateProfileImage update,
+                                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
+            throw new GlobalException("User authorization failed");
+        }
+        userService.updateProfileImage(userId, update);
+        return new CommonResponseEntity<>("User profile updated successfully");
+    }
+
     // 회원 탈퇴
     @DeleteMapping
     public CommonResponseEntity<Void> deleteUserAccount(@RequestParam("userId") Long userId,

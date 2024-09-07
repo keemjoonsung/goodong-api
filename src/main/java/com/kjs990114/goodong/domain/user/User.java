@@ -96,9 +96,12 @@ public class User extends BaseTimeEntity {
     public void unlike(Like like) {
         this.likes.remove(like);
     }
-    //유저 정보 업데이트
-    public void updateProfile(String nickname, String profileImage) {
+    //닉네임 변경
+    public void updateNickname(String nickname) {
         if(nickname != null) this.nickname = nickname;
+    }
+    //프로필 이미지 변경
+    public void updateProfileImage(String profileImage) {
         if(profileImage != null) this.profileImage = profileImage;
     }
     // 비밀번호 변경

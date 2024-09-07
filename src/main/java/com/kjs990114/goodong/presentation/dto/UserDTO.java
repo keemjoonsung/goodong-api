@@ -12,6 +12,7 @@ public class UserDTO {
 
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class Register {
         private String email;
         private String password;
@@ -57,8 +58,13 @@ public class UserDTO {
 
     @Getter
     @Setter
-    public static class Update {
+    public static class UpdateNickname {
         private String nickname;
+    }
+    
+    @Getter
+    @Setter
+    public static class UpdateProfileImage {
         private String profileImage;
     }
 
