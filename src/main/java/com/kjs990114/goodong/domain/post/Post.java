@@ -28,7 +28,7 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Model> models = new ArrayList<>();
 
@@ -55,7 +55,7 @@ public class Post extends BaseTimeEntity {
 
     // 게시물의 공개 상태를 변경하는 메서드
     public void updateStatus(PostStatus status) {
-        if(status != null) this.status = status;
+        if (status != null) this.status = status;
     }
 
     // 댓글 추가
@@ -81,8 +81,8 @@ public class Post extends BaseTimeEntity {
 
     // 게시물 수정 (제목과 내용 수정)
     public void updatePost(String title, String content) {
-        if(title != null) this.title = title;
-        if(content != null) this.content = content;
+        if (title != null) this.title = title;
+        if (content != null) this.content = content;
     }
 
     // 게시물에 태그 clear
@@ -92,12 +92,15 @@ public class Post extends BaseTimeEntity {
 
     // 게시물에 태그 전체 추가
     public void addTagAll(List<String> tags) {
-        for (String tag : tags) {
-            Tag newTag = Tag.builder()
-                    .tag(tag)
-                    .build();
-            this.tags.add(newTag);
+        if (tags != null) {
+            for (String tag : tags) {
+                Tag newTag = Tag.builder()
+                        .tag(tag)
+                        .build();
+                this.tags.add(newTag);
+            }
         }
+
     }
 
     // 게시글에 모델 추가

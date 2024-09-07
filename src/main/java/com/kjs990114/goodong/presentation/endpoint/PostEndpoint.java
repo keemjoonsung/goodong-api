@@ -24,7 +24,7 @@ public class PostEndpoint {
 
     //포스트 생성
     @PostMapping
-    public CommonResponseEntity<Void> createPost(@RequestBody PostDTO.Create create,
+    public CommonResponseEntity<Void> createPost(PostDTO.Create create,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
         String email = jwtUtil.getEmail(token);
         postService.createPost(create, email);

@@ -52,6 +52,7 @@ public class PostService {
                 .title(create.getTitle())
                 .content(create.getContent())
                 .status(create.getStatus())
+                .user(user)
                 .build();
         String url = generateFileUrl(create.getFile());
         Model newModel = com.kjs990114.goodong.domain.post.Model.builder()
@@ -62,6 +63,7 @@ public class PostService {
                 .build();
 
         newPost.addModel(newModel);
+        System.out.println("newModel: " + newModel.getFileUrl());
         newPost.addTagAll(create.getTags());
         userRepository.save(user);
 
@@ -227,7 +229,7 @@ public class PostService {
                 file.getBytes()
         );
 
-        return String.format("%s/%s", bucketName, fileName);
+        return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
 
     }
 

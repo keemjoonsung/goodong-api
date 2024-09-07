@@ -18,36 +18,34 @@ public class UserEndpoint {
     private final UserService userService;
 
     // 정보 반환
-    @GetMapping
-    public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@RequestParam("userId") Long userId) {
+    @GetMapping("/{userId}")
+    public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@PathVariable("userId") Long userId) {
         return new CommonResponseEntity<>(userService.getUserInfo(userId));
     }
-    // 닉네임 변경
-    @PatchMapping("/nickname")
-    public CommonResponseEntity<Void> updateUserNickname(@RequestParam("userId") Long userId,
-                                                    @RequestBody UserDTO.UpdateNickname update,
+    // 닉네임 , 프로필이미지
+    @PatchMapping("/{userId}")
+    public CommonResponseEntity<Void> updateUserProfile(@PathVariable("userId") Long userId,
+                                                    @RequestParam(required = false) String nickname,
+                                                    @RequestParam(required = false) String profileImageUrl,
                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
             throw new GlobalException("User authorization failed");
         }
-        userService.updateUserNickname(userId, update);
-        return new CommonResponseEntity<>("User profile updated successfully");
-    }
-    //프로필 이미지 변경
-    @PatchMapping("/profileImage")
-    public CommonResponseEntity<Void> updateUserProfileImage(@RequestParam("userId") Long userId,
-                                                        @RequestBody UserDTO.UpdateProfileImage update,
-                                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
-            throw new GlobalException("User authorization failed");
+        if(nickname == null && profileImageUrl == null){
+            throw new GlobalException("Nickname and profileImageUrl are required");
         }
-        userService.updateProfileImage(userId, update);
+        if(nickname != null && !nickname.isEmpty()) {
+            userService.updateUserNickname(userId,nickname);
+        }
+        if(profileImageUrl != null && !profileImageUrl.isEmpty()) {
+            userService.updateProfileImage(userId, profileImageUrl);
+        }
         return new CommonResponseEntity<>("User profile updated successfully");
     }
 
     // 회원 탈퇴
-    @DeleteMapping
-    public CommonResponseEntity<Void> deleteUserAccount(@RequestParam("userId") Long userId,
+    @DeleteMapping("/{userId}")
+    public CommonResponseEntity<Void> deleteUserAccount(@PathVariable("userId") Long userId,
                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
             throw new GlobalException("User authorization failed");

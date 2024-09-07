@@ -34,16 +34,16 @@ public class UserService {
                 .build();
     }
 
-    public void updateUserNickname(Long userId, UserDTO.UpdateNickname update) {
+    public void updateUserNickname(Long userId, String nickname) {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        user.updateNickname(update.getNickname());
+        user.updateNickname(nickname);
         userRepository.save(user);
 
     }
 
-    public void updateProfileImage(Long userId, UserDTO.UpdateProfileImage update) {
+    public void updateProfileImage(Long userId,String profileImageUrl) {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        user.updateProfileImage(update.getProfileImage());
+        user.updateProfileImage(profileImageUrl);
         userRepository.save(user);
     }
 

@@ -2,10 +2,7 @@ package com.kjs990114.goodong.presentation.dto;
 
 
 import com.kjs990114.goodong.domain.post.Post;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -85,6 +82,8 @@ public class PostDTO {
         private LocalDateTime lastModifiedAt;
     }
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class PostComment {
         private String content;
