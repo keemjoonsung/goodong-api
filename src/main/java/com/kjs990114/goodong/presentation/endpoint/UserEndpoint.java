@@ -22,7 +22,7 @@ public class UserEndpoint {
     public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@PathVariable("userId") Long userId) {
         return new CommonResponseEntity<>(userService.getUserInfo(userId));
     }
-    // 닉네임 , 프로필이미지
+    // 닉네임 혹은 프로필 이미지 변경
     @PatchMapping("/{userId}")
     public CommonResponseEntity<Void> updateUserProfile(@PathVariable("userId") Long userId,
                                                     @RequestParam(required = false) String nickname,
