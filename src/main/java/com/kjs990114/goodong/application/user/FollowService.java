@@ -50,9 +50,9 @@ public class FollowService {
         User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
         List<UserDTO.UserSummary> response;
         if(type == FollowEndpoint.FollowType.FOLLOWER){ //팔로워
-            Set<Follow> followings = user.getFollowings();
-            response = followings.stream().map(following -> {
-                User follower = following.getFollower();
+            Set<Follow> followers = user.getFollowers();
+            response = followers.stream().map(f -> {
+                User follower = f.getFollower();
                 return UserDTO.UserSummary.builder()
                         .userId(follower.getUserId())
                         .email(follower.getEmail())
@@ -72,6 +72,7 @@ public class FollowService {
                         .profileImage(followee.getProfileImage())
                         .build();
             }).toList();
+
         }
         return response;
     }

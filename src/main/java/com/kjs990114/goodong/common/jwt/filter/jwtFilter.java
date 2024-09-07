@@ -27,16 +27,15 @@ public class jwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, IOException {
 
-        String authorization= request.getHeader("Authorization");
-        System.out.println("authorization = " + authorization);
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+        String token= request.getHeader("Authorization");
+        System.out.println("authorization = " + token);
+        if (token == null || !token.startsWith("Bearer ")) {
             System.out.println("token null");
             filterChain.doFilter(request, response);
             return;
         }
 
         System.out.println("authorization now");
-        String token = authorization.split(" ")[1];
 
         if (jwtUtil.isExpired(token)) {
 
@@ -50,6 +49,8 @@ public class jwtFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRole(token);
         String email = jwtUtil.getEmail(token);
         System.out.println("nickname = " + nickname);
+        System.out.println("role = " + role);
+        System.out.println("email = " + email);
         User user = User.builder()
                 .nickname(nickname)
                 .email(email)

@@ -19,20 +19,26 @@ public class JwtUtil {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String getNickname(String token) {
+    public String getNickname(String bearer) {
+        String token = bearer.split(" ")[1];
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("nickname", String.class);
     }
 
-    public String getEmail(String token) {
+    public String getEmail(String bearer) {
+        String token = bearer.split(" ")[1];
+
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
 
-    public String getRole(String token) {
+    public String getRole(String bearer) {
+        String token = bearer.split(" ")[1];
+
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
-    public Boolean isExpired(String token) {
+    public Boolean isExpired(String bearer) {
         boolean isExpired;
+        String token = bearer.split(" ")[1];
         try {
             isExpired = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
         }catch (ExpiredJwtException e) {

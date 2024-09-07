@@ -43,6 +43,7 @@ public class UserDTO {
 
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class Login {
         private String email;
         private String password;
