@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.application.post;
 
-import com.kjs990114.goodong.application.user.UserService;
 import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.domain.post.Comment;
 import com.kjs990114.goodong.domain.post.Post;

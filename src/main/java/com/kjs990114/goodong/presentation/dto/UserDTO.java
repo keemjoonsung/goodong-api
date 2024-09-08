@@ -55,6 +55,8 @@ public class UserDTO {
         private int followerCount;
         private int followingCount;
         private List<UserContribution> userContributions;
+        @Builder.Default
+        private boolean isFollowing = false;
     }
 
     @Getter

@@ -19,8 +19,10 @@ public class UserEndpoint {
 
     // 정보 반환
     @GetMapping("/{userId}")
-    public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@PathVariable("userId") Long userId) {
-        return new CommonResponseEntity<>(userService.getUserInfo(userId));
+    public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@PathVariable("userId") Long userId,
+                                                                   @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+        Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
+        return new CommonResponseEntity<>(userService.getUserInfo(userId,viewerId));
     }
     // 닉네임 혹은 프로필 이미지 변경
     @PatchMapping("/{userId}")

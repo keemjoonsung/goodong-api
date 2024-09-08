@@ -15,8 +15,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserDTO.UserDetail getUserInfo(Long userId) {
+    public UserDTO.UserDetail getUserInfo(Long userId, Long viewerId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        boolean isFollowing = false;
+        if(viewerId != null) {
+            User viewer = userRepository.findById(viewerId).orElseThrow(() -> new GlobalException("User does not exists"));
+            isFollowing = viewer.getFollowings().stream().anyMatch((follow) ->
+                    follow.getFollower().getUserId().equals(viewerId) && follow.getFollowee().getUserId().equals(userId));
+        }
         int followingCount = user.getFollowings().size();
         int followerCount = user.getFollowers().size();
 
@@ -31,6 +37,7 @@ public class UserService {
                         .map(cont ->
                                 new UserDTO.UserContribution(cont.getDate(), cont.getCount())
                         ).toList())
+                .isFollowing(isFollowing)
                 .build();
     }
 
