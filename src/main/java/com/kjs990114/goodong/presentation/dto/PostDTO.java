@@ -94,7 +94,7 @@ public class PostDTO {
     @Builder
     public static class ModelInfo {
         private Integer version;
-        private String fileUrl;
+        private String fileName;
         private String commitMessage;
     }
 

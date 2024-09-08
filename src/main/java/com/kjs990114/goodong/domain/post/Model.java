@@ -20,7 +20,7 @@ public class Model extends BaseTimeEntity {
 
     private Integer version;
 
-    private String fileUrl;
+    private String fileName;
 
     private String commitMessage;
 

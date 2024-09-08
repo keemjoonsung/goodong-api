@@ -56,11 +56,11 @@ public class PostService {
                 .user(user)
                 .build();
 
-        String url = generateFileUrl(create.getFile());
-        Model newModel = com.kjs990114.goodong.domain.post.Model.builder()
+        String fileName = generateFileName(create.getFile());
+        Model newModel = Model.builder()
                 .commitMessage("First Commit")
                 .post(newPost)
-                .fileUrl(url)
+                .fileName(fileName)
                 .version(1)
                 .build();
 
@@ -132,7 +132,7 @@ public class PostService {
         List<PostDTO.ModelInfo> models = modelsEntity.stream().map(model ->
                 PostDTO.ModelInfo.builder()
                         .version(model.getVersion())
-                        .fileUrl(model.getFileUrl())
+                        .fileName(model.getFileName())
                         .commitMessage(model.getCommitMessage())
                         .build()
         ).toList();
@@ -211,11 +211,11 @@ public class PostService {
         post.updateStatus(update.getStatus());
         if (update.getFile() != null) {
             int nextVersion = post.getNextModelVersion();
-            String newFileUrl = generateFileUrl(update.getFile());
+            String newFileName = generateFileName(update.getFile());
             Model newModel = Model.builder()
                     .post(post)
                     .version(nextVersion)
-                    .fileUrl(newFileUrl)
+                    .fileName(newFileName)
                     .commitMessage(update.getCommitMessage())
                     .build();
             post.addModel(newModel);
@@ -235,16 +235,15 @@ public class PostService {
 
     }
 
-
-    public Resource getFileResource(String fileUrl) {
-        Blob blob = storage.get(bucketName, fileUrl);
+    public Resource getFileResource(String fileName) {
+        Blob blob = storage.get(bucketName, fileName);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         blob.downloadTo(outputStream);
 
         return new ByteArrayResource(outputStream.toByteArray());
     }
 
-    private String generateFileUrl(MultipartFile file) throws IOException {
+    private String generateFileName(MultipartFile file) throws IOException {
         String uuid = UUID.randomUUID().toString();
         String fileName = uuid + ".glb";
 
@@ -253,7 +252,7 @@ public class PostService {
                 file.getBytes()
         );
 
-        return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+        return fileName;
 
     }
 
