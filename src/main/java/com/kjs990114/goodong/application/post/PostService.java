@@ -236,7 +236,7 @@ public class PostService {
     }
 
     public Resource getFileResource(String fileName) {
-        Blob blob = storage.get(bucketName, fileName);
+        Blob blob = storage.get(bucketName, fileName + ".glb");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         blob.downloadTo(outputStream);
 
@@ -245,14 +245,12 @@ public class PostService {
 
     private String generateFileName(MultipartFile file) throws IOException {
         String uuid = UUID.randomUUID().toString();
-        String fileName = uuid + ".glb";
-
         storage.create(
-                BlobInfo.newBuilder(bucketName, fileName).build(),
+                BlobInfo.newBuilder(bucketName, uuid + ".glb").build(),
                 file.getBytes()
         );
 
-        return fileName;
+        return uuid;
 
     }
 
