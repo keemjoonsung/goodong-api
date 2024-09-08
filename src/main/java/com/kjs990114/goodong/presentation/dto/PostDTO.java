@@ -98,11 +98,19 @@ public class PostDTO {
 
     @Getter
     @Setter
+    @AllArgsConstructor
+    public static class File {
+        private MultipartFile file;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
     public static class AiResponse {
+        private String title;
+        private String description;
         private List<String> tags;
-        public AiResponse(List<String> tags) {
-            this.tags = tags;
-        }
+
     }
 
 }

@@ -40,6 +40,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-maven-plugin:3.3.2'
+    implementation platform("org.springframework.ai:spring-ai-bom:0.8.1-SNAPSHOT")
+    implementation 'org.springframework.ai:spring-ai-vertex-ai-gemini-spring-boot-starter'
     implementation 'mysql:mysql-connector-java:8.0.32'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'

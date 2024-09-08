@@ -1,22 +1,28 @@
 package com.kjs990114.goodong.presentation.endpoint;
 
+import com.kjs990114.goodong.application.post.AIService;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
-import com.kjs990114.goodong.presentation.dto.UserDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/ai")
+@RequiredArgsConstructor
 public class AIEndpoint {
-
-    @GetMapping("/tags")
+    private final AIService aiService;
+    @PostMapping
     public CommonResponseEntity<PostDTO.AiResponse> aiService(
-            @RequestParam("imageUrl") String image
-    ) {
-        return new CommonResponseEntity<>(new PostDTO.AiResponse(List.of("태그 1", "태그 2", "태그 3")));
+             PostDTO.File file
+    ) throws Exception{
+        List<String> response = aiService.getDescription(file.getFile());
+
+        return new CommonResponseEntity<>("Gemini API response successful.",new PostDTO.AiResponse(response.get(0),response.get(1),List.of(response.get(2).split(","))));
     }
+
+
 
 
 
