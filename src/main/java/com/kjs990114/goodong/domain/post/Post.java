@@ -97,6 +97,7 @@ public class Post extends BaseTimeEntity {
             for (String tag : tags) {
                 Tag newTag = Tag.builder()
                         .tag(tag)
+                        .post(this)
                         .build();
                 this.tags.add(newTag);
             }
