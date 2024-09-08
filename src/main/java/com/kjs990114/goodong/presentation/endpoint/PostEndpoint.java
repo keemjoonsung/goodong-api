@@ -90,8 +90,8 @@ public class PostEndpoint {
     }
     // 파일 url로 다운로드
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadModel(@RequestParam("fileUrl") String fileUrl) {
-        Resource resource = postService.getFileResource(fileUrl);
+    public ResponseEntity<Resource> downloadModel(@RequestParam("fileName") String fileName) {
+        Resource resource = postService.getFileResource(fileName);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "model.glb")
                 .body(resource);

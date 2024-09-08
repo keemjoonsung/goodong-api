@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.presentation.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -56,7 +57,7 @@ public class UserDTO {
         private int followingCount;
         private List<UserContribution> userContributions;
         @Builder.Default
-        private boolean isFollowing = false;
+        private boolean followed = false;
     }
 
     @Getter

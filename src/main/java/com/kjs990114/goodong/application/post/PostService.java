@@ -114,12 +114,13 @@ public class PostService {
     public PostDTO.PostDetail getPost(Long postId, Long viewerId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("User does not exists"));
         User user = post.getUser();
-        boolean isFollowing = false;
+        boolean isLiked = false;
 
         if(viewerId != null) {
             User viewer = userRepository.findById(viewerId).orElseThrow(() -> new GlobalException("User does not exists"));
-            isFollowing = viewer.getFollowings().stream().anyMatch((follow) ->
-                    follow.getFollower().getUserId().equals(viewerId) && follow.getFollowee().getUserId().equals(user.getUserId()));
+            isLiked = viewer.getLikes().stream().anyMatch(like ->
+                    like.getPost().getPostId().equals(post.getPostId())
+            );
         }
 
         if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
@@ -167,7 +168,7 @@ public class PostService {
                 .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
                 .comments(comments)
                 .likes(post.getLikes().size())
-                .isFollowing(isFollowing)
+                .liked(isLiked)
                 .build();
     }
 

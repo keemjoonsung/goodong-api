@@ -37,7 +37,7 @@ public class UserService {
                         .map(cont ->
                                 new UserDTO.UserContribution(cont.getDate(), cont.getCount())
                         ).toList())
-                .isFollowing(isFollowing)
+                .followed(isFollowing)
                 .build();
     }
 
