@@ -55,6 +55,7 @@ public class PostService {
                 .status(create.getStatus())
                 .user(user)
                 .build();
+
         String url = generateFileUrl(create.getFile());
         Model newModel = com.kjs990114.goodong.domain.post.Model.builder()
                 .commitMessage("First Commit")
@@ -64,7 +65,6 @@ public class PostService {
                 .build();
 
         newPost.addModel(newModel);
-        System.out.println("newModel: " + newModel.getFileUrl());
         newPost.addTagAll(create.getTags());
         userRepository.save(user);
 

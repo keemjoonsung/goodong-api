@@ -51,6 +51,8 @@ public class PostDTO {
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
         private Integer likes;
+        @Builder.Default
+        private boolean isFollowing = false;
     }
 
     @Getter
