@@ -23,7 +23,7 @@ public class FileService {
     private final Storage storage;
 
     public Resource getFileResource(String fileName, Extension extension) {
-        Blob blob = storage.get(bucketName, fileName + extension);
+        Blob blob = storage.get(bucketName, fileName + extension.getExtension());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         blob.downloadTo(outputStream);
 
@@ -33,7 +33,7 @@ public class FileService {
     public String saveFileStorage(MultipartFile file, Extension extension) throws IOException {
         String uuid = UUID.randomUUID().toString();
         storage.create(
-                BlobInfo.newBuilder(bucketName, uuid + extension).build(),
+                BlobInfo.newBuilder(bucketName, uuid + extension.getExtension()).build(),
                 file.getBytes()
         );
 
