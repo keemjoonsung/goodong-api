@@ -1,8 +1,6 @@
 package com.kjs990114.goodong.application.post;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
+import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.post.*;
@@ -14,20 +12,13 @@ import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.infrastructure.PostDocument;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,12 +26,10 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final JwtUtil jwtUtil;
-    @Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName;
-    private final Storage storage;
     private final PostRepository postRepository;
     private final PostSearchRepository postSearchRepository;
     private final UserRepository userRepository;
+    private final FileService fileService;
 
     /**
      * 포스트를 완전 처음 생성하면, user의 contribution이 1 늘어난다
@@ -63,7 +52,7 @@ public class PostService {
                 .user(user)
                 .build();
 
-        String fileName = generateFileName(create.getFile());
+        String fileName = fileService.saveFileStorage(create.getFile(), FileService.Extension.GLB);
         Model newModel = Model.builder()
                 .commitMessage("First Commit")
                 .post(newPost)
@@ -209,7 +198,7 @@ public class PostService {
         post.updateStatus(update.getStatus());
         if (update.getFile() != null) {
             int nextVersion = post.getNextModelVersion();
-            String newFileName = generateFileName(update.getFile());
+            String newFileName = fileService.saveFileStorage(update.getFile(), FileService.Extension.GLB);
             Model newModel = Model.builder()
                     .post(post)
                     .version(nextVersion)
@@ -251,25 +240,6 @@ public class PostService {
                             .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
                             .build();
                 }).collect(Collectors.toList());
-    }
-
-    public Resource getFileResource(String fileName) {
-        Blob blob = storage.get(bucketName, fileName + ".glb");
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        blob.downloadTo(outputStream);
-
-        return new ByteArrayResource(outputStream.toByteArray());
-    }
-
-    private String generateFileName(MultipartFile file) throws IOException {
-        String uuid = UUID.randomUUID().toString();
-        storage.create(
-                BlobInfo.newBuilder(bucketName, uuid + ".glb").build(),
-                file.getBytes()
-        );
-
-        return uuid;
-
     }
 
 

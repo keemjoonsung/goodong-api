@@ -27,7 +27,7 @@ public class FollowEndpoint {
     }
 
     // 언팔로우
-    @DeleteMapping()
+    @DeleteMapping
     public CommonResponseEntity<String> unfollowUser(@RequestParam("userId") Long userId,
                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long followerId = userAuthService.getUserInfo(token).getUserId();

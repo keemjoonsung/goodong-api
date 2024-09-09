@@ -11,6 +11,9 @@ import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,29 +31,25 @@ public class UserEndpoint {
                                                                    @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
         Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
         UserDTO.UserDetail userDetail = userService.getUserInfo(userId);
-        if(viewerId != null){
-            userDetail.setFollowed(followService.isFollowing(userId,viewerId));
+        if (viewerId != null) {
+            userDetail.setFollowed(followService.isFollowing(userId, viewerId));
         }
         userDetail.setFollowerCount(followService.getFollowerCount(userId));
         userDetail.setFollowingCount(followService.getFollowingCount(userId));
         return new CommonResponseEntity<>(userDetail);
     }
+
     // 닉네임 혹은 프로필 이미지 변경
     @PatchMapping("/{userId}")
     public CommonResponseEntity<Void> updateUserProfile(@PathVariable("userId") Long userId,
-                                                    @RequestParam(required = false) String nickname,
-                                                    @RequestParam(required = false) String profileImageUrl, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
+                                                        UserDTO.UpdateUser update,
+                                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+
+        if (!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
             throw new GlobalException("User authorization failed");
         }
-        if(nickname == null && profileImageUrl == null){
-            throw new GlobalException("Nickname and profileImageUrl are required");
-        }
-        if(nickname != null && !nickname.isEmpty()) {
-            userService.updateUserNickname(userId,nickname);
-        }
-        if(profileImageUrl != null && !profileImageUrl.isEmpty()) {
-            userService.updateProfileImage(userId, profileImageUrl);
+        if(update.getNickname() != null && update.getProfileImage() != null) {
+            userService.updateUserProfile(userId, update);
         }
         return new CommonResponseEntity<>("User profile updated successfully");
     }
@@ -58,8 +57,8 @@ public class UserEndpoint {
     // 회원 탈퇴
     @DeleteMapping("/{userId}")
     public CommonResponseEntity<Void> deleteUserAccount(@PathVariable("userId") Long userId,
-                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
+                                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        if (!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
             throw new GlobalException("User authorization failed");
         }
         userService.deleteUser(userId);

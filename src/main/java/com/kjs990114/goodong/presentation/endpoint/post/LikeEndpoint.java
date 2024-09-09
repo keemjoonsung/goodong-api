@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class LikeEndpoint {
     private final LikeService likeService;
     private final UserAuthService userAuthService;
-    private final JwtUtil jwtUtil;
 
     //좋아요 추가
     @PostMapping

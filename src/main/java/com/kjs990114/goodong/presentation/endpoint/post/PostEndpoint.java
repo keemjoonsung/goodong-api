@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.presentation.endpoint.post;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
+import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.application.post.LikeService;
 import com.kjs990114.goodong.application.post.PostService;
 import com.kjs990114.goodong.common.exception.GlobalException;
@@ -28,6 +29,7 @@ public class PostEndpoint {
     private final JwtUtil jwtUtil;
     private final UserAuthService userAuthService;
     private final LikeService likeService;
+    private final FileService fileService;
 
     //포스트 생성
     @PostMapping
@@ -110,7 +112,7 @@ public class PostEndpoint {
 
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadModel(@RequestParam("fileName") String fileName) {
-        Resource resource = postService.getFileResource(fileName);
+        Resource resource = fileService.getFileResource(fileName, FileService.Extension.GLB);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "model.glb")
                 .body(resource);

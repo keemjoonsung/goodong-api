@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -88,14 +89,9 @@ public class UserDTO {
 
     @Getter
     @Setter
-    public static class UpdateNickname {
+    public static class UpdateUser {
+        private MultipartFile profileImage;
         private String nickname;
-    }
-    
-    @Getter
-    @Setter
-    public static class UpdateProfileImage {
-        private String profileImage;
     }
 
     @Getter

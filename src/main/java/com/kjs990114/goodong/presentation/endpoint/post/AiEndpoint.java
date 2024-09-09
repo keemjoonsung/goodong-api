@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.presentation.endpoint.post;
 
-import com.kjs990114.goodong.application.post.AIService;
+import com.kjs990114.goodong.application.post.AiService;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ai")
 @RequiredArgsConstructor
-public class AIEndpoint {
-    private final AIService aiService;
+public class AiEndpoint {
+    private final AiService aiService;
     @PostMapping
     public CommonResponseEntity<PostDTO.AiResponse> aiService(
              PostDTO.File file

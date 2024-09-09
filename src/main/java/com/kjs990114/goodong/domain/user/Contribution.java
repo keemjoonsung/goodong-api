@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.domain.user;
 
-import com.kjs990114.goodong.domain.post.Post;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,9 +8,9 @@ import java.time.LocalDate;
 @Entity(name = "contribution")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"cont_id", "date"})})
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 public class Contribution {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

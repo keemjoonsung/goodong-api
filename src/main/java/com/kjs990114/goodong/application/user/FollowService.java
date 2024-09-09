@@ -12,7 +12,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Set;
 
@@ -30,9 +29,9 @@ public class FollowService {
             @CacheEvict(value = "followerList", key = "#followeeId"),
             @CacheEvict(value = "followingList", key = "#followerId")
     })
-    public void follow(Long followeeId, Long followerId){
-        User follower = userRepository.findById(followerId).orElseThrow(()-> new GlobalException("User does not exists"));
-        User followee = userRepository.findById(followeeId).orElseThrow(()-> new GlobalException("User does not exists"));
+    public void follow(Long followeeId, Long followerId) {;
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User followee = userRepository.findById(followeeId).orElseThrow(() -> new GlobalException("User does not exists"));
         Follow follow = Follow.builder()
                 .follower(follower)
                 .followee(followee)
@@ -52,10 +51,9 @@ public class FollowService {
             @CacheEvict(value = "followerList", key = "#followeeId"),
             @CacheEvict(value = "followingList", key = "#followerId")
     })
-    public void unfollow(Long followeeId, Long followerId){
-        User follower = userRepository.findById(followerId).orElseThrow(()-> new GlobalException("User does not exists"));
-        User followee = userRepository.findById(followeeId).orElseThrow(()-> new GlobalException("User does not exists"));
-
+    public void unfollow(Long followeeId, Long followerId) {
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User followee = userRepository.findById(followeeId).orElseThrow(() -> new GlobalException("User does not exists"));
         follower.unfollow(followeeId);
         followee.deleteFollower(followerId);
         userRepository.save(follower);
@@ -65,51 +63,45 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "followingList")
-    public List<UserDTO.UserSummary> getFollowings(Long userId){
-        System.out.println("팔로잉리스트 캐쉬 업슴");
+    public List<UserDTO.UserSummary> getFollowings(Long userId) {
         return getFollow(userId, FollowEndpoint.FollowType.FOLLOWING);
     }
 
     @Cacheable(value = "followerList")
     @Transactional(readOnly = true)
-    public List<UserDTO.UserSummary> getFollowers(Long userId){
-        System.out.println("팔로우리스트 캐쉬 업슴");
+    public List<UserDTO.UserSummary> getFollowers(Long userId) {
         return getFollow(userId, FollowEndpoint.FollowType.FOLLOWER);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "isFollowed")
-    public boolean isFollowing(Long userId, Long myId){
-        System.out.println("팔로우여부 캐쉬 업슴");
-        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
-        User me = userRepository.findById(myId).orElseThrow(()-> new GlobalException("User does not exists"));
+    public boolean isFollowing(Long userId, Long myId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User me = userRepository.findById(myId).orElseThrow(() -> new GlobalException("User does not exists"));
         return user.getFollowers().stream().anyMatch(follow ->
                 follow.getFollower().getUserId().equals(me.getUserId())
-                );
+        );
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "followerCount", key ="#userId")
-    public int getFollowerCount(Long userId){
-        System.out.println("팔로워카운트 캐쉬 업슴");
-
-        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+    @Cacheable(value = "followerCount", key = "#userId")
+    public int getFollowerCount(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
         return user.getFollowers().size();
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "followingCount", key ="#userId")
-    public int getFollowingCount(Long userId){
-        System.out.println("팔로잉카운트 캐쉬 업슴");
-        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+    @Cacheable(value = "followingCount", key = "#userId")
+    public int getFollowingCount(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
         return user.getFollowings().size();
     }
 
 
-    private List<UserDTO.UserSummary> getFollow(Long userId, FollowEndpoint.FollowType type){
-        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+    private List<UserDTO.UserSummary> getFollow(Long userId, FollowEndpoint.FollowType type) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
         List<UserDTO.UserSummary> response;
-        if(type == FollowEndpoint.FollowType.FOLLOWER){ //팔로워
+        if (type == FollowEndpoint.FollowType.FOLLOWER) { //팔로워
             Set<Follow> followers = user.getFollowers();
             response = followers.stream().map(f -> {
                 User follower = f.getFollower();
@@ -120,7 +112,7 @@ public class FollowService {
                         .profileImage(follower.getProfileImage())
                         .build();
             }).toList();
-        }else{ // 팔로잉
+        } else { // 팔로잉
             Set<Follow> followings = user.getFollowings();
             response = followings.stream().map(following -> {
                 User followee = following.getFollowee();
@@ -136,4 +128,4 @@ public class FollowService {
         }
         return response;
     }
- }
+}
