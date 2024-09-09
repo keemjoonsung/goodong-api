@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.application.user;
 
 import com.kjs990114.goodong.application.file.FileService;
+import com.kjs990114.goodong.common.cache.MyCacheManager;
 import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+
 import java.util.List;
 
 @Service
@@ -22,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FileService fileService;
+    private final MyCacheManager myCacheManager;
     @Value("${spring.cloud.gcp.storage.path}")
     private String storagePath;
 
@@ -43,10 +46,10 @@ public class UserService {
     @CacheEvict(value = "users", key = "#userId")
     public void updateUserProfile(Long userId, UserDTO.UpdateUser update) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        if(update.getNickname()!= null){
-            updateUserNickname(user,update.getNickname());
+        if (update.getNickname() != null) {
+            updateUserNickname(user, update.getNickname());
         }
-        if(update.getProfileImage()!= null){
+        if (update.getProfileImage() != null) {
             MultipartFile file = update.getProfileImage();
             String fileName = fileService.saveFileStorage(file, FileService.Extension.PNG);
             String profileImageUrl = storagePath + fileName;
@@ -56,10 +59,10 @@ public class UserService {
     }
 
     @Transactional
-    @CacheEvict(value = "users", key = "#userId")
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
         userRepository.delete(user);
+        myCacheManager.EvictCacheAll();
     }
 
     @Transactional(readOnly = true)
@@ -71,9 +74,10 @@ public class UserService {
         ).toList();
     }
 
-    private void updateProfileImage(User user,String profileImageUrl) {
+    private void updateProfileImage(User user, String profileImageUrl) {
         user.updateProfileImage(profileImageUrl);
     }
+
     private void updateUserNickname(User user, String nickname) {
         user.updateNickname(nickname);
     }

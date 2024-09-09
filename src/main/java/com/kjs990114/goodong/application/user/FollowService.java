@@ -62,12 +62,12 @@ public class FollowService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "followingList")
+    @Cacheable(value = "followingList",key = "#userId")
     public List<UserDTO.UserSummary> getFollowings(Long userId) {
         return getFollow(userId, FollowEndpoint.FollowType.FOLLOWING);
     }
 
-    @Cacheable(value = "followerList")
+    @Cacheable(value = "followerList",key = "#userId")
     @Transactional(readOnly = true)
     public List<UserDTO.UserSummary> getFollowers(Long userId) {
         return getFollow(userId, FollowEndpoint.FollowType.FOLLOWER);

@@ -36,7 +36,8 @@ public class PostService {
      **/
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "posts", key = "#userId"),
+            @CacheEvict(value = "postsPrivate", key = "#userId"),
+            @CacheEvict(value = "postsPublic", key = "#userId"),
             @CacheEvict(value = "contributions", key = "#userId")
     })
     public void createPost(PostDTO.Create create, Long userId) throws IOException {
@@ -172,6 +173,10 @@ public class PostService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "postDetail", key = "#postId"),
+            @CacheEvict(value = "likeList", allEntries = true)
+    })
     @CacheEvict(value = "postDetail", key = "#postId")
     public void deletePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
