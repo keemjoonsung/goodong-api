@@ -174,7 +174,9 @@ public class PostService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "postDetail", key = "#postId"),
-            @CacheEvict(value = "contributions", key = "#userId")
+            @CacheEvict(value = "contributions", key = "#userId"),
+            @CacheEvict(value = "postsPublic", key = "#postId"),
+            @CacheEvict(value = "postsPrivate", key = "#postId")
     })
     public void updatePost(Long postId, Long userId, PostDTO.Update update) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
