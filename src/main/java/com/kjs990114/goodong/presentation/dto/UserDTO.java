@@ -47,6 +47,7 @@ public class UserDTO {
     }
     //유저 상세 정보
     @Getter
+    @Setter
     @Builder
     @AllArgsConstructor
     public static class UserDetail {
@@ -56,6 +57,8 @@ public class UserDTO {
         private String profileImage;
         private int followerCount;
         private int followingCount;
+        @Builder.Default
+        private Boolean followed = false;
     }
 
     @Getter
@@ -91,12 +94,6 @@ public class UserDTO {
     @Setter
     public static class UpdateProfileImage {
         private String profileImage;
-    }
-
-    @Getter
-    @Setter
-    public static class Followed{
-        private boolean followed;
     }
 
     @Getter

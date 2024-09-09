@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.presentation.endpoint.user;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
+import com.kjs990114.goodong.application.user.FollowService;
 import com.kjs990114.goodong.application.user.UserService;
 import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
@@ -16,12 +17,18 @@ public class UserEndpoint {
 
     private final UserAuthService userAuthService;
     private final UserService userService;
+    private final FollowService followService;
 
     // 정보 반환
     @GetMapping("/{userId}")
     public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@PathVariable("userId") Long userId,
                                                                    @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        return new CommonResponseEntity<>(userService.getUserInfo(userId));
+        Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
+        UserDTO.UserDetail userDetail = userService.getUserInfo(userId);
+        if(viewerId != null){
+            userDetail.setFollowed(followService.isFollowing(userId,viewerId));
+        }
+        return new CommonResponseEntity<>(userDetail);
     }
     // 닉네임 혹은 프로필 이미지 변경
     @PatchMapping("/{userId}")

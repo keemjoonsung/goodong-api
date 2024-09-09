@@ -54,6 +54,7 @@ public class PostDTO {
     }
 
     @Getter
+    @Setter
     @Builder
     public static class PostDetail {
         private Long postId;
@@ -69,6 +70,8 @@ public class PostDTO {
         private List<String> tags;
         private List<CommentInfo> comments;
         private Integer likes;
+        @Builder.Default
+        private Boolean liked = false;
     }
     @Getter
     @Builder
@@ -110,7 +113,6 @@ public class PostDTO {
         private String title;
         private String description;
         private List<String> tags;
-
     }
 
 }

@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.presentation.endpoint.post;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
+import com.kjs990114.goodong.application.post.LikeService;
 import com.kjs990114.goodong.application.post.PostService;
 import com.kjs990114.goodong.common.exception.GlobalException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
@@ -26,6 +27,7 @@ public class PostEndpoint {
     private final PostService postService;
     private final JwtUtil jwtUtil;
     private final UserAuthService userAuthService;
+    private final LikeService likeService;
 
     //포스트 생성
     @PostMapping
@@ -92,7 +94,11 @@ public class PostEndpoint {
         if(!postService.getPost(postId).getUserId().equals(viewerId) && postService.getPost(postId).getStatus().equals(Post.PostStatus.PRIVATE)){
             throw new GlobalException("UnAuthorized Exception");
         }
-        return new CommonResponseEntity<>(postService.getPost(postId));
+        PostDTO.PostDetail postDetail = postService.getPost(postId);
+        if(viewerId != null) {
+            postDetail.setLiked(likeService.isLiked(postId,viewerId));
+        }
+        return new CommonResponseEntity<>(postDetail);
     }
 
     @GetMapping("/duplicated")
