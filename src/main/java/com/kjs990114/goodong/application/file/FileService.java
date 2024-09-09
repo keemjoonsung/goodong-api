@@ -17,7 +17,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-
 public class FileService {
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
