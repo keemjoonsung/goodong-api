@@ -4,6 +4,8 @@ import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.user.FollowService;
 import com.kjs990114.goodong.application.user.UserService;
 import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.domain.user.User;
+import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class UserEndpoint {
     private final UserAuthService userAuthService;
     private final UserService userService;
     private final FollowService followService;
+    private final UserRepository userRepository;
 
     // 정보 반환
     @GetMapping("/{userId}")
@@ -28,14 +31,15 @@ public class UserEndpoint {
         if(viewerId != null){
             userDetail.setFollowed(followService.isFollowing(userId,viewerId));
         }
+        userDetail.setFollowerCount(followService.getFollowerCount(userId));
+        userDetail.setFollowingCount(followService.getFollowingCount(userId));
         return new CommonResponseEntity<>(userDetail);
     }
     // 닉네임 혹은 프로필 이미지 변경
     @PatchMapping("/{userId}")
     public CommonResponseEntity<Void> updateUserProfile(@PathVariable("userId") Long userId,
                                                     @RequestParam(required = false) String nickname,
-                                                    @RequestParam(required = false) String profileImageUrl,
-                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+                                                    @RequestParam(required = false) String profileImageUrl, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if(!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
             throw new GlobalException("User authorization failed");
         }

@@ -48,17 +48,6 @@ public class FollowEndpoint {
 
     }
 
-    @GetMapping("/check")
-    CommonResponseEntity<Boolean> isFollowing(@RequestParam("userId") Long userId,
-                                                          @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
-        boolean followed = false;
-        Long myId = userAuthService.getUserInfo(token).getUserId();
-        if(token != null){
-            followed = followService.isFollowing(userId, myId);
-        }
-        return new CommonResponseEntity<>(followed);
-
-    }
 
     public enum FollowType {
         FOLLOWING,

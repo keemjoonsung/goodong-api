@@ -249,7 +249,6 @@ public class PostService {
                             .status(post.getStatus())
                             .lastModifiedAt(post.getLastModifiedAt())
                             .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                            .likes(post.getLikes().size())
                             .build();
                 }).collect(Collectors.toList());
     }

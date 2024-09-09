@@ -55,8 +55,10 @@ public class UserDTO {
         private String email;
         private String nickname;
         private String profileImage;
-        private int followerCount;
-        private int followingCount;
+        @Builder.Default
+        private int followerCount = 0;
+        @Builder.Default
+        private int followingCount = 0;
         @Builder.Default
         private Boolean followed = false;
     }

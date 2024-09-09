@@ -98,6 +98,7 @@ public class PostEndpoint {
         if(viewerId != null) {
             postDetail.setLiked(likeService.isLiked(postId,viewerId));
         }
+        postDetail.setLikes(likeService.getLikesCount(postId));
         return new CommonResponseEntity<>(postDetail);
     }
 

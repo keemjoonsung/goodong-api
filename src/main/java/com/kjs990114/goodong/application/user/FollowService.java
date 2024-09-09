@@ -25,6 +25,8 @@ public class FollowService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "isFollowed"),
+            @CacheEvict(value = "followingCount", key = "#followerId"),
+            @CacheEvict(value = "followerCount", key = "#followeeId"),
             @CacheEvict(value = "followerList", key = "#followeeId"),
             @CacheEvict(value = "followingList", key = "#followerId")
     })
@@ -44,6 +46,9 @@ public class FollowService {
 
     @Transactional
     @Caching(evict = {
+            @CacheEvict(value = "isFollowed"),
+            @CacheEvict(value = "followingCount", key = "#followerId"),
+            @CacheEvict(value = "followerCount", key = "#followeeId"),
             @CacheEvict(value = "followerList", key = "#followeeId"),
             @CacheEvict(value = "followingList", key = "#followerId")
     })
@@ -61,23 +66,43 @@ public class FollowService {
     @Transactional(readOnly = true)
     @Cacheable(value = "followingList")
     public List<UserDTO.UserSummary> getFollowings(Long userId){
+        System.out.println("팔로잉리스트 캐쉬 업슴");
         return getFollow(userId, FollowEndpoint.FollowType.FOLLOWING);
     }
 
     @Cacheable(value = "followerList")
     @Transactional(readOnly = true)
     public List<UserDTO.UserSummary> getFollowers(Long userId){
+        System.out.println("팔로우리스트 캐쉬 업슴");
         return getFollow(userId, FollowEndpoint.FollowType.FOLLOWER);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "isFollowed")
     public boolean isFollowing(Long userId, Long myId){
+        System.out.println("팔로우여부 캐쉬 업슴");
         User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
         User me = userRepository.findById(myId).orElseThrow(()-> new GlobalException("User does not exists"));
         return user.getFollowers().stream().anyMatch(follow ->
                 follow.getFollower().getUserId().equals(me.getUserId())
                 );
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "followerCount", key ="#userId")
+    public int getFollowerCount(Long userId){
+        System.out.println("팔로워카운트 캐쉬 업슴");
+
+        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+        return user.getFollowers().size();
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "followingCount", key ="#userId")
+    public int getFollowingCount(Long userId){
+        System.out.println("팔로잉카운트 캐쉬 업슴");
+        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+        return user.getFollowings().size();
     }
 
 

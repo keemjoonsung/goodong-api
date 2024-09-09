@@ -10,6 +10,7 @@ import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,16 @@ public class LikeService {
     private final UserRepository userRepository;
 
     @Transactional
-    @CacheEvict(value = "isLike")
+    @Caching(evict = {
+            @CacheEvict(value = "isLike"),
+            @CacheEvict(value = "likesCount")
+    })
     public void likePost(Long postId, Long likerId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
         User user = userRepository.findById(likerId).orElseThrow(() -> new GlobalException("User does not exist"));
 
-        if(post.getStatus().equals(Post.PostStatus.PRIVATE)){
-            if(!post.getUser().getUserId().equals(user.getUserId())){
+        if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
+            if (!post.getUser().getUserId().equals(user.getUserId())) {
                 throw new GlobalException("User Authorization failed");
             }
         }
@@ -40,14 +44,18 @@ public class LikeService {
         postRepository.save(post);
         userRepository.save(user);
     }
+
     @Transactional
-    @CacheEvict(value = "isLike")
+    @Caching(evict = {
+            @CacheEvict(value = "isLike"),
+            @CacheEvict(value = "likesCount")
+    })
     public void unlikePost(Long postId, Long likerId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
         User user = userRepository.findById(likerId).orElseThrow(() -> new GlobalException("User does not exist"));
 
-        if(post.getStatus().equals(Post.PostStatus.PRIVATE)){
-            if(!post.getUser().getUserId().equals(user.getUserId())){
+        if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
+            if (!post.getUser().getUserId().equals(user.getUserId())) {
                 throw new GlobalException("User Authorization failed");
             }
         }
@@ -64,9 +72,17 @@ public class LikeService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "isLiked")
-    public boolean isLiked(Long postId, Long likerId){
+    public boolean isLiked(Long postId, Long likerId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
         return post.getLikes().stream().anyMatch(like ->
                 like.getUser().getUserId().equals(likerId));
+    }
+
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "likesCount", key = "#postId")
+    public int getLikesCount(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+        return post.getLikes().size();
     }
 }
