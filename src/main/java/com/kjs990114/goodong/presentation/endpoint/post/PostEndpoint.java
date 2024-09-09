@@ -64,7 +64,7 @@ public class PostEndpoint {
     // 게시글 Update
     @PatchMapping("/{postId}")
     public CommonResponseEntity<Void> updatePost(@PathVariable("postId") Long postId,
-                                                 @RequestBody PostDTO.Update postDTO,
+                                                 PostDTO.Update postDTO,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
         Long userId = userAuthService.getUserInfo(token).getUserId();
 
