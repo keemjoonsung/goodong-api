@@ -117,22 +117,6 @@ public class PostService {
                         .build()
         ).toList();
 
-        List<Comment> commentsEntity = post.getComments();
-        List<PostDTO.CommentInfo> comments = commentsEntity.stream()
-                .map(comment -> {
-                    User commentUser = comment.getUser();
-                    return PostDTO.CommentInfo.builder()
-                            .commentId(comment.getCommentId())
-                            .userId(commentUser.getUserId())
-                            .email(commentUser.getEmail())
-                            .nickname(commentUser.getNickname())
-                            .content(comment.getContent())
-                            .createdAt(comment.getCreatedAt())
-                            .lastModifiedAt(comment.getLastModifiedAt())
-                            .build();
-                }).toList();
-
-
         return PostDTO.PostDetail.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -145,7 +129,6 @@ public class PostService {
                 .createdAt(post.getCreatedAt())
                 .lastModifiedAt(post.getLastModifiedAt())
                 .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
-                .comments(comments)
                 .likes(post.getLikes().size())
                 .build();
     }

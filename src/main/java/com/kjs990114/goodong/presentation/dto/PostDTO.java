@@ -75,6 +75,7 @@ public class PostDTO {
     }
     @Getter
     @Builder
+    @Setter
     public static class CommentInfo {
         private Long commentId;
         private Long userId;

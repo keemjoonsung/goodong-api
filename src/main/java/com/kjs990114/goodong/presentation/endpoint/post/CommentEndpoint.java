@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommentEndpoint {
     private final JwtUtil jwtUtil;
     private final CommentService commentService;
+
     // 댓글 달기
     @PostMapping  // 댓글 달
     public CommonResponseEntity<Void> addComment(@RequestParam("postId") Long postId,
@@ -27,20 +28,22 @@ public class CommentEndpoint {
 
     //댓글 삭제 하기
     @DeleteMapping
-    public CommonResponseEntity<Void> deleteComment(@RequestParam("commentId") Long commentId,
+    public CommonResponseEntity<Void> deleteComment(@RequestParam("postId") Long postId,
+                                                    @RequestParam("commentId") Long commentId,
                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         String email = jwtUtil.getEmail(token);
-        commentService.deleteComment(commentId, email);
+        commentService.deleteComment(postId, commentId, email);
         return new CommonResponseEntity<>("Comment deleted successfully");
     }
 
     //댓글 업데이트 하기
     @PatchMapping
-    public CommonResponseEntity<Void> updateComment(@RequestParam("commentId") Long commentId,
+    public CommonResponseEntity<Void> updateComment(@RequestParam("postId") Long postId,
+                                                    @RequestParam("commentId") Long commentId,
                                                     @RequestBody PostDTO.PostComment postComment, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         String email = jwtUtil.getEmail(token);
         String content = postComment.getContent();
-        commentService.updateComment(commentId,email,content);
+        commentService.updateComment(postId,commentId, email, content);
         return new CommonResponseEntity<>("Comment updated successfully");
 
     }

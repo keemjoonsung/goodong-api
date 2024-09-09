@@ -2,6 +2,7 @@ package com.kjs990114.goodong.presentation.endpoint.post;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.file.FileService;
+import com.kjs990114.goodong.application.post.CommentService;
 import com.kjs990114.goodong.application.post.LikeService;
 import com.kjs990114.goodong.application.post.PostService;
 import com.kjs990114.goodong.common.exception.GlobalException;
@@ -30,6 +31,7 @@ public class PostEndpoint {
     private final UserAuthService userAuthService;
     private final LikeService likeService;
     private final FileService fileService;
+    private final CommentService commentService;
 
     //포스트 생성
     @PostMapping
@@ -101,6 +103,7 @@ public class PostEndpoint {
             postDetail.setLiked(likeService.isLiked(postId,viewerId));
         }
         postDetail.setLikes(likeService.getLikesCount(postId));
+        postDetail.setComments(commentService.getComments(postId));
         return new CommonResponseEntity<>(postDetail);
     }
 

@@ -6,9 +6,14 @@ import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.post.repository.PostRepository;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
+import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +22,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
+    @CacheEvict(value = "commentList", key= "#postId")
     public void addComment(Long postId, String email, String content) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
         User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
@@ -31,11 +37,12 @@ public class CommentService {
         userRepository.save(user);
     }
     @Transactional
-    public void deleteComment(Long commentId, String email) {
+    @CacheEvict(value = "commentList", key= "#postId")
+    public void deleteComment(Long postId ,Long commentId, String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
         Comment comment = user.getComments().stream()
                 .filter(c -> c.getCommentId().equals(commentId)).findFirst().orElseThrow(() -> new GlobalException("Comment does not exist"));
-        Post post = comment.getPost();
+        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
 
         if (!comment.getUser().getEmail().equals(email)) {
             throw new GlobalException("Authorization Failed");
@@ -48,12 +55,12 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, String email, String content) {
+    @CacheEvict(value = "commentList", key= "#postId")
+    public void updateComment(Long postId, Long commentId, String email, String content) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
         Comment comment = user.getComments().stream()
                 .filter(c -> c.getCommentId().equals(commentId)).findFirst().orElseThrow(() -> new GlobalException("Comment does not exist"));
-        Post post = comment.getPost();
-
+        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
         if (!comment.getUser().getEmail().equals(email)) {
             throw new GlobalException("Authorization Failed");
         }
@@ -61,5 +68,22 @@ public class CommentService {
 
         userRepository.save(user);
         postRepository.save(post);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "commentList",key = "#postId")
+    public List<PostDTO.CommentInfo> getComments(Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+        return post.getComments().stream().map(
+                comment -> PostDTO.CommentInfo.builder()
+                        .commentId(comment.getCommentId())
+                        .userId(comment.getUser().getUserId())
+                        .email(comment.getUser().getEmail())
+                        .nickname(comment.getUser().getNickname())
+                        .content(comment.getContent())
+                        .createdAt(comment.getCreatedAt())
+                        .lastModifiedAt(comment.getLastModifiedAt())
+                        .build()
+        ).toList();
     }
 }
