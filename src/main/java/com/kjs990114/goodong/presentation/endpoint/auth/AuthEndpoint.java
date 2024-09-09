@@ -1,7 +1,8 @@
-package com.kjs990114.goodong.presentation.endpoint;
+package com.kjs990114.goodong.presentation.endpoint.auth;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthEndpoint {
 
     private final UserAuthService userAuthService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public CommonResponseEntity<String> login(@RequestBody UserDTO.Login login) {

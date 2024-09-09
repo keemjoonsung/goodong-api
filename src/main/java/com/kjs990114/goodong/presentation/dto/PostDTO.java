@@ -2,7 +2,6 @@ package com.kjs990114.goodong.presentation.dto;
 
 
 import com.kjs990114.goodong.domain.post.Post;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,8 +69,6 @@ public class PostDTO {
         private List<String> tags;
         private List<CommentInfo> comments;
         private Integer likes;
-        @Builder.Default
-        private boolean liked = false;
     }
     @Getter
     @Builder

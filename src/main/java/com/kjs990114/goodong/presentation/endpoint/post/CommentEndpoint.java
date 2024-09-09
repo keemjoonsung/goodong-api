@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.presentation.endpoint;
+package com.kjs990114.goodong.presentation.endpoint.post;
 
 import com.kjs990114.goodong.application.post.CommentService;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;

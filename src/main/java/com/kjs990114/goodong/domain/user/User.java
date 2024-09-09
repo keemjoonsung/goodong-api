@@ -73,6 +73,14 @@ public class User extends BaseTimeEntity {
     public void unfollow(Long followeeId) {
         this.followings.removeIf(f -> f.getFollowee().getUserId().equals(followeeId));
     }
+    //포스트 추가
+    public void posting(Post post){
+        this.posts.add(post);
+    }
+    //포스트 삭제
+    public void unposting(Long postId){
+        this.posts.removeIf(post -> post.getPostId().equals(postId));
+    }
     //나의 팔로워 추가
     public void addFollower(Follow follower) {
         this.followers.add(follower);

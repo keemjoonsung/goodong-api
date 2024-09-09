@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.presentation.endpoint;
+package com.kjs990114.goodong.presentation.endpoint.post;
 
 import com.kjs990114.goodong.application.post.AIService;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
@@ -21,9 +21,5 @@ public class AIEndpoint {
 
         return new CommonResponseEntity<>("Gemini API response successful.",new PostDTO.AiResponse(response.get(0),response.get(1),List.of(response.get(2).split(","))));
     }
-
-
-
-
 
 }

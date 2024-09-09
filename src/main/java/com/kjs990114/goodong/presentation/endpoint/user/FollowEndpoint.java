@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.presentation.endpoint;
+package com.kjs990114.goodong.presentation.endpoint.user;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.user.FollowService;
@@ -39,10 +39,25 @@ public class FollowEndpoint {
     @GetMapping
     public CommonResponseEntity<List<UserDTO.UserSummary>> getFollowInfo(@RequestParam("userId") Long userId,
                                                              @RequestParam("type") FollowType type) {
-        if(type != FollowType.FOLLOWING && type != FollowType.FOLLOWER ) {
-            return new CommonResponseEntity<>(400, "Invalid type parameter");
+        if(type == FollowType.FOLLOWING) {
+            return new CommonResponseEntity<>(followService.getFollowings(userId));
+        }else if(type == FollowType.FOLLOWER) {
+            return new CommonResponseEntity<>(followService.getFollowers(userId));
         }
-        return new CommonResponseEntity<>(followService.getFollow(userId, type));
+        return new CommonResponseEntity<>(400, "Invalid type parameter");
+
+    }
+
+    @GetMapping("/check")
+    CommonResponseEntity<Boolean> isFollowing(@RequestParam("userId") Long userId,
+                                                          @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
+        boolean followed = false;
+        Long myId = userAuthService.getUserInfo(token).getUserId();
+        if(token != null){
+            followed = followService.isFollowing(userId, myId);
+        }
+        return new CommonResponseEntity<>(followed);
+
     }
 
     public enum FollowType {

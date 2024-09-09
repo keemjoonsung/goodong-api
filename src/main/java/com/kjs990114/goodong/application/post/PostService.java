@@ -13,12 +13,15 @@ import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.infrastructure.PostDocument;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
@@ -28,7 +31,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PostService {
 
@@ -43,8 +45,13 @@ public class PostService {
     /**
      * 포스트를 완전 처음 생성하면, user의 contribution이 1 늘어난다
      **/
-    public void createPost(PostDTO.Create create, String email) throws IOException {
-        User user = userRepository.findByEmail(email).orElseThrow();
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "posts", key = "#userId"),
+            @CacheEvict(value = "contributions", key = "#userId")
+    })
+    public void createPost(PostDTO.Create create, Long userId) throws IOException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
@@ -66,6 +73,7 @@ public class PostService {
 
         newPost.addModel(newModel);
         newPost.addTagAll(create.getTags());
+        user.posting(newPost);
         userRepository.save(user);
 
         Post post = postRepository.save(newPost);
@@ -82,6 +90,7 @@ public class PostService {
         postSearchRepository.save(postDocument);
     }
 
+    @Transactional(readOnly = true)
     public Boolean checkDuplicatedTitle(String title, String token) {
         String email = jwtUtil.getEmail(token);
         User user = userRepository.findByEmail(email).orElseThrow();
@@ -89,45 +98,25 @@ public class PostService {
                 .anyMatch(post -> post.getTitle().equalsIgnoreCase(title));
     }
 
-    public List<PostDTO.Summary> getUserPosts(Long userId, boolean isMyPosts) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        List<Post> posts = postRepository.findAllByUser(user);
-
-        return posts.stream()
-                .filter(post -> isMyPosts || post.getStatus() == Post.PostStatus.PUBLIC)
-                .map(post -> {
-                    List<Tag> tags = post.getTags();
-                    return PostDTO.Summary.builder()
-                            .postId(post.getPostId())
-                            .title(post.getTitle())
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .nickname(user.getNickname())
-                            .status(post.getStatus())
-                            .lastModifiedAt(post.getLastModifiedAt())
-                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                            .likes(post.getLikes().size())
-                            .build();
-                }).collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    @Cacheable(value = "postsPublic", key = "#userId")
+    public List<PostDTO.Summary> getUserPublicPosts(Long userId) {
+        System.out.println("캐시없음 - PUBLIC");
+        return getUserPosts(userId, Post.PostStatus.PUBLIC);
     }
 
-    public PostDTO.PostDetail getPost(Long postId, Long viewerId) {
+    @Transactional(readOnly = true)
+    @Cacheable(value = "postsPrivate", key = "#userId")
+    public List<PostDTO.Summary> getUserPrivatePosts(Long userId) {
+        System.out.println("캐시없음 - PRIVATE");
+        return getUserPosts(userId, Post.PostStatus.PRIVATE);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "postDetail", key = "#postId")
+    public PostDTO.PostDetail getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("User does not exists"));
         User user = post.getUser();
-        boolean isLiked = false;
-
-        if(viewerId != null) {
-            User viewer = userRepository.findById(viewerId).orElseThrow(() -> new GlobalException("User does not exists"));
-            isLiked = viewer.getLikes().stream().anyMatch(like ->
-                    like.getPost().getPostId().equals(post.getPostId())
-            );
-        }
-
-        if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
-            if (!user.getUserId().equals(viewerId)) {
-                throw new GlobalException("User Authorization Failed");
-            }
-        }
 
         List<Model> modelsEntity = post.getModels();
         List<PostDTO.ModelInfo> models = modelsEntity.stream().map(model ->
@@ -168,10 +157,10 @@ public class PostService {
                 .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
                 .comments(comments)
                 .likes(post.getLikes().size())
-                .liked(isLiked)
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<PostDTO.Summary> searchPosts(String keyword) {
         List<PostDocument> documents = postSearchRepository.findByTitleContainingOrContentContainingOrTaggingContaining(keyword, keyword, keyword);
         return documents.stream().map(document -> {
@@ -193,18 +182,26 @@ public class PostService {
         ).toList();
     }
 
-    public void deletePost(Long postId) {
+    @Transactional
+    @CacheEvict(value = "postDetail", key = "#postId")
+    public void deletePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
         PostDocument postDocument = postSearchRepository.findById(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
-
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exist"));
+        user.unposting(postId);
+        userRepository.save(user);
         postRepository.delete(post);
         postSearchRepository.delete(postDocument);
-
     }
 
-    public void updatePost(Long postId, PostDTO.Update update) throws IOException {
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "postDetail", key = "#postId"),
+            @CacheEvict(value = "contributions", key = "#userId")
+    })
+    public void updatePost(Long postId, Long userId, PostDTO.Update update) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = post.getUser();
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exist"));
         PostDocument postDocument = postSearchRepository.findByPostId(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
         post.updatePost(update.getTitle(), update.getContent());
         post.removeTagAll();
@@ -236,6 +233,27 @@ public class PostService {
 
     }
 
+    private List<PostDTO.Summary> getUserPosts(Long userId, Post.PostStatus type) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        List<Post> posts = user.getPosts();
+        return posts.stream()
+                .filter(post -> post.getStatus() == type)
+                .map(post -> {
+                    List<Tag> tags = post.getTags();
+                    return PostDTO.Summary.builder()
+                            .postId(post.getPostId())
+                            .title(post.getTitle())
+                            .userId(user.getUserId())
+                            .email(user.getEmail())
+                            .nickname(user.getNickname())
+                            .status(post.getStatus())
+                            .lastModifiedAt(post.getLastModifiedAt())
+                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
+                            .likes(post.getLikes().size())
+                            .build();
+                }).collect(Collectors.toList());
+    }
+
     public Resource getFileResource(String fileName) {
         Blob blob = storage.get(bucketName, fileName + ".glb");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -254,5 +272,6 @@ public class PostService {
         return uuid;
 
     }
+
 
 }

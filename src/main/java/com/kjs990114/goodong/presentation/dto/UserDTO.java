@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.presentation.dto;
 
+import com.kjs990114.goodong.domain.user.Contribution;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -55,9 +56,6 @@ public class UserDTO {
         private String profileImage;
         private int followerCount;
         private int followingCount;
-        private List<UserContribution> userContributions;
-        @Builder.Default
-        private boolean followed = false;
     }
 
     @Getter
@@ -66,6 +64,13 @@ public class UserDTO {
     public static class Login {
         private String email;
         private String password;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class UserContributionList {
+        List<Contribution> contributions;
     }
 
     @Getter
@@ -86,6 +91,12 @@ public class UserDTO {
     @Setter
     public static class UpdateProfileImage {
         private String profileImage;
+    }
+
+    @Getter
+    @Setter
+    public static class Followed{
+        private boolean followed;
     }
 
     @Getter
