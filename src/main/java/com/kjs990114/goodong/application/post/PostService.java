@@ -203,10 +203,10 @@ public class PostService {
                     .build();
             post.addModel(newModel);
         }
-
         postDocument.setContent(update.getContent());
         postDocument.setTitle(update.getTitle());
-        postDocument.setTagging(String.join(" ", update.getTags()));
+        String tagging = update.getTags() == null || update.getTags().isEmpty() ? "" : String.join(" ", update.getTags());
+        postDocument.setTagging(tagging);
 
         Contribution contribution = new Contribution();
         contribution.setUser(user);
