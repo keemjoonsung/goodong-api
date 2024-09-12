@@ -25,7 +25,6 @@ public class AiEndpoint {
     public CommonResponseEntity<PostDTO.AiResponse> aiService(
             @RequestParam(defaultValue = "false") Boolean autoCreate,
             @RequestParam(defaultValue = "PUBLIC") String status,
-            @RequestParam(defaultValue = "AI auto generated commit") String commitMsg,
             @RequestBody MultipartFile file,
             @RequestBody MultipartFile fileGlb,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token
@@ -40,13 +39,13 @@ public class AiEndpoint {
                             .content(aiResponse.getDescription())
                             .tags(aiResponse.getTags())
                             .file(fileGlb)
-                            .commitMsg(commitMsg)
+                            .commitMessage("First Commit")
                             .status(Post.PostStatus.valueOf(status))
                             .build()
                     ,userId
             );
             return new CommonResponseEntity<>("GEMINI API CREATED REPOSITORY SUCCESSFUL");
-        }{
+        }else{
             return new CommonResponseEntity<>("Gemini API response successful.", aiResponse);
         }
 

@@ -24,7 +24,7 @@ public class PostDTO {
         private String content;
         private MultipartFile file;
         private Post.PostStatus status;
-        private String commitMsg;
+        private String commitMessage;
         @Builder.Default
         private List<String> tags = new ArrayList<>();
     }

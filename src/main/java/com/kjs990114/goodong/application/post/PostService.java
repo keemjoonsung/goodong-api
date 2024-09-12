@@ -55,7 +55,7 @@ public class PostService {
                 .build();
 
         String fileName = fileService.saveFileStorage(create.getFile(), FileService.Extension.GLB);
-        String commitMsg = create.getCommitMsg() == null ? "Commit" : create.getCommitMsg();
+        String commitMsg = create.getCommitMessage() == null || create.getCommitMessage().isBlank()? "Commit" : create.getCommitMessage();
         Model newModel = Model.builder()
                 .commitMessage(commitMsg)
                 .post(newPost)
@@ -190,9 +190,12 @@ public class PostService {
         User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exist"));
         PostDocument postDocument = postSearchRepository.findByPostId(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
         post.updatePost(update.getTitle(), update.getContent());
-        post.removeTagAll();
-        post.addTagAll(update.getTags());
+        if(update.getTags() != null) {
+            post.removeTagAll();
+            post.addTagAll(update.getTags());
+        }
         post.updateStatus(update.getStatus());
+        String commitMessage = update.getCommitMessage() == null || update.getCommitMessage().isEmpty() ? "Commit" : update.getCommitMessage();
         if (update.getFile() != null) {
             int nextVersion = post.getNextModelVersion();
             String newFileName = fileService.saveFileStorage(update.getFile(), FileService.Extension.GLB);
@@ -200,17 +203,15 @@ public class PostService {
                     .post(post)
                     .version(nextVersion)
                     .fileName(newFileName)
-                    .commitMessage(update.getCommitMessage())
+                    .commitMessage(commitMessage)
                     .build();
             post.addModel(newModel);
         }
         postDocument.setContent(update.getContent());
         postDocument.setTitle(update.getTitle());
-        //null 이면
         if(update.getTags() != null) {
             postDocument.setTagging(String.join(" ", update.getTags()));
         }
-
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
