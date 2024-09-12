@@ -55,8 +55,9 @@ public class PostService {
                 .build();
 
         String fileName = fileService.saveFileStorage(create.getFile(), FileService.Extension.GLB);
+        String commitMsg = create.getCommitMsg() == null ? "Commit" : create.getCommitMsg();
         Model newModel = Model.builder()
-                .commitMessage("First Commit")
+                .commitMessage(commitMsg)
                 .post(newPost)
                 .fileName(fileName)
                 .version(1)
@@ -205,8 +206,10 @@ public class PostService {
         }
         postDocument.setContent(update.getContent());
         postDocument.setTitle(update.getTitle());
-        String tagging = update.getTags() == null || update.getTags().isEmpty() ? "" : String.join(" ", update.getTags());
-        postDocument.setTagging(tagging);
+        //null 이면
+        if(update.getTags() != null) {
+            postDocument.setTagging(String.join(" ", update.getTags()));
+        }
 
         Contribution contribution = new Contribution();
         contribution.setUser(user);

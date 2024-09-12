@@ -18,17 +18,20 @@ public class PostDTO {
 
     @Getter
     @Builder
+    @Setter
     public static class Create{
         private String title;
         private String content;
         private MultipartFile file;
         private Post.PostStatus status;
+        private String commitMsg;
         @Builder.Default
         private List<String> tags = new ArrayList<>();
     }
 
     @Getter
     @Builder
+    @Setter
     public static class Update{
         private String title;
         private String content;
