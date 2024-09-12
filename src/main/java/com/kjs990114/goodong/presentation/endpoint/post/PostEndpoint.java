@@ -45,12 +45,18 @@ public class PostEndpoint {
 
     // 유저의 post 리스트 반환
     @GetMapping
-    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam("userId") Long userId,
+    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam(required = false, name = "userId") Long userId,
                                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+
         Long viewerId = userAuthService.getUserInfo(token).getUserId();
-        List<PostDTO.Summary> response = new ArrayList<>(postService.getUserPublicPosts(userId));
-        if (userId.equals(viewerId)) {
-            response.addAll(postService.getUserPrivatePosts(userId));
+        List<PostDTO.Summary> response = new ArrayList<>();
+
+        if (userId == null || userId.equals(viewerId)) {
+            response.addAll(postService.getUserPrivatePosts(viewerId));
+            response.addAll(postService.getUserPublicPosts(viewerId));
+        }else{
+            response.addAll(postService.getUserPublicPosts(userId));
         }
         response.sort(Comparator.comparing(PostDTO.Summary::getLastModifiedAt).reversed());
 
@@ -58,8 +64,11 @@ public class PostEndpoint {
     }
     //검색 -> elastic search
     @GetMapping("/search")
-    public CommonResponseEntity<List<PostDTO.Summary>> searchPosts(@RequestParam("keyword") String keyword) {
-        return new CommonResponseEntity<>(postService.searchPosts(keyword));
+    public CommonResponseEntity<List<PostDTO.Summary>> searchPosts(@RequestParam("keyword") String keyword,
+                                                                   @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
+        System.out.println();
+        Long userId = userAuthService.getUserInfo(token).getUserId();
+        return new CommonResponseEntity<>(postService.searchPosts(keyword,userId));
     }
     // 게시글 Update
     @PatchMapping("/{postId}")

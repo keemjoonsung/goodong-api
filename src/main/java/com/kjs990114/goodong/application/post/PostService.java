@@ -18,6 +18,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -134,9 +135,14 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostDTO.Summary> searchPosts(String keyword) {
+    public List<PostDTO.Summary> searchPosts(String keyword,Long userId) {
         List<PostDocument> documents = postSearchRepository.findByTitleContainingOrContentContainingOrTaggingContaining(keyword, keyword, keyword);
-        return documents.stream().map(document -> {
+        if(documents.isEmpty()) return new ArrayList<>();
+        return documents.stream().filter(document ->{
+            Post post = postRepository.findById(document.getPostId()).orElseThrow();
+            User user = post.getUser();
+            return userId.equals(user.getUserId()) || post.getStatus() == Post.PostStatus.PUBLIC;
+        }).map(document -> {
                     Post post = postRepository.findById(document.getPostId()).orElseThrow();
                     List<Tag> tags = post.getTags();
                     User user = post.getUser();

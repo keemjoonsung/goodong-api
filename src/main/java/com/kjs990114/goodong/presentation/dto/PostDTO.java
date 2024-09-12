@@ -105,6 +105,7 @@ public class PostDTO {
     @AllArgsConstructor
     public static class File {
         private MultipartFile file;
+        private MultipartFile filePng;
     }
 
     @Getter
