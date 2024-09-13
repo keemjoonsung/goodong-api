@@ -5,6 +5,7 @@ import com.kjs990114.goodong.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,6 +118,7 @@ public class Post extends BaseTimeEntity {
                 .max()
                 .orElse(0) + 1;
     }
+
 
 }
 

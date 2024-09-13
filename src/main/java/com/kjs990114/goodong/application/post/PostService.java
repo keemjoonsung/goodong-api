@@ -215,7 +215,7 @@ public class PostService {
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
-
+        post.updateModifiedAt();
         postRepository.save(post);
         postSearchRepository.save(postDocument);
         userRepository.save(user);
