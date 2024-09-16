@@ -14,7 +14,7 @@ public class MyCacheManager {
         cacheManager.getCacheNames().forEach(cacheName -> {
             Cache cache = cacheManager.getCache(cacheName);
             if (cache != null) {
-                cache.clear();  // 캐시 초기화 (비우기)
+                cache.clear();
             }
         });
 

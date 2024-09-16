@@ -55,21 +55,23 @@ public class PostEndpoint {
         if (userId == null || userId.equals(viewerId)) {
             response.addAll(postService.getUserPrivatePosts(viewerId));
             response.addAll(postService.getUserPublicPosts(viewerId));
-        }else{
+        } else {
             response.addAll(postService.getUserPublicPosts(userId));
         }
         response.sort(Comparator.comparing(PostDTO.Summary::getLastModifiedAt).reversed());
 
         return new CommonResponseEntity<>(response);
     }
+
     //검색 -> elastic search
     @GetMapping("/search")
     public CommonResponseEntity<List<PostDTO.Summary>> searchPosts(@RequestParam("keyword") String keyword,
                                                                    @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
         System.out.println();
         Long userId = userAuthService.getUserInfo(token).getUserId();
-        return new CommonResponseEntity<>(postService.searchPosts(keyword,userId));
+        return new CommonResponseEntity<>(postService.searchPosts(keyword, userId));
     }
+
     // 게시글 Update
     @PatchMapping("/{postId}")
     public CommonResponseEntity<Void> updatePost(@PathVariable("postId") Long postId,
@@ -104,12 +106,12 @@ public class PostEndpoint {
     ) {
         Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
 
-        if(!postService.getPost(postId).getUserId().equals(viewerId) && postService.getPost(postId).getStatus().equals(Post.PostStatus.PRIVATE)){
+        if (!postService.getPost(postId).getUserId().equals(viewerId) && postService.getPost(postId).getStatus().equals(Post.PostStatus.PRIVATE)) {
             throw new GlobalException("UnAuthorized Exception");
         }
         PostDTO.PostDetail postDetail = postService.getPost(postId);
-        if(viewerId != null) {
-            postDetail.setLiked(likeService.isLiked(postId,viewerId));
+        if (viewerId != null) {
+            postDetail.setLiked(likeService.isLiked(postId, viewerId));
         }
         postDetail.setLikes(likeService.getLikesCount(postId));
         postDetail.setComments(commentService.getComments(postId));
@@ -123,7 +125,14 @@ public class PostEndpoint {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadModel(@RequestParam("fileName") String fileName) {
+    public ResponseEntity<Resource> downloadModel(@RequestParam("fileName") String fileName,
+                                                  @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
+        Post post = fileService.getPost(fileName);
+        Long userId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
+        System.out.println(post.getStatus());
+        if (((post.getStatus() == Post.PostStatus.PRIVATE) && !(post.getUser().getUserId().equals(userId)))) {
+            throw new GlobalException("UnAuthorized Exception");
+        }
         Resource resource = fileService.getFileResource(fileName, FileService.Extension.GLB);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "model.glb")
