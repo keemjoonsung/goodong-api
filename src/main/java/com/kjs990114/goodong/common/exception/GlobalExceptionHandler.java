@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "무결성 위반",
+                "Goodong Web Exception",
                 errors
         );
 
