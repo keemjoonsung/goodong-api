@@ -5,7 +5,7 @@ import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.application.post.CommentService;
 import com.kjs990114.goodong.application.post.LikeService;
 import com.kjs990114.goodong.application.post.PostService;
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
@@ -80,7 +80,7 @@ public class PostEndpoint {
         Long userId = userAuthService.getUserInfo(token).getUserId();
 
         if (!jwtUtil.getEmail(token).equals(postService.getPost(postId).getEmail())) {
-            throw new GlobalException("UnAuthorized Exception");
+            throw new UnAuthorizedException("UnAuthorized Exception");
         }
         postService.updatePost(postId, userId, postDTO);
         return new CommonResponseEntity<>("Update success");
@@ -93,7 +93,7 @@ public class PostEndpoint {
         Long userId = userAuthService.getUserInfo(token).getUserId();
 
         if (!jwtUtil.getEmail(token).equals(postService.getPost(postId).getEmail())) {
-            throw new GlobalException("UnAuthorized Exception");
+            throw new UnAuthorizedException("UnAuthorized Exception");
         }
         postService.deletePost(userId, postId);
         return new CommonResponseEntity<>("Delete success");
@@ -107,7 +107,7 @@ public class PostEndpoint {
         Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
 
         if (!postService.getPost(postId).getUserId().equals(viewerId) && postService.getPost(postId).getStatus().equals(Post.PostStatus.PRIVATE)) {
-            throw new GlobalException("UnAuthorized Exception");
+            throw new UnAuthorizedException("UnAuthorized Exception");
         }
         PostDTO.PostDetail postDetail = postService.getPost(postId);
         if (viewerId != null) {
@@ -131,7 +131,7 @@ public class PostEndpoint {
         Long userId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
         System.out.println(post.getStatus());
         if (((post.getStatus() == Post.PostStatus.PRIVATE) && !(post.getUser().getUserId().equals(userId)))) {
-            throw new GlobalException("UnAuthorized Exception");
+            throw new UnAuthorizedException("UnAuthorized Exception");
         }
         Resource resource = fileService.getFileResource(fileName, FileService.Extension.GLB);
         return ResponseEntity.ok()

@@ -3,15 +3,13 @@ package com.kjs990114.goodong.presentation.endpoint.user;
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.user.FollowService;
 import com.kjs990114.goodong.application.user.UserService;
-import com.kjs990114.goodong.common.exception.GlobalException;
-import com.kjs990114.goodong.domain.user.User;
+import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -46,7 +44,7 @@ public class UserEndpoint {
                                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
 
         if (!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
-            throw new GlobalException("User authorization failed");
+            throw new UnAuthorizedException("User authorization failed");
         }
         if(update.getNickname() != null && update.getProfileImage() != null) {
             userService.updateUserProfile(userId, update);
@@ -59,7 +57,7 @@ public class UserEndpoint {
     public CommonResponseEntity<Void> deleteUserAccount(@PathVariable("userId") Long userId,
                                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if (!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
-            throw new GlobalException("User authorization failed");
+            throw new UnAuthorizedException("User authorization failed");
         }
         userService.deleteUser(userId);
         return new CommonResponseEntity<>("User account deleted successfully");

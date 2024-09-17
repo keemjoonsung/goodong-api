@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.application.post;
 
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.domain.post.Comment;
 import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.post.repository.PostRepository;
@@ -24,8 +25,8 @@ public class CommentService {
     @Transactional
     @CacheEvict(value = "commentList", key= "#postId")
     public void addComment(Long postId, String email, String content) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User does not exist"));
         Comment comment = new Comment();
         comment.setContent(content);
         comment.setUser(user);
@@ -39,13 +40,13 @@ public class CommentService {
     @Transactional
     @CacheEvict(value = "commentList", key= "#postId")
     public void deleteComment(Long postId ,Long commentId, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User does not exist"));
         Comment comment = user.getComments().stream()
-                .filter(c -> c.getCommentId().equals(commentId)).findFirst().orElseThrow(() -> new GlobalException("Comment does not exist"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+                .filter(c -> c.getCommentId().equals(commentId)).findFirst().orElseThrow(() -> new NotFoundException("Comment does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
 
         if (!comment.getUser().getEmail().equals(email)) {
-            throw new GlobalException("Authorization Failed");
+            throw new UnAuthorizedException("Authorization Failed");
         }
         user.deleteComment(comment);
         post.deleteComment(comment);
@@ -57,12 +58,12 @@ public class CommentService {
     @Transactional
     @CacheEvict(value = "commentList", key= "#postId")
     public void updateComment(Long postId, Long commentId, String email, String content) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new GlobalException("User does not exist"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User does not exist"));
         Comment comment = user.getComments().stream()
-                .filter(c -> c.getCommentId().equals(commentId)).findFirst().orElseThrow(() -> new GlobalException("Comment does not exist"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+                .filter(c -> c.getCommentId().equals(commentId)).findFirst().orElseThrow(() -> new NotFoundException("Comment does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         if (!comment.getUser().getEmail().equals(email)) {
-            throw new GlobalException("Authorization Failed");
+            throw new UnAuthorizedException("Authorization Failed");
         }
         comment.setContent(content);
 
@@ -73,7 +74,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     @Cacheable(value = "commentList",key = "#postId")
     public List<PostDTO.CommentInfo> getComments(Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         return post.getComments().stream().map(
                 comment -> PostDTO.CommentInfo.builder()
                         .commentId(comment.getCommentId())

@@ -2,7 +2,7 @@ package com.kjs990114.goodong.application.user;
 
 import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.common.cache.MyCacheManager;
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
@@ -31,7 +31,7 @@ public class UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "#userId")
     public UserDTO.UserDetail getUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
 
         return UserDTO.UserDetail.builder()
                 .userId(user.getUserId())
@@ -45,7 +45,7 @@ public class UserService {
     @Transactional
     @CacheEvict(value = "users", key = "#userId")
     public void updateUserProfile(Long userId, UserDTO.UpdateUser update) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         if (update.getNickname() != null) {
             updateUserNickname(user, update.getNickname());
         }
@@ -60,7 +60,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         userRepository.delete(user);
         myCacheManager.EvictCacheAll();
     }
@@ -68,7 +68,7 @@ public class UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "contributions", key = "#userId")
     public List<UserDTO.UserContribution> getContributionList(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getContributions().stream().map(
                 contribution -> new UserDTO.UserContribution(contribution.getDate(), contribution.getCount())
         ).toList();

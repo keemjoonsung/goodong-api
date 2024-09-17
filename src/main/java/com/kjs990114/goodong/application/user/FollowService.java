@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.user;
 
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.Follow;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
@@ -30,8 +30,8 @@ public class FollowService {
             @CacheEvict(value = "followingList", key = "#followerId")
     })
     public void follow(Long followeeId, Long followerId) {;
-        User follower = userRepository.findById(followerId).orElseThrow(() -> new GlobalException("User does not exists"));
-        User followee = userRepository.findById(followeeId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User followee = userRepository.findById(followeeId).orElseThrow(() -> new NotFoundException("User does not exists"));
         Follow follow = Follow.builder()
                 .follower(follower)
                 .followee(followee)
@@ -52,8 +52,8 @@ public class FollowService {
             @CacheEvict(value = "followingList", key = "#followerId")
     })
     public void unfollow(Long followeeId, Long followerId) {
-        User follower = userRepository.findById(followerId).orElseThrow(() -> new GlobalException("User does not exists"));
-        User followee = userRepository.findById(followeeId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User followee = userRepository.findById(followeeId).orElseThrow(() -> new NotFoundException("User does not exists"));
         follower.unfollow(followeeId);
         followee.deleteFollower(followerId);
         userRepository.save(follower);
@@ -76,8 +76,8 @@ public class FollowService {
     @Transactional(readOnly = true)
     @Cacheable(value = "isFollowed")
     public boolean isFollowing(Long userId, Long myId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        User me = userRepository.findById(myId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User me = userRepository.findById(myId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getFollowers().stream().anyMatch(follow ->
                 follow.getFollower().getUserId().equals(me.getUserId())
         );
@@ -86,20 +86,20 @@ public class FollowService {
     @Transactional(readOnly = true)
     @Cacheable(value = "followerCount", key = "#userId")
     public int getFollowerCount(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getFollowers().size();
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "followingCount", key = "#userId")
     public int getFollowingCount(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getFollowings().size();
     }
 
 
     private List<UserDTO.UserSummary> getFollow(Long userId, FollowEndpoint.FollowType type) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         List<UserDTO.UserSummary> response;
         if (type == FollowEndpoint.FollowType.FOLLOWER) { //팔로워
             Set<Follow> followers = user.getFollowers();

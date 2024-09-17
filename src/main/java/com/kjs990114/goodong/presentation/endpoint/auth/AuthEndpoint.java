@@ -1,8 +1,8 @@
 package com.kjs990114.goodong.presentation.endpoint.auth;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
-import com.kjs990114.goodong.common.exception.GlobalException;
-import com.kjs990114.goodong.common.jwt.util.JwtUtil;
+import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthEndpoint {
 
     private final UserAuthService userAuthService;
-    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public CommonResponseEntity<String> login(@RequestBody UserDTO.Login login) {
@@ -39,7 +38,7 @@ public class AuthEndpoint {
                                                      @RequestBody UserDTO.Password password,
                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         if(!userAuthService.getUserInfo(token).getUserId().equals(userId)){
-            throw new GlobalException("User Authorization failed");
+            throw new UnAuthorizedException("User Authorization failed");
         }
         userAuthService.changePassword(userId,password.getPassword());
         return new CommonResponseEntity<>("Password change success");
@@ -49,10 +48,10 @@ public class AuthEndpoint {
     public CommonResponseEntity<Boolean> duplicate(@RequestParam(required = false, name="email") String email,
                                                      @RequestParam(required = false, name="nickname") String nickname){
         if(email == null && nickname == null) {
-            throw new GlobalException("Email and Nickname cannot be null");
+            throw new NotFoundException("Email and Nickname cannot be null");
         }
         if(email != null && nickname != null) {
-            throw new GlobalException("Choose one query parameter, either 'email' or 'nickname'.");
+            throw new NotFoundException("Choose one query parameter, either 'email' or 'nickname'.");
         }
         if (email != null) {
             return new CommonResponseEntity<>(userAuthService.isEmailDuplicated(email));

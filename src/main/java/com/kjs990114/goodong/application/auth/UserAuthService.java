@@ -1,13 +1,12 @@
 package com.kjs990114.goodong.application.auth;
 
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -63,13 +62,13 @@ public class UserAuthService {
 
     @Transactional(readOnly = true)
     public UserDTO.UserSummary getUserInfo(String token) {
-        User user = userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(() -> new GlobalException("User session Expired!"));
+        User user = userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(() -> new NotFoundException("User session Expired!"));
         return new UserDTO.UserSummary(user.getUserId(), user.getEmail(), user.getNickname(), user.getProfileImage());
     }
 
     @Transactional
     public void changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         user.changePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }

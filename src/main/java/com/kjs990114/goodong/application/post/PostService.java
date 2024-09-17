@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.application.post;
 
 import com.kjs990114.goodong.application.file.FileService;
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.post.*;
 import com.kjs990114.goodong.domain.post.repository.PostRepository;
@@ -32,9 +32,6 @@ public class PostService {
     private final UserRepository userRepository;
     private final FileService fileService;
 
-    /**
-     * 포스트를 완전 처음 생성하면, user의 contribution이 1 늘어난다
-     **/
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "postsPrivate", key = "#userId"),
@@ -42,7 +39,7 @@ public class PostService {
             @CacheEvict(value = "contributions", key = "#userId")
     })
     public void createPost(PostDTO.Create create, Long userId) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
@@ -107,7 +104,7 @@ public class PostService {
     @Transactional(readOnly = true)
     @Cacheable(value = "postDetail", key = "#postId")
     public PostDTO.PostDetail getPost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("User does not exists"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("User does not exists"));
         User user = post.getUser();
 
         List<Model> modelsEntity = post.getModels();
@@ -169,9 +166,9 @@ public class PostService {
     })
     @CacheEvict(value = "postDetail", key = "#postId")
     public void deletePost(Long userId, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        PostDocument postDocument = postSearchRepository.findById(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        PostDocument postDocument = postSearchRepository.findById(post.getPostId()).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
         user.unposting(postId);
         userRepository.save(user);
         postRepository.delete(post);
@@ -186,9 +183,9 @@ public class PostService {
             @CacheEvict(value = "postsPrivate", key = "#userId")
     })
     public void updatePost(Long postId, Long userId, PostDTO.Update update) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exist"));
-        PostDocument postDocument = postSearchRepository.findByPostId(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
+        PostDocument postDocument = postSearchRepository.findByPostId(post.getPostId()).orElseThrow(() -> new NotFoundException("Post does not exist"));
         post.updatePost(update.getTitle(), update.getContent());
         if(update.getTags() != null) {
             post.removeTagAll();
@@ -223,7 +220,7 @@ public class PostService {
     }
 
     private List<PostDTO.Summary> getUserPosts(Long userId, Post.PostStatus type) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         List<Post> posts = user.getPosts();
         return posts.stream()
                 .filter(post -> post.getStatus() == type)

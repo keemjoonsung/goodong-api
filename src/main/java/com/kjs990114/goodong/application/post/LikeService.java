@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.application.post;
 
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.domain.post.Like;
 import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.post.Tag;
@@ -32,12 +33,12 @@ public class LikeService {
             @CacheEvict(value = "likeList")
     })
     public void likePost(Long postId, Long likerId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = userRepository.findById(likerId).orElseThrow(() -> new GlobalException("User does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findById(likerId).orElseThrow(() -> new NotFoundException("User does not exist"));
 
         if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
             if (!post.getUser().getUserId().equals(user.getUserId())) {
-                throw new GlobalException("User Authorization failed");
+                throw new NotFoundException("User Authorization failed");
             }
         }
 
@@ -58,18 +59,18 @@ public class LikeService {
             @CacheEvict(value = "likeList")
     })
     public void unlikePost(Long postId, Long likerId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = userRepository.findById(likerId).orElseThrow(() -> new GlobalException("User does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findById(likerId).orElseThrow(() -> new NotFoundException("User does not exist"));
 
         if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
             if (!post.getUser().getUserId().equals(user.getUserId())) {
-                throw new GlobalException("User Authorization failed");
+                throw new UnAuthorizedException("User Authorization failed");
             }
         }
 
         Like like = post.getLikes().stream().filter(l ->
                 l.getUser().getUserId().equals(user.getUserId())
-        ).findFirst().orElseThrow(() -> new GlobalException("Like does not exist"));
+        ).findFirst().orElseThrow(() -> new NotFoundException("Like does not exist"));
 
         post.unLike(like);
         user.unlike(like);
@@ -80,7 +81,7 @@ public class LikeService {
     @Transactional(readOnly = true)
     @Cacheable(value = "isLiked")
     public boolean isLiked(Long postId, Long likerId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         return post.getLikes().stream().anyMatch(like ->
                 like.getUser().getUserId().equals(likerId));
     }
@@ -89,14 +90,14 @@ public class LikeService {
     @Transactional(readOnly = true)
     @Cacheable(value = "likesCount", key = "#postId")
     public int getLikesCount(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         return post.getLikes().size();
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "likedList", key = "#userId")
     public List<PostDTO.Summary> getLikedPosts(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getLikes().stream().sorted(Comparator.comparing(Like::getCreatedAt)).map(
                 Like::getPost
         ).toList().stream().map(
