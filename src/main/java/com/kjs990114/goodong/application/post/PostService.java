@@ -136,10 +136,11 @@ public class PostService {
     public List<PostDTO.Summary> searchPosts(String keyword,Long userId) {
         List<PostDocument> documents = postSearchRepository.findByTitleContainingOrContentContainingOrTaggingContaining(keyword, keyword, keyword);
         if(documents.isEmpty()) return new ArrayList<>();
+        System.out.println(documents.size());
         return documents.stream().filter(document ->{
             Post post = postRepository.findById(document.getPostId()).orElseThrow();
             User user = post.getUser();
-            return userId.equals(user.getUserId()) || post.getStatus() == Post.PostStatus.PUBLIC;
+            return user.getUserId().equals(userId) || post.getStatus() == Post.PostStatus.PUBLIC;
         }).map(document -> {
                     Post post = postRepository.findById(document.getPostId()).orElseThrow();
                     List<Tag> tags = post.getTags();

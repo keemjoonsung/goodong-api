@@ -43,16 +43,16 @@ public class PostEndpoint {
         return new CommonResponseEntity<>("Post created successfully");
     }
 
-    // 유저의 post 리스트 반환
-    @GetMapping
-    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam(required = false, name = "userId") Long userId,
-                                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    // 유저의 posts
+    @GetMapping(params = "userId")
+    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam(name = "userId") Long userId,
+                                                                    @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
 
 
-        Long viewerId = userAuthService.getUserInfo(token).getUserId();
+        Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
         List<PostDTO.Summary> response = new ArrayList<>();
 
-        if (userId == null || userId.equals(viewerId)) {
+        if (userId.equals(viewerId)) {
             response.addAll(postService.getUserPrivatePosts(viewerId));
             response.addAll(postService.getUserPublicPosts(viewerId));
         } else {
@@ -64,11 +64,10 @@ public class PostEndpoint {
     }
 
     //검색 -> elastic search
-    @GetMapping("/search")
+    @GetMapping(params = "keyword")
     public CommonResponseEntity<List<PostDTO.Summary>> searchPosts(@RequestParam("keyword") String keyword,
                                                                    @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
-        System.out.println();
-        Long userId = userAuthService.getUserInfo(token).getUserId();
+        Long userId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
         return new CommonResponseEntity<>(postService.searchPosts(keyword, userId));
     }
 
@@ -118,13 +117,13 @@ public class PostEndpoint {
         return new CommonResponseEntity<>(postDetail);
     }
 
-    @GetMapping("/duplicated")
-    public CommonResponseEntity<Boolean> isDuplicateTitle(@RequestParam("title") String title,
-                                                          @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
+    @GetMapping(params = "checkTitle")
+    public CommonResponseEntity<Boolean> isDuplicateTitle(@RequestParam("checkTitle") String title,
+                                                          @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
         return new CommonResponseEntity<>(postService.checkDuplicatedTitle(title, token));
     }
 
-    @GetMapping("/download")
+    @GetMapping(params = "fileName")
     public ResponseEntity<Resource> downloadModel(@RequestParam("fileName") String fileName,
                                                   @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
         Post post = fileService.getPost(fileName);
