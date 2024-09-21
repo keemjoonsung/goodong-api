@@ -3,10 +3,6 @@ package com.kjs990114.goodong.application.file;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.kjs990114.goodong.common.exception.NotFoundException;
-import com.kjs990114.goodong.domain.post.Model;
-import com.kjs990114.goodong.domain.post.Post;
-import com.kjs990114.goodong.domain.post.repository.ModelRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +18,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class FileService {
-    private final ModelRepository modelRepository;
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
     private final Storage storage;
@@ -44,10 +39,7 @@ public class FileService {
 
         return uuid;
     }
-    public Post getPost(String fileName){
-        Model model =  modelRepository.findByFileName(fileName).orElseThrow(()->new NotFoundException("Model does not exist"));
-        return model.getPost();
-    }
+
     @Getter
     public enum Extension {
         GLB(".glb"),

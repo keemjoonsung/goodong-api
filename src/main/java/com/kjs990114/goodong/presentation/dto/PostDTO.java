@@ -119,5 +119,12 @@ public class PostDTO {
         private String description;
         private List<String> tags;
     }
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class PostInfo {
+        private Post.PostStatus status;
+        private Long userId;
+    }
 
 }

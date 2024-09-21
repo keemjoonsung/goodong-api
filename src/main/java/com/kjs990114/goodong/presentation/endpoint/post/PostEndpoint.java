@@ -44,15 +44,14 @@ public class PostEndpoint {
     }
 
     // 유저의 posts
-    @GetMapping(params = "userId")
-    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam(name = "userId") Long userId,
+    @GetMapping
+    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestParam(required = false, name = "userId") Long userId,
                                                                     @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
-
 
         Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
         List<PostDTO.Summary> response = new ArrayList<>();
 
-        if (userId.equals(viewerId)) {
+        if (userId == null || userId.equals(viewerId)) {
             response.addAll(postService.getUserPrivatePosts(viewerId));
             response.addAll(postService.getUserPublicPosts(viewerId));
         } else {
@@ -126,10 +125,9 @@ public class PostEndpoint {
     @GetMapping(params = "fileName")
     public ResponseEntity<Resource> downloadModel(@RequestParam("fileName") String fileName,
                                                   @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
-        Post post = fileService.getPost(fileName);
+        PostDTO.PostInfo post = postService.getPost(fileName);
         Long userId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
-        System.out.println(post.getStatus());
-        if (((post.getStatus() == Post.PostStatus.PRIVATE) && !(post.getUser().getUserId().equals(userId)))) {
+        if (((post.getStatus() == Post.PostStatus.PRIVATE) && !(post.getUserId().equals(userId)))) {
             throw new UnAuthorizedException("UnAuthorized Exception");
         }
         Resource resource = fileService.getFileResource(fileName, FileService.Extension.GLB);

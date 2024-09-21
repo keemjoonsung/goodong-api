@@ -88,16 +88,20 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public PostDTO.PostInfo getPost(String fileName){
+        Post post = postRepository.findPostIdByFileName(fileName).orElseThrow(()->new NotFoundException("Model does not exist"));
+        return new PostDTO.PostInfo(post.getStatus(),post.getUser().getUserId());
+    }
+
+    @Transactional(readOnly = true)
     @Cacheable(value = "postsPublic", key = "#userId")
     public List<PostDTO.Summary> getUserPublicPosts(Long userId) {
-        System.out.println("캐시없음 - PUBLIC");
         return getUserPosts(userId, Post.PostStatus.PUBLIC);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "postsPrivate", key = "#userId")
     public List<PostDTO.Summary> getUserPrivatePosts(Long userId) {
-        System.out.println("캐시없음 - PRIVATE");
         return getUserPosts(userId, Post.PostStatus.PRIVATE);
     }
 
