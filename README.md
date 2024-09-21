@@ -56,7 +56,8 @@ images will be uploaded soon
 <br>
 
 ## Structure
-![스크린샷 2024-06-05 오후 11 14 18](https://github.com/kjs990114/goodong/assets/50402527/dba6201a-1152-4da4-94fe-890a1e06c1eb)
+![제목 없는 다이어그램 drawio (1)](https://github.com/user-attachments/assets/23f6d149-7e3c-437d-89c5-8a17c74aff60)
+
 
 <br>
 
