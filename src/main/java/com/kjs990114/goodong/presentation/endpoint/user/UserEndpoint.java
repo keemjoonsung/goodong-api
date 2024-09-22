@@ -21,7 +21,7 @@ public class UserEndpoint {
     private final UserAuthService userAuthService;
     private final UserService userService;
     private final FollowService followService;
-    private final UserRepository userRepository;
+
 
     // 정보 반환
     @GetMapping("/{userId}")

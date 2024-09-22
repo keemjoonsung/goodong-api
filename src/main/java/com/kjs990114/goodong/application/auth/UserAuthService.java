@@ -77,11 +77,11 @@ public class UserAuthService {
     public boolean isEmailDuplicated(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
-
+    @Transactional(readOnly = true)
     public boolean isNicknameDuplicated(String nickname) {
         return userRepository.findByNickname(nickname).isPresent();
     }
-
+    @Transactional(readOnly = true)
     public boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
         Matcher matcher = pattern.matcher(password);

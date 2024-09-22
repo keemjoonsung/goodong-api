@@ -9,8 +9,6 @@ import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +21,6 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    @CacheEvict(value = "commentList", key= "#postId")
     public void addComment(Long postId, String email, String content) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User does not exist"));
@@ -38,7 +35,6 @@ public class CommentService {
         userRepository.save(user);
     }
     @Transactional
-    @CacheEvict(value = "commentList", key= "#postId")
     public void deleteComment(Long postId ,Long commentId, String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User does not exist"));
         Comment comment = user.getComments().stream()
@@ -56,7 +52,6 @@ public class CommentService {
     }
 
     @Transactional
-    @CacheEvict(value = "commentList", key= "#postId")
     public void updateComment(Long postId, Long commentId, String email, String content) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User does not exist"));
         Comment comment = user.getComments().stream()
@@ -72,7 +67,6 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "commentList",key = "#postId")
     public List<PostDTO.CommentInfo> getComments(Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         return post.getComments().stream().map(

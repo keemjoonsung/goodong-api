@@ -103,13 +103,6 @@ public class PostDTO {
         private String commitMessage;
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class File {
-        private MultipartFile file;
-        private MultipartFile filePng;
-    }
 
     @Getter
     @Setter
@@ -119,6 +112,7 @@ public class PostDTO {
         private String description;
         private List<String> tags;
     }
+
     @Getter
     @Setter
     @AllArgsConstructor

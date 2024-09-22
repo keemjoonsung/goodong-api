@@ -1,26 +1,28 @@
 package com.kjs990114.goodong.application.post;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.post.*;
 import com.kjs990114.goodong.domain.post.repository.PostRepository;
-import com.kjs990114.goodong.domain.post.repository.PostSearchRepository;
 import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.infrastructure.PostDocument;
+import com.kjs990114.goodong.presentation.dto.DTOMapper;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.*;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +30,13 @@ public class PostService {
 
     private final JwtUtil jwtUtil;
     private final PostRepository postRepository;
-    private final PostSearchRepository postSearchRepository;
     private final UserRepository userRepository;
     private final FileService fileService;
+    private final ElasticsearchOperations elasticsearchOperations;
+    @Value("${spring.page.size}")
+    private int pageSize;
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "postsPrivate", key = "#userId"),
-            @CacheEvict(value = "postsPublic", key = "#userId"),
-            @CacheEvict(value = "contributions", key = "#userId")
-    })
     public void createPost(PostDTO.Create create, Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         Contribution contribution = new Contribution();
@@ -64,25 +63,12 @@ public class PostService {
         newPost.addTagAll(create.getTags());
         user.posting(newPost);
         userRepository.save(user);
-
-        Post post = postRepository.save(newPost);
-        List<Tag> tags = post.getTags();
-        String tagging = tags.stream()
-                .map(Tag::getTag)
-                .collect(Collectors.joining(" "));
-
-        PostDocument postDocument = new PostDocument();
-        postDocument.setPostId(post.getPostId());
-        postDocument.setTitle(post.getTitle());
-        postDocument.setContent(post.getContent());
-        postDocument.setTagging(tagging);
-        postSearchRepository.save(postDocument);
+        postRepository.save(newPost);
     }
 
     @Transactional(readOnly = true)
-    public Boolean checkDuplicatedTitle(String title, String token) {
-        String email = jwtUtil.getEmail(token);
-        User user = userRepository.findByEmail(email).orElseThrow();
+    public Boolean checkDuplicatedTitle(String title, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
         return user.getPosts().stream()
                 .anyMatch(post -> post.getTitle().equalsIgnoreCase(title));
     }
@@ -94,103 +80,56 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "postsPublic", key = "#userId")
-    public List<PostDTO.Summary> getUserPublicPosts(Long userId) {
-        return getUserPosts(userId, Post.PostStatus.PUBLIC);
+    public Page<PostDTO.Summary> getPosts(Long userId, Long viewerId, int page){
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
+        Page<Post> entityPage = postRepository.findUserPosts(userId,viewerId,pageable);
+        return entityPage.map(DTOMapper::postToSummary);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "postsPrivate", key = "#userId")
-    public List<PostDTO.Summary> getUserPrivatePosts(Long userId) {
-        return getUserPosts(userId, Post.PostStatus.PRIVATE);
-    }
-
-    @Transactional(readOnly = true)
-    @Cacheable(value = "postDetail", key = "#postId")
     public PostDTO.PostDetail getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("User does not exists"));
-        User user = post.getUser();
-
-        List<Model> modelsEntity = post.getModels();
-        List<PostDTO.ModelInfo> models = modelsEntity.stream().map(model ->
-                PostDTO.ModelInfo.builder()
-                        .version(model.getVersion())
-                        .fileName(model.getFileName())
-                        .commitMessage(model.getCommitMessage())
-                        .build()
-        ).toList();
-
-        return PostDTO.PostDetail.builder()
-                .postId(post.getPostId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .status(post.getStatus())
-                .models(models)
-                .userId(user.getUserId())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .createdAt(post.getCreatedAt())
-                .lastModifiedAt(post.getLastModifiedAt())
-                .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
-                .likes(post.getLikes().size())
-                .build();
+        return DTOMapper.postToDetail(post);
     }
 
     @Transactional(readOnly = true)
-    public List<PostDTO.Summary> searchPosts(String keyword,Long userId) {
-        List<PostDocument> documents = postSearchRepository.findByTitleContainingOrContentContainingOrTaggingContaining(keyword, keyword, keyword);
-        if(documents.isEmpty()) return new ArrayList<>();
-        System.out.println(documents.size());
-        return documents.stream().filter(document ->{
-            Post post = postRepository.findById(document.getPostId()).orElseThrow();
-            User user = post.getUser();
-            return user.getUserId().equals(userId) || post.getStatus() == Post.PostStatus.PUBLIC;
-        }).map(document -> {
-                    Post post = postRepository.findById(document.getPostId()).orElseThrow();
-                    List<Tag> tags = post.getTags();
-                    User user = post.getUser();
-                    return PostDTO.Summary.builder()
-                            .postId(post.getPostId())
-                            .title(post.getTitle())
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .nickname(user.getNickname())
-                            .status(post.getStatus())
-                            .lastModifiedAt(post.getLastModifiedAt())
-                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                            .likes(post.getLikes().size())
-                            .build();
-                }
-        ).toList();
+    public Page<PostDTO.Summary> searchPosts(String keyword, int page) {
+        Pageable pageable = PageRequest.of(page,pageSize);
+        NativeQuery searchQuery = NativeQuery.builder()
+                .withQuery(query -> query
+                        .bool(bool -> bool
+                                .should(should -> should.match(match -> match.field("title").query(FieldValue.of(keyword)).boost(3.0f)))
+                                .should(should -> should.match(match -> match.field("tagging").query(FieldValue.of(keyword)).boost(2.0f)))
+                                .should(should -> should.match(match -> match.field("content").query(FieldValue.of(keyword)).boost(1.0f)))
+                        )
+                )
+                .withPageable(pageable)
+                .build();
+
+        SearchHits<PostDocument> searchHits = elasticsearchOperations.search(searchQuery, PostDocument.class);
+        List<Long> postIdList = searchHits.stream().map(hit -> hit.getContent().getPostId()).toList();
+        List<Post> postList = postRepository.findAllById(postIdList);
+        List<PostDTO.Summary> summaries = postList.stream()
+                .filter(post -> post.getStatus().equals(Post.PostStatus.PUBLIC))
+                .map(DTOMapper::postToSummary)
+                .toList();
+
+        return new PageImpl<>(summaries, pageable, searchHits.getTotalHits());
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "postDetail", key = "#postId"),
-            @CacheEvict(value = "likeList", allEntries = true)
-    })
-    @CacheEvict(value = "postDetail", key = "#postId")
     public void deletePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
-        PostDocument postDocument = postSearchRepository.findById(post.getPostId()).orElseThrow(() -> new NotFoundException("Post does not exist"));
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
         user.unposting(postId);
         userRepository.save(user);
         postRepository.delete(post);
-        postSearchRepository.delete(postDocument);
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "postDetail", key = "#postId"),
-            @CacheEvict(value = "contributions", key = "#userId"),
-            @CacheEvict(value = "postsPublic", key = "#userId"),
-            @CacheEvict(value = "postsPrivate", key = "#userId")
-    })
     public void updatePost(Long postId, Long userId, PostDTO.Update update) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
-        PostDocument postDocument = postSearchRepository.findByPostId(post.getPostId()).orElseThrow(() -> new NotFoundException("Post does not exist"));
         post.updatePost(update.getTitle(), update.getContent());
         if(update.getTags() != null) {
             post.removeTagAll();
@@ -209,40 +148,13 @@ public class PostService {
                     .build();
             post.addModel(newModel);
         }
-        postDocument.setContent(update.getContent());
-        postDocument.setTitle(update.getTitle());
-        if(update.getTags() != null) {
-            postDocument.setTagging(String.join(" ", update.getTags()));
-        }
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
         post.updateModifiedAt();
         postRepository.save(post);
-        postSearchRepository.save(postDocument);
         userRepository.save(user);
 
     }
-
-    private List<PostDTO.Summary> getUserPosts(Long userId, Post.PostStatus type) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
-        List<Post> posts = user.getPosts();
-        return posts.stream()
-                .filter(post -> post.getStatus() == type)
-                .map(post -> {
-                    List<Tag> tags = post.getTags();
-                    return PostDTO.Summary.builder()
-                            .postId(post.getPostId())
-                            .title(post.getTitle())
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .nickname(user.getNickname())
-                            .status(post.getStatus())
-                            .lastModifiedAt(post.getLastModifiedAt())
-                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                            .build();
-                }).collect(Collectors.toList());
-    }
-
 
 }

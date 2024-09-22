@@ -1,15 +1,12 @@
 package com.kjs990114.goodong.application.user;
 
 import com.kjs990114.goodong.application.file.FileService;
-import com.kjs990114.goodong.common.cache.MyCacheManager;
 import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,12 +21,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FileService fileService;
-    private final MyCacheManager myCacheManager;
     @Value("${spring.cloud.gcp.storage.path}")
     private String storagePath;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "users", key = "#userId")
     public UserDTO.UserDetail getUserInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
 
@@ -43,7 +38,6 @@ public class UserService {
 
 
     @Transactional
-    @CacheEvict(value = "users", key = "#userId")
     public void updateUserProfile(Long userId, UserDTO.UpdateUser update) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         if (update.getNickname() != null) {
@@ -62,11 +56,9 @@ public class UserService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         userRepository.delete(user);
-        myCacheManager.EvictCacheAll();
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "contributions", key = "#userId")
     public List<UserDTO.UserContribution> getContributionList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getContributions().stream().map(
