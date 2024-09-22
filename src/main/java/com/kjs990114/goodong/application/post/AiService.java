@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AIService {
+public class AiService {
 
     private final VertexAiGeminiChatClient geminiClient;
 

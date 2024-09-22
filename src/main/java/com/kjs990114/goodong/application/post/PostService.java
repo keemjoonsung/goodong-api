@@ -1,50 +1,44 @@
 package com.kjs990114.goodong.application.post;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.kjs990114.goodong.common.exception.GlobalException;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import com.kjs990114.goodong.application.file.FileService;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.post.*;
 import com.kjs990114.goodong.domain.post.repository.PostRepository;
-import com.kjs990114.goodong.domain.post.repository.PostSearchRepository;
 import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.infrastructure.PostDocument;
+import com.kjs990114.goodong.presentation.dto.DTOMapper;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.*;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 
-import java.io.ByteArrayOutputStream;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PostService {
 
     private final JwtUtil jwtUtil;
-    @Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName;
-    private final Storage storage;
     private final PostRepository postRepository;
-    private final PostSearchRepository postSearchRepository;
     private final UserRepository userRepository;
+    private final FileService fileService;
+    private final ElasticsearchOperations elasticsearchOperations;
+    @Value("${spring.page.size}")
+    private int pageSize;
 
-    /**
-     * 포스트를 완전 처음 생성하면, user의 contribution이 1 늘어난다
-     **/
-    public void createPost(PostDTO.Create create, String email) throws IOException {
-        User user = userRepository.findByEmail(email).orElseThrow();
+    @Transactional
+    public void createPost(PostDTO.Create create, Long userId) throws IOException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
@@ -55,193 +49,111 @@ public class PostService {
                 .status(create.getStatus())
                 .user(user)
                 .build();
-        String url = generateFileUrl(create.getFile());
-        Model newModel = com.kjs990114.goodong.domain.post.Model.builder()
-                .commitMessage("First Commit")
+
+        String fileName = fileService.saveFileStorage(create.getFile(), FileService.Extension.GLB);
+        String commitMsg = create.getCommitMessage() == null || create.getCommitMessage().isBlank()? "Commit" : create.getCommitMessage();
+        Model newModel = Model.builder()
+                .commitMessage(commitMsg)
                 .post(newPost)
-                .fileUrl(url)
+                .fileName(fileName)
                 .version(1)
                 .build();
 
         newPost.addModel(newModel);
-        System.out.println("newModel: " + newModel.getFileUrl());
         newPost.addTagAll(create.getTags());
+        user.posting(newPost);
         userRepository.save(user);
-
-        Post post = postRepository.save(newPost);
-        List<Tag> tags = post.getTags();
-        String tagging = tags.stream()
-                .map(Tag::getTag)
-                .collect(Collectors.joining(" "));
-
-        PostDocument postDocument = new PostDocument();
-        postDocument.setPostId(post.getPostId());
-        postDocument.setTitle(post.getTitle());
-        postDocument.setContent(post.getContent());
-        postDocument.setTagging(tagging);
-        postSearchRepository.save(postDocument);
+        postRepository.save(newPost);
     }
 
-    public Boolean checkDuplicatedTitle(String title, String token) {
-        String email = jwtUtil.getEmail(token);
-        User user = userRepository.findByEmail(email).orElseThrow();
+    @Transactional(readOnly = true)
+    public Boolean checkDuplicatedTitle(String title, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
         return user.getPosts().stream()
                 .anyMatch(post -> post.getTitle().equalsIgnoreCase(title));
     }
 
-    public List<PostDTO.Summary> getUserPosts(Long userId, boolean isMyPosts) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        List<Post> posts = postRepository.findAllByUser(user);
-        return posts.stream()
-                .filter(post -> isMyPosts || post.getStatus() == Post.PostStatus.PUBLIC)
-                .map(post -> {
-                    List<Tag> tags = post.getTags();
-                    return PostDTO.Summary.builder()
-                            .postId(post.getPostId())
-                            .title(post.getTitle())
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .nickname(user.getNickname())
-                            .status(post.getStatus())
-                            .lastModifiedAt(post.getLastModifiedAt())
-                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                            .likes(post.getLikes().size())
-                            .build();
-                }).collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public PostDTO.PostInfo getPost(String fileName){
+        Post post = postRepository.findPostIdByFileName(fileName).orElseThrow(()->new NotFoundException("Model does not exist"));
+        return new PostDTO.PostInfo(post.getStatus(),post.getUser().getUserId());
     }
 
-    public PostDTO.PostDetail getPost(Long postId, Long viewerId) {
-        Post post = postRepository.findById(postId).orElseThrow();
-        User user = post.getUser();
-        if(post.getStatus().equals(Post.PostStatus.PRIVATE)) {
-            if(!user.getUserId().equals(viewerId)) {
-                throw new GlobalException("User Authorization Failed");
-            }
-        }
-        List<Model> modelsEntity = post.getModels();
-        List<PostDTO.ModelInfo> models = modelsEntity.stream().map(model ->
-                PostDTO.ModelInfo.builder()
-                        .version(model.getVersion())
-                        .fileUrl(model.getFileUrl())
-                        .commitMessage(model.getCommitMessage())
-                        .build()
-        ).toList();
+    @Transactional(readOnly = true)
+    public Page<PostDTO.Summary> getPosts(Long userId, Long viewerId, int page){
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
+        Page<Post> entityPage = postRepository.findUserPosts(userId,viewerId,pageable);
+        return entityPage.map(DTOMapper::postToSummary);
+    }
 
-        List<Comment> commentsEntity = post.getComments();
-        List<PostDTO.CommentInfo> comments = commentsEntity.stream()
-                .map(comment -> {
-                    User commentUser = comment.getUser();
-                    return PostDTO.CommentInfo.builder()
-                            .commentId(comment.getCommentId())
-                            .userId(commentUser.getUserId())
-                            .email(commentUser.getEmail())
-                            .nickname(commentUser.getNickname())
-                            .content(comment.getContent())
-                            .createdAt(comment.getCreatedAt())
-                            .lastModifiedAt(comment.getLastModifiedAt())
-                            .build();
-                }).toList();
+    @Transactional(readOnly = true)
+    public PostDTO.PostDetail getPost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        return DTOMapper.postToDetail(post);
+    }
 
-        return PostDTO.PostDetail.builder()
-                .postId(post.getPostId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .status(post.getStatus())
-                .models(models)
-                .userId(user.getUserId())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .createdAt(post.getCreatedAt())
-                .lastModifiedAt(post.getLastModifiedAt())
-                .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
-                .comments(comments)
-                .likes(post.getLikes().size())
+    @Transactional(readOnly = true)
+    public Page<PostDTO.Summary> searchPosts(String keyword, int page) {
+        Pageable pageable = PageRequest.of(page,pageSize);
+        NativeQuery searchQuery = NativeQuery.builder()
+                .withQuery(query -> query
+                        .bool(bool -> bool
+                                .should(should -> should.match(match -> match.field("title").query(FieldValue.of(keyword)).boost(3.0f)))
+                                .should(should -> should.match(match -> match.field("tagging").query(FieldValue.of(keyword)).boost(2.0f)))
+                                .should(should -> should.match(match -> match.field("content").query(FieldValue.of(keyword)).boost(1.0f)))
+                        )
+                )
+                .withPageable(pageable)
                 .build();
+
+        SearchHits<PostDocument> searchHits = elasticsearchOperations.search(searchQuery, PostDocument.class);
+        List<Long> postIdList = searchHits.stream().map(hit -> hit.getContent().getPostId()).toList();
+        List<Post> postList = postRepository.findAllById(postIdList);
+        List<PostDTO.Summary> summaries = postList.stream()
+                .filter(post -> post.getStatus().equals(Post.PostStatus.PUBLIC))
+                .map(DTOMapper::postToSummary)
+                .toList();
+
+        return new PageImpl<>(summaries, pageable, searchHits.getTotalHits());
     }
 
-    public List<PostDTO.Summary> searchPosts(String keyword) {
-        List<PostDocument> documents = postSearchRepository.findByTitleContainingOrContentContainingOrTaggingContaining(keyword, keyword, keyword);
-        return documents.stream().map(document -> {
-                    Post post = postRepository.findById(document.getPostId()).orElseThrow();
-                    List<Tag> tags = post.getTags();
-                    User user = post.getUser();
-                    return PostDTO.Summary.builder()
-                            .postId(post.getPostId())
-                            .title(post.getTitle())
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .nickname(user.getNickname())
-                            .status(post.getStatus())
-                            .lastModifiedAt(post.getLastModifiedAt())
-                            .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                            .likes(post.getLikes().size())
-                            .build();
-                }
-        ).toList();
-    }
-
-    public void deletePost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        PostDocument postDocument = postSearchRepository.findById(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
-
+    @Transactional
+    public void deletePost(Long userId, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
+        user.unposting(postId);
+        userRepository.save(user);
         postRepository.delete(post);
-        postSearchRepository.delete(postDocument);
-
     }
 
-    public void updatePost(Long postId, PostDTO.Update update) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new GlobalException("Post does not exist"));
-        User user = post.getUser();
-        PostDocument postDocument = postSearchRepository.findByPostId(post.getPostId()).orElseThrow(() -> new GlobalException("Post does not exist"));
+    @Transactional
+    public void updatePost(Long postId, Long userId, PostDTO.Update update) throws IOException {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
         post.updatePost(update.getTitle(), update.getContent());
-        post.removeTagAll();
-        post.addTagAll(update.getTags());
+        if(update.getTags() != null) {
+            post.removeTagAll();
+            post.addTagAll(update.getTags());
+        }
         post.updateStatus(update.getStatus());
+        String commitMessage = update.getCommitMessage() == null || update.getCommitMessage().isEmpty() ? "Commit" : update.getCommitMessage();
         if (update.getFile() != null) {
             int nextVersion = post.getNextModelVersion();
-            String newFileUrl = generateFileUrl(update.getFile());
+            String newFileName = fileService.saveFileStorage(update.getFile(), FileService.Extension.GLB);
             Model newModel = Model.builder()
                     .post(post)
                     .version(nextVersion)
-                    .fileUrl(newFileUrl)
-                    .commitMessage(update.getCommitMessage())
+                    .fileName(newFileName)
+                    .commitMessage(commitMessage)
                     .build();
             post.addModel(newModel);
         }
-
-        postDocument.setContent(update.getContent());
-        postDocument.setTitle(update.getTitle());
-        postDocument.setTagging(String.join(" ", update.getTags()));
-
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
-
+        post.updateModifiedAt();
         postRepository.save(post);
-        postSearchRepository.save(postDocument);
         userRepository.save(user);
-
-    }
-
-
-    public Resource getFileResource(String fileUrl) {
-        Blob blob = storage.get(bucketName, fileUrl);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        blob.downloadTo(outputStream);
-
-        return new ByteArrayResource(outputStream.toByteArray());
-    }
-
-    private String generateFileUrl(MultipartFile file) throws IOException {
-        String uuid = UUID.randomUUID().toString();
-        String fileName = uuid + ".glb";
-
-        storage.create(
-                BlobInfo.newBuilder(bucketName, fileName).build(),
-                file.getBytes()
-        );
-
-        return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
 
     }
 

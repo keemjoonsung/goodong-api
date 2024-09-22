@@ -1,5 +1,7 @@
 package com.kjs990114.goodong.presentation.dto;
 
+import com.kjs990114.goodong.domain.user.Contribution;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -8,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,6 +48,7 @@ public class UserDTO {
     }
     //유저 상세 정보
     @Getter
+    @Setter
     @Builder
     @AllArgsConstructor
     public static class UserDetail {
@@ -52,9 +56,12 @@ public class UserDTO {
         private String email;
         private String nickname;
         private String profileImage;
-        private int followerCount;
-        private int followingCount;
-        private List<UserContribution> userContributions;
+        @Builder.Default
+        private int followerCount = 0;
+        @Builder.Default
+        private int followingCount = 0;
+        @Builder.Default
+        private Boolean followed = false;
     }
 
     @Getter
@@ -68,6 +75,13 @@ public class UserDTO {
     @Getter
     @Setter
     @AllArgsConstructor
+    public static class UserContributionList {
+        List<Contribution> contributions;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
     public static class UserContribution {
         LocalDate date;
         int count;
@@ -75,14 +89,9 @@ public class UserDTO {
 
     @Getter
     @Setter
-    public static class UpdateNickname {
+    public static class UpdateUser {
+        private MultipartFile profileImage;
         private String nickname;
-    }
-    
-    @Getter
-    @Setter
-    public static class UpdateProfileImage {
-        private String profileImage;
     }
 
     @Getter

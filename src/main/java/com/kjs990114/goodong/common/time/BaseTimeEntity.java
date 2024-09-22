@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.common.time;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -15,8 +16,14 @@ import java.time.LocalDateTime;
 public abstract class BaseTimeEntity {
 
     @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
+    @Column(nullable = false)
     private LocalDateTime lastModifiedAt;
+
+    public void updateModifiedAt(){
+        this.lastModifiedAt = LocalDateTime.now();
+    }
 }

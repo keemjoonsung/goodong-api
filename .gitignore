@@ -6,7 +6,6 @@ build/
 !**/src/test/**/build/
 .DS_Store
 application-local.properties
-README.md
 
 ### STS ###
 .apt_generated

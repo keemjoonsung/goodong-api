@@ -1,12 +1,11 @@
 package com.kjs990114.goodong.application.auth;
 
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserAuthService {
 
@@ -33,6 +32,7 @@ public class UserAuthService {
 
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$";
 
+    @Transactional(readOnly = true)
     public String login(UserDTO.Login login) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
@@ -45,9 +45,10 @@ public class UserAuthService {
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
-        return jwtUtil.createJwt(login.getEmail(),nickname, role,60*60*60*60*60*10L);
+        return jwtUtil.createJwt(login.getEmail(), nickname, role, 60 * 60 * 60 * 60 * 60 * 10L);
     }
 
+    @Transactional
     public void register(UserDTO.Register register) {
 
         User user = User.builder()
@@ -59,31 +60,33 @@ public class UserAuthService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public UserDTO.UserSummary getUserInfo(String token) {
-        User user =userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(()-> new GlobalException("User does not exists"));
-        return new UserDTO.UserSummary(user.getUserId(),user.getEmail(),user.getNickname(),user.getProfileImage());
+        User user = userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(() -> new NotFoundException("User session Expired!"));
+        return new UserDTO.UserSummary(user.getUserId(), user.getEmail(), user.getNickname(), user.getProfileImage());
     }
 
+    @Transactional
     public void changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         user.changePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public boolean isEmailDuplicated(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
-
+    @Transactional(readOnly = true)
     public boolean isNicknameDuplicated(String nickname) {
         return userRepository.findByNickname(nickname).isPresent();
     }
-
+    @Transactional(readOnly = true)
     public boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
     }
-
 
 
 }

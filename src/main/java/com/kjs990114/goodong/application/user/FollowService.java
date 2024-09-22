@@ -1,27 +1,28 @@
 package com.kjs990114.goodong.application.user;
 
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.Follow;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
-import com.kjs990114.goodong.presentation.endpoint.FollowEndpoint;
-import jakarta.transaction.Transactional;
+import com.kjs990114.goodong.presentation.endpoint.user.FollowEndpoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Set;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class FollowService {
 
     private final UserRepository userRepository;
 
-    public void follow(Long followeeId, Long followerId){
-        User follower = userRepository.findById(followerId).orElseThrow(()-> new GlobalException("User does not exists"));
-        User followee = userRepository.findById(followeeId).orElseThrow(()-> new GlobalException("User does not exists"));
+    @Transactional
+
+    public void follow(Long followeeId, Long followerId) {;
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User followee = userRepository.findById(followeeId).orElseThrow(() -> new NotFoundException("User does not exists"));
         Follow follow = Follow.builder()
                 .follower(follower)
                 .followee(followee)
@@ -33,10 +34,10 @@ public class FollowService {
         userRepository.save(followee);
     }
 
-    public void unfollow(Long followeeId, Long followerId){
-        User follower = userRepository.findById(followerId).orElseThrow(()-> new GlobalException("User does not exists"));
-        User followee = userRepository.findById(followeeId).orElseThrow(()-> new GlobalException("User does not exists"));
-
+    @Transactional
+    public void unfollow(Long followeeId, Long followerId) {
+        User follower = userRepository.findById(followerId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User followee = userRepository.findById(followeeId).orElseThrow(() -> new NotFoundException("User does not exists"));
         follower.unfollow(followeeId);
         followee.deleteFollower(followerId);
         userRepository.save(follower);
@@ -44,10 +45,42 @@ public class FollowService {
 
     }
 
-    public List<UserDTO.UserSummary> getFollow(Long userId, FollowEndpoint.FollowType type){
-        User user = userRepository.findById(userId).orElseThrow(()-> new GlobalException("User does not exists"));
+    @Transactional(readOnly = true)
+    public List<UserDTO.UserSummary> getFollowings(Long userId) {
+        return getFollow(userId, FollowEndpoint.FollowType.FOLLOWING);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDTO.UserSummary> getFollowers(Long userId) {
+        return getFollow(userId, FollowEndpoint.FollowType.FOLLOWER);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isFollowing(Long userId, Long myId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User me = userRepository.findById(myId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        return user.getFollowers().stream().anyMatch(follow ->
+                follow.getFollower().getUserId().equals(me.getUserId())
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public int getFollowerCount(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        return user.getFollowers().size();
+    }
+
+    @Transactional(readOnly = true)
+    public int getFollowingCount(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        return user.getFollowings().size();
+    }
+
+
+    private List<UserDTO.UserSummary> getFollow(Long userId, FollowEndpoint.FollowType type) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         List<UserDTO.UserSummary> response;
-        if(type == FollowEndpoint.FollowType.FOLLOWER){ //팔로워
+        if (type == FollowEndpoint.FollowType.FOLLOWER) { //팔로워
             Set<Follow> followers = user.getFollowers();
             response = followers.stream().map(f -> {
                 User follower = f.getFollower();
@@ -58,7 +91,7 @@ public class FollowService {
                         .profileImage(follower.getProfileImage())
                         .build();
             }).toList();
-        }else{ // 팔로잉
+        } else { // 팔로잉
             Set<Follow> followings = user.getFollowings();
             response = followings.stream().map(following -> {
                 User followee = following.getFollowee();
@@ -74,4 +107,4 @@ public class FollowService {
         }
         return response;
     }
- }
+}

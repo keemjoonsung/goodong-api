@@ -18,17 +18,20 @@ public class PostDTO {
 
     @Getter
     @Builder
+    @Setter
     public static class Create{
         private String title;
         private String content;
         private MultipartFile file;
         private Post.PostStatus status;
+        private String commitMessage;
         @Builder.Default
         private List<String> tags = new ArrayList<>();
     }
 
     @Getter
     @Builder
+    @Setter
     public static class Update{
         private String title;
         private String content;
@@ -54,6 +57,7 @@ public class PostDTO {
     }
 
     @Getter
+    @Setter
     @Builder
     public static class PostDetail {
         private Long postId;
@@ -69,9 +73,12 @@ public class PostDTO {
         private List<String> tags;
         private List<CommentInfo> comments;
         private Integer likes;
+        @Builder.Default
+        private Boolean liked = false;
     }
     @Getter
     @Builder
+    @Setter
     public static class CommentInfo {
         private Long commentId;
         private Long userId;
@@ -92,16 +99,10 @@ public class PostDTO {
     @Builder
     public static class ModelInfo {
         private Integer version;
-        private String fileUrl;
+        private String fileName;
         private String commitMessage;
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class File {
-        private MultipartFile file;
-    }
 
     @Getter
     @Setter
@@ -110,7 +111,14 @@ public class PostDTO {
         private String title;
         private String description;
         private List<String> tags;
+    }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class PostInfo {
+        private Post.PostStatus status;
+        private Long userId;
     }
 
 }

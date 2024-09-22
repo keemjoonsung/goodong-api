@@ -1,55 +1,77 @@
 package com.kjs990114.goodong.application.user;
 
-import com.kjs990114.goodong.common.exception.GlobalException;
+import com.kjs990114.goodong.application.file.FileService;
+import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+import java.util.List;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FileService fileService;
+    @Value("${spring.cloud.gcp.storage.path}")
+    private String storagePath;
 
+    @Transactional(readOnly = true)
     public UserDTO.UserDetail getUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        int followingCount = user.getFollowings().size();
-        int followerCount = user.getFollowers().size();
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
 
         return UserDTO.UserDetail.builder()
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
-                .followerCount(followerCount)
-                .followingCount(followingCount)
-                .userContributions(user.getContributions().stream()
-                        .map(cont ->
-                                new UserDTO.UserContribution(cont.getDate(), cont.getCount())
-                        ).toList())
                 .build();
     }
 
-    public void updateUserNickname(Long userId, String nickname) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        user.updateNickname(nickname);
-        userRepository.save(user);
 
+    @Transactional
+    public void updateUserProfile(Long userId, UserDTO.UpdateUser update) throws IOException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        if (update.getNickname() != null) {
+            updateUserNickname(user, update.getNickname());
+        }
+        if (update.getProfileImage() != null) {
+            MultipartFile file = update.getProfileImage();
+            String fileName = fileService.saveFileStorage(file, FileService.Extension.PNG);
+            String profileImageUrl = storagePath + fileName;
+            updateProfileImage(user, profileImageUrl);
+        }
+        userRepository.save(user);
     }
 
-    public void updateProfileImage(Long userId,String profileImageUrl) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
-        user.updateProfileImage(profileImageUrl);
-        userRepository.save(user);
-    }
-
+    @Transactional
     public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new GlobalException("User does not exists"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         userRepository.delete(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDTO.UserContribution> getContributionList(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        return user.getContributions().stream().map(
+                contribution -> new UserDTO.UserContribution(contribution.getDate(), contribution.getCount())
+        ).toList();
+    }
+
+    private void updateProfileImage(User user, String profileImageUrl) {
+        user.updateProfileImage(profileImageUrl);
+    }
+
+    private void updateUserNickname(User user, String nickname) {
+        user.updateNickname(nickname);
     }
 
 }

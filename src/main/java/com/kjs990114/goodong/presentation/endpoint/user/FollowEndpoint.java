@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.presentation.endpoint;
+package com.kjs990114.goodong.presentation.endpoint.user;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.user.FollowService;
@@ -27,7 +27,7 @@ public class FollowEndpoint {
     }
 
     // 언팔로우
-    @DeleteMapping()
+    @DeleteMapping
     public CommonResponseEntity<String> unfollowUser(@RequestParam("userId") Long userId,
                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long followerId = userAuthService.getUserInfo(token).getUserId();
@@ -39,11 +39,15 @@ public class FollowEndpoint {
     @GetMapping
     public CommonResponseEntity<List<UserDTO.UserSummary>> getFollowInfo(@RequestParam("userId") Long userId,
                                                              @RequestParam("type") FollowType type) {
-        if(type != FollowType.FOLLOWING && type != FollowType.FOLLOWER ) {
-            return new CommonResponseEntity<>(400, "Invalid type parameter");
+        if(type == FollowType.FOLLOWING) {
+            return new CommonResponseEntity<>(followService.getFollowings(userId));
+        }else if(type == FollowType.FOLLOWER) {
+            return new CommonResponseEntity<>(followService.getFollowers(userId));
         }
-        return new CommonResponseEntity<>(followService.getFollow(userId, type));
+        return new CommonResponseEntity<>(400, "Invalid type parameter");
+
     }
+
 
     public enum FollowType {
         FOLLOWING,

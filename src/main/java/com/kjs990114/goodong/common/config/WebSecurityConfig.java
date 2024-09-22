@@ -2,8 +2,6 @@ package com.kjs990114.goodong.common.config;
 
 import com.kjs990114.goodong.common.jwt.filter.jwtFilter;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +29,6 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        //csrf disable
         http
                 .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
 

@@ -1,8 +1,8 @@
 ## goodong : Graduation Project - SKKU 2024
 
 3D model repository web - combine with Blender Add-on (https://github.com/kjs990114/goodong-blender-addon)<br>
-AI-based Export & Import 3D model<br>
-AI-based posting
+Blender Export and Import 3D model via website<br>
+AI-based posting (auto generate title, description and tags)
 
   
   <br>
@@ -47,10 +47,17 @@ images will be uploaded soon
 
 2024.07.21 - deploy backend using Google Cloud Platform (cloud run, cloud build, cloud sql, cloude storage bucket), and CI / CD
 
+2024.09.05 - User can comment posts, like posts, follow users
+
+2024.09.08 - Version control of Repository
+
+2024.09.10 - User can generate title, contents and tags automatically with Gemini API
+
 <br>
 
 ## Structure
-![스크린샷 2024-06-05 오후 11 14 18](https://github.com/kjs990114/goodong/assets/50402527/dba6201a-1152-4da4-94fe-890a1e06c1eb)
+![제목 없는 다이어그램 drawio (1)](https://github.com/user-attachments/assets/23f6d149-7e3c-437d-89c5-8a17c74aff60)
+
 
 <br>
 
@@ -70,13 +77,19 @@ images will be uploaded soon
 
 ## Technical Stacks
 
-frontend - React.js , Axios
+frontend - React.js , Axios , Three.js
 
-backend - Spring boot , JPA
+backend - Spring boot , JPA/Hibernate
 
-db - MySQL
+databse - MySQL
 
 security - Spring Security, JWT
 
-api - OpenAI API
+api - Google Vertex AI (Gemini 1.5 flash)
 
+infrastructure - Google Cloud Platform
+
+<br>
+
+## ERD
+[ERD CLOUD](https://www.erdcloud.com/d/M9LBJgsyBpjDeoR3r)
