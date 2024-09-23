@@ -4,7 +4,6 @@ import com.kjs990114.goodong.application.auth.UserAuthService;
 import com.kjs990114.goodong.application.user.FollowService;
 import com.kjs990114.goodong.application.user.UserService;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
-import com.kjs990114.goodong.domain.user.repository.UserRepository;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;

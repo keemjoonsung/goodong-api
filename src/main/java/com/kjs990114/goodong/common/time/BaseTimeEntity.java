@@ -23,7 +23,18 @@ public abstract class BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime lastModifiedAt;
 
+    @Column
+    private LocalDateTime deletedAt;
+
     public void updateModifiedAt(){
         this.lastModifiedAt = LocalDateTime.now();
+    }
+
+    public void softDelete(){
+        deletedAt = LocalDateTime.now();
+    }
+
+    public void undoDelete(){
+        deletedAt = null;
     }
 }

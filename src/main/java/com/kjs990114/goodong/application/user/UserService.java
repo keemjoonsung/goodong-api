@@ -3,7 +3,7 @@ package com.kjs990114.goodong.application.user;
 import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.domain.user.repository.UserRepository;
+import com.kjs990114.goodong.domain.user.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +26,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDTO.UserDetail getUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
 
         return UserDTO.UserDetail.builder()
                 .userId(user.getUserId())
@@ -39,7 +39,7 @@ public class UserService {
 
     @Transactional
     public void updateUserProfile(Long userId, UserDTO.UpdateUser update) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         if (update.getNickname() != null) {
             updateUserNickname(user, update.getNickname());
         }
@@ -54,13 +54,14 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
-        userRepository.delete(user);
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        user.softDelete();
+        userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
     public List<UserDTO.UserContribution> getContributionList(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getContributions().stream().map(
                 contribution -> new UserDTO.UserContribution(contribution.getDate(), contribution.getCount())
         ).toList();

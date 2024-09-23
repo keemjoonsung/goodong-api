@@ -4,7 +4,7 @@ import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.domain.user.repository.UserRepository;
+import com.kjs990114.goodong.domain.user.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +34,7 @@ public class UserAuthService {
 
     @Transactional(readOnly = true)
     public String login(UserDTO.Login login) {
+        System.out.println("로그인 시도");
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -45,6 +46,7 @@ public class UserAuthService {
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
+        System.out.println("로그인성공");
         return jwtUtil.createJwt(login.getEmail(), nickname, role, 60 * 60 * 60 * 60 * 60 * 10L);
     }
 
@@ -68,7 +70,7 @@ public class UserAuthService {
 
     @Transactional
     public void changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         user.changePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }

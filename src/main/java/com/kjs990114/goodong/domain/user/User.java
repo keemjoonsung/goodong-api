@@ -141,7 +141,6 @@ public class User extends BaseTimeEntity {
         } else {
             contributions.add(contribution);
         }
-
     }
 
 }

@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.common.userdetails;
 
 import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.domain.user.repository.UserRepository;
+import com.kjs990114.goodong.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

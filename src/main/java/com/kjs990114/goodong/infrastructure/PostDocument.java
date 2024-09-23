@@ -17,6 +17,7 @@ public class PostDocument {
     @Id
     private String id;
 
+    @Field(name = "post_id")
     private Long postId;
 
     @Field(type = FieldType.Text, analyzer = "standard")

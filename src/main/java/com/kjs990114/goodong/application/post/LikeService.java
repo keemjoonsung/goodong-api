@@ -4,9 +4,9 @@ import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.domain.post.Like;
 import com.kjs990114.goodong.domain.post.Post;
-import com.kjs990114.goodong.domain.post.repository.PostRepository;
+import com.kjs990114.goodong.domain.post.PostRepository;
 import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.domain.user.repository.UserRepository;
+import com.kjs990114.goodong.domain.user.UserRepository;
 
 import com.kjs990114.goodong.presentation.dto.DTOMapper;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
@@ -26,8 +26,8 @@ public class LikeService {
     @Transactional
 
     public void likePost(Long postId, Long likerId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
-        User user = userRepository.findById(likerId).orElseThrow(() -> new NotFoundException("User does not exist"));
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findByUserId(likerId).orElseThrow(() -> new NotFoundException("User does not exist"));
 
         if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
             if (!post.getUser().getUserId().equals(user.getUserId())) {
@@ -48,8 +48,8 @@ public class LikeService {
     @Transactional
 
     public void unlikePost(Long postId, Long likerId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
-        User user = userRepository.findById(likerId).orElseThrow(() -> new NotFoundException("User does not exist"));
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = userRepository.findByUserId(likerId).orElseThrow(() -> new NotFoundException("User does not exist"));
 
         if (post.getStatus().equals(Post.PostStatus.PRIVATE)) {
             if (!post.getUser().getUserId().equals(user.getUserId())) {
@@ -69,7 +69,7 @@ public class LikeService {
 
     @Transactional(readOnly = true)
     public boolean isLiked(Long postId, Long likerId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         return post.getLikes().stream().anyMatch(like ->
                 like.getUser().getUserId().equals(likerId));
     }
@@ -77,13 +77,13 @@ public class LikeService {
 
     @Transactional(readOnly = true)
     public int getLikesCount(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         return post.getLikes().size();
     }
 
     @Transactional(readOnly = true)
     public List<PostDTO.Summary> getLikedPosts(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return user.getLikes().stream()
                 .sorted(Comparator.comparing(Like::getCreatedAt))
                 .map(Like::getPost).toList().stream()

@@ -65,7 +65,7 @@ public class PostEndpoint {
         if (!userId.equals(postService.getPost(postId).getUserId())) {
             throw new UnAuthorizedException("UnAuthorized Exception");
         }
-        postService.updatePost(postId, userId, postDTO);
+        postService.updatePost(postId, postDTO);
         return new CommonResponseEntity<>("Update success");
     }
 
@@ -77,7 +77,7 @@ public class PostEndpoint {
         if (!userId.equals(postService.getPost(postId).getUserId())) {
             throw new UnAuthorizedException("UnAuthorized Exception");
         }
-        postService.deletePost(userId, postId);
+        postService.deletePost(postId);
         return new CommonResponseEntity<>("Delete success");
     }
 

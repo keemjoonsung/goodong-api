@@ -5,10 +5,10 @@ import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.post.*;
-import com.kjs990114.goodong.domain.post.repository.PostRepository;
+import com.kjs990114.goodong.domain.post.PostRepository;
 import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.domain.user.repository.UserRepository;
+import com.kjs990114.goodong.domain.user.UserRepository;
 import com.kjs990114.goodong.infrastructure.PostDocument;
 import com.kjs990114.goodong.presentation.dto.DTOMapper;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
@@ -38,7 +38,7 @@ public class PostService {
 
     @Transactional
     public void createPost(PostDTO.Create create, Long userId) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         Contribution contribution = new Contribution();
         contribution.setUser(user);
         user.updateContribution(contribution);
@@ -68,7 +68,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Boolean checkDuplicatedTitle(String title, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
         return user.getPosts().stream()
                 .anyMatch(post -> post.getTitle().equalsIgnoreCase(title));
     }
@@ -88,13 +88,14 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostDTO.PostDetail getPost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return DTOMapper.postToDetail(post);
     }
 
     @Transactional(readOnly = true)
     public Page<PostDTO.Summary> searchPosts(String keyword, int page) {
         Pageable pageable = PageRequest.of(page,pageSize);
+
         NativeQuery searchQuery = NativeQuery.builder()
                 .withQuery(query -> query
                         .bool(bool -> bool
@@ -118,18 +119,19 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(Long userId, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
+    public void deletePost(Long postId) {
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = post.getUser();
         user.unposting(postId);
+        post.softDelete();
         userRepository.save(user);
-        postRepository.delete(post);
+        postRepository.save(post);
     }
 
     @Transactional
-    public void updatePost(Long postId, Long userId, PostDTO.Update update) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User does not exist"));
+    public void updatePost(Long postId, PostDTO.Update update) throws IOException {
+        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
+        User user = post.getUser();
         post.updatePost(update.getTitle(), update.getContent());
         if(update.getTags() != null) {
             post.removeTagAll();
