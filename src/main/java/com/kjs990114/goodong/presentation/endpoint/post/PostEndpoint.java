@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,29 +35,40 @@ public class PostEndpoint {
         postService.createPost(create, userId);
         return new CommonResponseEntity<>("Post created successfully");
     }
+
     //내 포스트
     @GetMapping
     public CommonResponseEntity<Page<PostDTO.Summary>> getMyPosts(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token,
-                                                                    @RequestParam(name = "page", defaultValue = "0") int page) {
+                                                                  @RequestParam(name = "page", defaultValue = "0") int page) {
         Long userId = userAuthService.getUserInfo(token).getUserId();
-        Page<PostDTO.Summary> response = postService.getPosts(userId,userId,page);
+        Page<PostDTO.Summary> response = postService.getPosts(userId, userId, page);
         return new CommonResponseEntity<>(response);
     }
+
     // 유저의 posts
     @GetMapping(params = "userId")
     public CommonResponseEntity<Page<PostDTO.Summary>> getUserPosts(@RequestParam(name = "userId") Long userId,
                                                                     @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token,
                                                                     @RequestParam(name = "page", defaultValue = "0") int page) {
         Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
-        Page<PostDTO.Summary> response = postService.getPosts(userId,viewerId,page);
+        Page<PostDTO.Summary> response = postService.getPosts(userId, viewerId, page);
         return new CommonResponseEntity<>(response);
     }
+
     // posts 검색
     @GetMapping(params = "query")
     public CommonResponseEntity<Page<PostDTO.Summary>> searchPosts(@RequestParam("query") String keyword,
                                                                    @RequestParam(name = "page", defaultValue = "0") int page) {
-        return new CommonResponseEntity<>(postService.searchPosts(keyword,page));
+        return new CommonResponseEntity<>(postService.searchPosts(keyword, page));
     }
+
+    @GetMapping("/all")
+    public CommonResponseEntity<List<PostDTO.Summary>> getUserPosts(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        Long viewerId = userAuthService.getUserInfo(token).getUserId();
+        List<PostDTO.Summary> response = postService.getMyPosts(viewerId);
+        return new CommonResponseEntity<>(response);
+    }
+
     // 게시글 Update
     @PatchMapping("/{postId}")
     public CommonResponseEntity<Void> updatePost(@PathVariable("postId") Long postId,
@@ -98,6 +111,7 @@ public class PostEndpoint {
         postDetail.setComments(commentService.getComments(postId));
         return new CommonResponseEntity<>(postDetail);
     }
+
     //중복체크
     @GetMapping("/check-title")
     public CommonResponseEntity<Boolean> isDuplicateTitle(@RequestParam("title") String title,

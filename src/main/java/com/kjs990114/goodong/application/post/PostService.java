@@ -72,7 +72,11 @@ public class PostService {
         return user.getPosts().stream()
                 .anyMatch(post -> post.getTitle().equalsIgnoreCase(title));
     }
-
+    @Transactional(readOnly = true)
+    public List<PostDTO.Summary> getMyPosts(Long userId){
+        List<Post> post = postRepository.findUserPostsAll(userId);
+        return post.stream().map(DTOMapper::postToSummary).toList();
+    }
     @Transactional(readOnly = true)
     public PostDTO.PostInfo getPost(String fileName){
         Post post = postRepository.findPostIdByFileName(fileName).orElseThrow(()->new NotFoundException("Model does not exist"));

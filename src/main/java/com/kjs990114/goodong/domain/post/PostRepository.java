@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,4 +23,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM post p WHERE p.postId = :postId AND p.deletedAt IS NULL")
     Optional<Post> findByPostId(@Param("postId") Long postId);
 
+    @Query("SELECT p FROM post p WHERE p.user.userId = :userId AND p.deletedAt IS NULL")
+    List<Post> findUserPostsAll(@Param("userId") Long userId);
 }
