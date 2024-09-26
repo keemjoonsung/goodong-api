@@ -121,4 +121,12 @@ public class PostDTO {
         private Long userId;
     }
 
+    @Data
+    @Builder
+    @AllArgsConstructor
+    public static class files {
+        private MultipartFile file;
+        private MultipartFile fileGlb;
+    }
+
 }

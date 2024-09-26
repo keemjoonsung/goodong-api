@@ -25,11 +25,12 @@ public class AiEndpoint {
     public CommonResponseEntity<PostDTO.AiResponse> aiService(
             @RequestParam(defaultValue = "false") Boolean autoCreate,
             @RequestParam(defaultValue = "PUBLIC") String status,
-            @RequestBody MultipartFile file,
-            @RequestBody MultipartFile fileGlb,
+            PostDTO.files files,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token
     ) throws Exception{
-        List<String> response = aiService.getDescription(file);
+        MultipartFile filePng = files.getFile();
+        MultipartFile fileGlb = files.getFileGlb();
+        List<String> response = aiService.getDescription(filePng);
         PostDTO.AiResponse aiResponse = new PostDTO.AiResponse(response.get(0), response.get(1), List.of(response.get(2).split(",")));
         if(autoCreate) {
             Long userId = userAuthService.getUserInfo(token).getUserId();
