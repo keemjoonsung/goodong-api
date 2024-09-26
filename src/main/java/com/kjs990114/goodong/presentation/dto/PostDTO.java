@@ -24,8 +24,6 @@ public class PostDTO {
         private String content;
         private MultipartFile file;
         private Post.PostStatus status;
-        @NotBlank(message = "Email cannot be blank")
-        private String commitMessage;
         @Builder.Default
         private List<String> tags = new ArrayList<>();
     }
@@ -34,9 +32,12 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     public static class Update{
+        @NotBlank(message = "title cannot be blank")
         private String title;
+        @NotBlank(message = "content cannot be blank")
         private String content;
         private MultipartFile file;
+        @NotBlank(message = "commit message cannot be blank")
         private String commitMessage;
         private Post.PostStatus status;
         @Builder.Default

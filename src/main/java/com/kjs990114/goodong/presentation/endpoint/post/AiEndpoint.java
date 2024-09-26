@@ -40,7 +40,6 @@ public class AiEndpoint {
                             .content(aiResponse.getDescription())
                             .tags(aiResponse.getTags())
                             .file(fileGlb)
-                            .commitMessage("First Commit")
                             .status(Post.PostStatus.valueOf(status))
                             .build()
                     ,userId

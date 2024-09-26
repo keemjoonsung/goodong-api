@@ -51,9 +51,8 @@ public class PostService {
                 .build();
 
         String fileName = fileService.saveFileStorage(create.getFile(), FileService.Extension.GLB);
-        String commitMsg = create.getCommitMessage() == null || create.getCommitMessage().isBlank()? "Commit" : create.getCommitMessage();
         Model newModel = Model.builder()
-                .commitMessage(commitMsg)
+                .commitMessage("First Commit")
                 .post(newPost)
                 .fileName(fileName)
                 .version(1)
