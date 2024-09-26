@@ -10,15 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Getter
-@NoArgsConstructor
-@Builder
 public class PostDTO {
 
 
-    @Getter
+    @Data
     @Builder
-    @Setter
+    @AllArgsConstructor
     public static class Create{
         private String title;
         private String content;
@@ -29,9 +26,9 @@ public class PostDTO {
         private List<String> tags = new ArrayList<>();
     }
 
-    @Getter
+    @Data
     @Builder
-    @Setter
+    @AllArgsConstructor
     public static class Update{
         private String title;
         private String content;
@@ -42,8 +39,9 @@ public class PostDTO {
         private List<String> tags = new ArrayList<>();
     }
 
-    @Getter
+    @Data
     @Builder
+    @AllArgsConstructor
     public static class Summary {
         private Long postId;
         private String title;
@@ -56,9 +54,9 @@ public class PostDTO {
         private Integer likes;
     }
 
-    @Getter
-    @Setter
+    @Data
     @Builder
+    @AllArgsConstructor
     public static class PostDetail {
         private Long postId;
         private String title;
@@ -76,9 +74,10 @@ public class PostDTO {
         @Builder.Default
         private Boolean liked = false;
     }
-    @Getter
+
+    @Data
     @Builder
-    @Setter
+    @AllArgsConstructor
     public static class CommentInfo {
         private Long commentId;
         private Long userId;
@@ -88,13 +87,14 @@ public class PostDTO {
         private LocalDateTime createdAt;
         private LocalDateTime lastModifiedAt;
     }
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
+
+    @Data
     @Builder
+    @AllArgsConstructor
     public static class PostComment {
         private String content;
     }
+
     @Getter
     @Builder
     public static class ModelInfo {
@@ -104,8 +104,8 @@ public class PostDTO {
     }
 
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
     @AllArgsConstructor
     public static class AiResponse {
         private String title;
@@ -113,8 +113,8 @@ public class PostDTO {
         private List<String> tags;
     }
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
     @AllArgsConstructor
     public static class PostInfo {
         private Post.PostStatus status;

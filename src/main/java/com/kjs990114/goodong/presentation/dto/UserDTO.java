@@ -1,15 +1,11 @@
 package com.kjs990114.goodong.presentation.dto;
 
 import com.kjs990114.goodong.domain.user.Contribution;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -17,8 +13,8 @@ import java.util.List;
 
 public class UserDTO {
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
     @AllArgsConstructor
     public static class Register {
         @Email(message = "Invalid email format")  // 이메일 형식 검사
@@ -37,7 +33,7 @@ public class UserDTO {
         private String nickname;
     }
 
-    @Getter
+    @Data
     @Builder
     @AllArgsConstructor
     public static class UserSummary {
@@ -47,8 +43,7 @@ public class UserDTO {
         private String profileImage;
     }
     //유저 상세 정보
-    @Getter
-    @Setter
+    @Data
     @Builder
     @AllArgsConstructor
     public static class UserDetail {
@@ -64,38 +59,39 @@ public class UserDTO {
         private Boolean followed = false;
     }
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
     @AllArgsConstructor
     public static class Login {
         private String email;
         private String password;
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
+    @Data
+    @Builder
     public static class UserContributionList {
         List<Contribution> contributions;
     }
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
     @AllArgsConstructor
     public static class UserContribution {
         LocalDate date;
         int count;
     }
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
+    @AllArgsConstructor
     public static class UpdateUser {
         private MultipartFile profileImage;
         private String nickname;
     }
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
+    @AllArgsConstructor
     public static class Password{
         private String password;
     }
