@@ -2,6 +2,7 @@ package com.kjs990114.goodong.presentation.dto;
 
 
 import com.kjs990114.goodong.domain.post.Post;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,10 +18,13 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     public static class Create{
+        @NotBlank(message = "title cannot be blank")
         private String title;
+        @NotBlank(message = "Content cannot be blank")
         private String content;
         private MultipartFile file;
         private Post.PostStatus status;
+        @NotBlank(message = "Email cannot be blank")
         private String commitMessage;
         @Builder.Default
         private List<String> tags = new ArrayList<>();

@@ -9,6 +9,7 @@ import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +30,7 @@ public class PostEndpoint {
 
     //포스트 생성
     @PostMapping
-    public CommonResponseEntity<Void> createPost(PostDTO.Create create,
+    public CommonResponseEntity<Void> createPost(@Valid PostDTO.Create create,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
         Long userId = userAuthService.getUserInfo(token).getUserId();
         postService.createPost(create, userId);
