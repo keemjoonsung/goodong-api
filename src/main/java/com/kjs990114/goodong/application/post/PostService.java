@@ -92,17 +92,17 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public RestPage<PostDTO.Summary> getPosts(Long userId, int page, boolean isMyPosts) {
-        HashOperations<String, String, RestPage<PostDTO.Summary>> hashOp = redisTemplate.opsForHash();
-        String key = cacheName + ":" + userId;
-        String hashKey = page + ":" + isMyPosts;
-        RestPage<PostDTO.Summary> cachedPage = hashOp.get(key, hashKey);
-        if (cachedPage != null) {
-            return cachedPage;
-        }
+//        HashOperations<String, String, RestPage<PostDTO.Summary>> hashOp = redisTemplate.opsForHash();
+//        String key = cacheName + ":" + userId;
+//        String hashKey = page + ":" + isMyPosts;
+//        RestPage<PostDTO.Summary> cachedPage = hashOp.get(key, hashKey);
+//        if (cachedPage != null) {
+//            return cachedPage;
+//        }
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
         Page<Post> entityPage = isMyPosts ? postRepository.findUserPublicAndPrivatePosts(userId, pageable) : postRepository.findUserPublicPosts(userId, pageable);
         RestPage<PostDTO.Summary> dbPage = new RestPage<>(entityPage.map(DTOMapper::postToSummary));
-        hashOp.put(key,hashKey,dbPage);
+//        hashOp.put(key,hashKey,dbPage);
         return dbPage;
     }
 
