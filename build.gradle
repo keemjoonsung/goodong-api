@@ -41,6 +41,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-maven-plugin:3.3.2'
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation platform("org.springframework.ai:spring-ai-bom:0.8.1-SNAPSHOT")
     implementation 'org.springframework.ai:spring-ai-vertex-ai-gemini-spring-boot-starter'
     implementation 'mysql:mysql-connector-java:8.0.32'

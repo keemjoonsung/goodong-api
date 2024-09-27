@@ -12,6 +12,7 @@ import com.kjs990114.goodong.domain.user.UserRepository;
 import com.kjs990114.goodong.infrastructure.PostDocument;
 import com.kjs990114.goodong.presentation.dto.DTOMapper;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
+import com.kjs990114.goodong.presentation.dto.RestPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
@@ -19,8 +20,11 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -28,11 +32,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final JwtUtil jwtUtil;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final FileService fileService;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final String cacheName = "userPosts";
     @Value("${spring.page.size}")
     private int pageSize;
 
@@ -63,6 +68,7 @@ public class PostService {
         user.posting(newPost);
         userRepository.save(user);
         postRepository.save(newPost);
+        redisTemplate.delete(cacheName + ":" + userId);
     }
 
     @Transactional(readOnly = true)
@@ -71,22 +77,33 @@ public class PostService {
         return user.getPosts().stream()
                 .anyMatch(post -> post.getTitle().equalsIgnoreCase(title));
     }
+
     @Transactional(readOnly = true)
-    public List<PostDTO.Summary> getMyPosts(Long userId){
+    public List<PostDTO.Summary> getMyPosts(Long userId) {
         List<Post> post = postRepository.findUserPostsAll(userId);
         return post.stream().map(DTOMapper::postToSummary).toList();
     }
+
     @Transactional(readOnly = true)
-    public PostDTO.PostInfo getPost(String fileName){
-        Post post = postRepository.findPostIdByFileName(fileName).orElseThrow(()->new NotFoundException("Model does not exist"));
-        return new PostDTO.PostInfo(post.getStatus(),post.getUser().getUserId());
+    public PostDTO.PostInfo getPost(String fileName) {
+        Post post = postRepository.findPostIdByFileName(fileName).orElseThrow(() -> new NotFoundException("Model does not exist"));
+        return new PostDTO.PostInfo(post.getStatus(), post.getUser().getUserId());
     }
 
     @Transactional(readOnly = true)
-    public Page<PostDTO.Summary> getPosts(Long userId, Long viewerId, int page){
+    public RestPage<PostDTO.Summary> getPosts(Long userId, int page, boolean isMyPosts) {
+        HashOperations<String, String, RestPage<PostDTO.Summary>> hashOp = redisTemplate.opsForHash();
+        String key = cacheName + ":" + userId;
+        String hashKey = page + ":" + isMyPosts;
+        RestPage<PostDTO.Summary> cachedPage = hashOp.get(key, hashKey);
+        if (cachedPage != null) {
+            return cachedPage;
+        }
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
-        Page<Post> entityPage = postRepository.findUserPosts(userId,viewerId,pageable);
-        return entityPage.map(DTOMapper::postToSummary);
+        Page<Post> entityPage = isMyPosts ? postRepository.findUserPublicAndPrivatePosts(userId, pageable) : postRepository.findUserPublicPosts(userId, pageable);
+        RestPage<PostDTO.Summary> dbPage = new RestPage<>(entityPage.map(DTOMapper::postToSummary));
+        hashOp.put(key,hashKey,dbPage);
+        return dbPage;
     }
 
     @Transactional(readOnly = true)
@@ -97,7 +114,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<PostDTO.Summary> searchPosts(String keyword, int page) {
-        Pageable pageable = PageRequest.of(page,pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize);
 
         NativeQuery searchQuery = NativeQuery.builder()
                 .withQuery(query -> query
@@ -129,6 +146,7 @@ public class PostService {
         post.softDelete();
         userRepository.save(user);
         postRepository.save(post);
+        redisTemplate.delete(cacheName + ":" + user.getUserId());
     }
 
     @Transactional
@@ -136,7 +154,7 @@ public class PostService {
         Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         User user = post.getUser();
         post.updatePost(update.getTitle(), update.getContent());
-        if(update.getTags() != null) {
+        if (update.getTags() != null) {
             post.removeTagAll();
             post.addTagAll(update.getTags());
         }
@@ -159,7 +177,7 @@ public class PostService {
         post.updateModifiedAt();
         postRepository.save(post);
         userRepository.save(user);
-
+        redisTemplate.delete(cacheName + ":" + user.getUserId());
     }
 
 }

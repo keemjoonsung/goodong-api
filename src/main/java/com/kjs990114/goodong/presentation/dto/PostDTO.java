@@ -47,6 +47,7 @@ public class PostDTO {
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Summary {
         private Long postId;
         private String title;
@@ -56,7 +57,7 @@ public class PostDTO {
         private Post.PostStatus status;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
-        private Integer likes;
+        private int likes;
     }
 
     @Data
@@ -75,7 +76,7 @@ public class PostDTO {
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
         private List<CommentInfo> comments;
-        private Integer likes;
+        private int likes;
         @Builder.Default
         private Boolean liked = false;
     }

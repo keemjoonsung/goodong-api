@@ -36,6 +36,7 @@ public class UserDTO {
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class UserSummary {
         private Long userId;
         private String email;
@@ -46,6 +47,7 @@ public class UserDTO {
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class UserDetail {
         private Long userId;
         private String email;

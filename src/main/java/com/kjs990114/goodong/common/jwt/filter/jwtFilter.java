@@ -27,16 +27,15 @@ public class jwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-
         String token= request.getHeader("Authorization");
-        System.out.println("authorization = " + token);
+//        System.out.println("authorization = " + token);
         if (token == null || !token.startsWith("Bearer ")) {
             System.out.println("token null");
             filterChain.doFilter(request, response);
             return;
         }
 
-        System.out.println("authorization now");
+//        System.out.println("authorization now");
 
         if (jwtUtil.isExpired(token)) {
 
@@ -49,9 +48,7 @@ public class jwtFilter extends OncePerRequestFilter {
         String nickname = jwtUtil.getNickname(token);
         String role = jwtUtil.getRole(token);
         String email = jwtUtil.getEmail(token);
-        System.out.println("nickname = " + nickname);
-        System.out.println("role = " + role);
-        System.out.println("email = " + email);
+
         User user = User.builder()
                 .nickname(nickname)
                 .email(email)
@@ -63,7 +60,6 @@ public class jwtFilter extends OncePerRequestFilter {
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
         filterChain.doFilter(request, response);
     }
 }

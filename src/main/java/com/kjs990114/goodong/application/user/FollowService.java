@@ -7,6 +7,8 @@ import com.kjs990114.goodong.domain.user.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import com.kjs990114.goodong.presentation.endpoint.user.FollowEndpoint;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Set;
 public class FollowService {
 
     private final UserRepository userRepository;
+    private final RedisTemplate<String,Object> redisTemplate;
 
     @Transactional
 
@@ -32,6 +35,8 @@ public class FollowService {
         followee.addFollower(follow);
         userRepository.save(follower);
         userRepository.save(followee);
+        redisTemplate.delete("followerCount:" + followeeId);
+        redisTemplate.delete("followingCount:" + followerId);
     }
 
     @Transactional
@@ -42,7 +47,8 @@ public class FollowService {
         followee.deleteFollower(followerId);
         userRepository.save(follower);
         userRepository.save(followee);
-
+        redisTemplate.delete("followerCount:" + followeeId);
+        redisTemplate.delete("followingCount:" + followerId);
     }
 
     @Transactional(readOnly = true)
@@ -57,8 +63,11 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     public boolean isFollowing(Long userId, Long myId) {
+        if(userId.equals(myId)) return false;
+        System.out.println("db접근");
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         User me = userRepository.findByUserId(myId).orElseThrow(() -> new NotFoundException("User does not exists"));
+
         return user.getFollowers().stream().anyMatch(follow ->
                 follow.getFollower().getUserId().equals(me.getUserId())
         );
@@ -66,14 +75,30 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     public int getFollowerCount(Long userId) {
+        ValueOperations<String,Object> valueOps = redisTemplate.opsForValue();
+        String key = "followerCount:" + userId;
+        Integer followerCount = (Integer) valueOps.get(key);
+        if(followerCount != null){
+            return followerCount;
+        }
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
-        return user.getFollowers().size();
+        int count = user.getFollowers().size();
+        valueOps.set(key,count);
+        return count;
     }
 
     @Transactional(readOnly = true)
     public int getFollowingCount(Long userId) {
+        ValueOperations<String,Object> valueOps = redisTemplate.opsForValue();
+        String key = "followingCount:" + userId;
+        Integer followingCount = (Integer) valueOps.get(key);
+        if(followingCount != null){
+            return followingCount;
+        }
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
-        return user.getFollowings().size();
+        int count = user.getFollowings().size();
+        valueOps.set(key,count);
+        return count;
     }
 
 

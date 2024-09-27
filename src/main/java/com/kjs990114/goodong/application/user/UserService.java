@@ -4,12 +4,16 @@ import com.kjs990114.goodong.application.file.FileService;
 import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.UserRepository;
+import com.kjs990114.goodong.presentation.dto.DTOMapper;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.IOException;
 
@@ -21,21 +25,44 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FileService fileService;
+    private final FollowService followService;
+    private final HandlerMapping resourceHandlerMapping;
     @Value("${spring.cloud.gcp.storage.path}")
     private String storagePath;
+    private final RedisTemplate<String,Object> redisTemplate;
+
 
     @Transactional(readOnly = true)
-    public UserDTO.UserDetail getUserInfo(Long userId) {
+    public UserDTO.UserDetail getUserInfoDetail(Long userId) {
+        String key =  "userDetail:" + userId;
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        UserDTO.UserDetail cachedInfo = (UserDTO.UserDetail) valueOperations.get(key);
+        if(cachedInfo != null){
+            System.out.println("유저정보 캐시 히트");
+            return cachedInfo;
+        }
+        System.out.println("유저 정보 캐시 미스");
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
-
-        return UserDTO.UserDetail.builder()
-                .userId(user.getUserId())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .profileImage(user.getProfileImage())
-                .build();
+        UserDTO.UserDetail dbInfo = DTOMapper.userToDetail(user);
+        valueOperations.set(key,dbInfo);
+        return dbInfo;
     }
+    @Transactional(readOnly = true)
+    public UserDTO.UserSummary getUserInfoSummary(Long userId) {
+        ValueOperations<String, Object> valueOp = redisTemplate.opsForValue();
+        String key =   "userSummary:" + userId;
+        UserDTO.UserSummary cachedInfo = (UserDTO.UserSummary) valueOp.get(key);
+        if(cachedInfo != null){
+            System.out.println("유저 header 캐시 히트");
+            return cachedInfo;
+        }
 
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        System.out.println("유저 header 캐시 미스");
+        UserDTO.UserSummary dbInfo = DTOMapper.userToSummary(user);
+        valueOp.set(key,dbInfo);
+        return dbInfo;
+    }
 
     @Transactional
     public void updateUserProfile(Long userId, UserDTO.UpdateUser update) throws IOException {
@@ -50,6 +77,9 @@ public class UserService {
             updateProfileImage(user, profileImageUrl);
         }
         userRepository.save(user);
+        redisTemplate.delete("userSummary:" + userId);
+        redisTemplate.delete("userDetail:" + userId);
+        redisTemplate.delete("userPosts" + userId);
     }
 
     @Transactional
@@ -57,6 +87,9 @@ public class UserService {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         user.softDelete();
         userRepository.save(user);
+        redisTemplate.delete("userSummary:" + userId);
+        redisTemplate.delete("userDetail:" + userId);
+        redisTemplate.delete("userPosts" + userId);
     }
 
     @Transactional(readOnly = true)
@@ -66,6 +99,7 @@ public class UserService {
                 contribution -> new UserDTO.UserContribution(contribution.getDate(), contribution.getCount())
         ).toList();
     }
+
 
     private void updateProfileImage(User user, String profileImageUrl) {
         user.updateProfileImage(profileImageUrl);

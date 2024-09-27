@@ -24,7 +24,7 @@ public class ModelEndpoint {
     public ResponseEntity<Resource> downloadModel(@RequestParam("modelName") String modelName,
                                                   @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
         PostDTO.PostInfo post = postService.getPost(modelName);
-        Long userId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
+        Long userId = token == null ? null : userAuthService.getUserId(token);
         if (((post.getStatus() == Post.PostStatus.PRIVATE) && !(post.getUserId().equals(userId)))) {
             throw new UnAuthorizedException("UnAuthorized Exception");
         }

@@ -13,7 +13,6 @@ public class DTOMapper {
     public static PostDTO.Summary postToSummary(Post post) {
         User user = post.getUser();
         List<Tag> tags = post.getTags();
-
         return PostDTO.Summary.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -23,10 +22,11 @@ public class DTOMapper {
                 .status(post.getStatus())
                 .lastModifiedAt(post.getLastModifiedAt())
                 .tags(tags.stream().map(Tag::getTag).collect(Collectors.toList()))
-                .likes(post.getLikes().size())
+                .likes(post.getLikeCount())
                 .build();
     }
-    public static PostDTO.PostDetail postToDetail(Post post){
+
+    public static PostDTO.PostDetail postToDetail(Post post) {
         List<Model> models = post.getModels();
         User user = post.getUser();
         List<PostDTO.ModelInfo> model = models.stream().map(m ->
@@ -48,7 +48,25 @@ public class DTOMapper {
                 .createdAt(post.getCreatedAt())
                 .lastModifiedAt(post.getLastModifiedAt())
                 .tags(post.getTags().stream().map(Tag::getTag).collect(Collectors.toList()))
-                .likes(post.getLikes().size())
+                .likes(post.getLikeCount())
+                .build();
+    }
+
+    public static UserDTO.UserDetail userToDetail(User user) {
+        return UserDTO.UserDetail.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .build();
+    }
+
+    public static UserDTO.UserSummary userToSummary(User user){
+        return UserDTO.UserSummary.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 }

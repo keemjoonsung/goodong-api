@@ -7,6 +7,8 @@ import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.domain.user.UserRepository;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,7 +31,7 @@ public class UserAuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-
+    private final RedisTemplate<String, Object> redisTemplate;
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$";
 
     @Transactional(readOnly = true)
@@ -62,17 +64,27 @@ public class UserAuthService {
         userRepository.save(user);
     }
 
-    @Transactional(readOnly = true)
-    public UserDTO.UserSummary getUserInfo(String token) {
-        User user = userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(() -> new NotFoundException("User session Expired!"));
-        return new UserDTO.UserSummary(user.getUserId(), user.getEmail(), user.getNickname(), user.getProfileImage());
-    }
 
     @Transactional
     public void changePassword(Long userId, String newPassword) {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         user.changePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public Long getUserId(String token){
+        System.out.println(token);
+        ValueOperations<String,Object> valueOp = redisTemplate.opsForValue();
+        String key = "userToken:"  + token;
+        Object cachedData = valueOp.get(key);
+        if(cachedData != null) {
+            return Long.parseLong(cachedData.toString());
+        }
+        User user = userRepository.findByEmail(jwtUtil.getEmail(token)).orElseThrow(() -> new NotFoundException("User does not exists"));
+        Long dbData = user.getUserId();
+        valueOp.set(key,dbData);
+        return dbData;
     }
 
     @Transactional(readOnly = true)

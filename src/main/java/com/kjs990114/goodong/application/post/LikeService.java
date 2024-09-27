@@ -11,6 +11,7 @@ import com.kjs990114.goodong.domain.user.UserRepository;
 import com.kjs990114.goodong.presentation.dto.DTOMapper;
 import com.kjs990114.goodong.presentation.dto.PostDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class LikeService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final RedisTemplate<String,Object> redisTemplate;
 
     @Transactional
 
@@ -43,10 +45,10 @@ public class LikeService {
         user.like(like);
         postRepository.save(post);
         userRepository.save(user);
+        redisTemplate.delete("userPosts:" + post.getUser().getUserId());
     }
 
     @Transactional
-
     public void unlikePost(Long postId, Long likerId) {
         Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         User user = userRepository.findByUserId(likerId).orElseThrow(() -> new NotFoundException("User does not exist"));
@@ -65,6 +67,7 @@ public class LikeService {
         user.unlike(like);
         postRepository.save(post);
         userRepository.save(user);
+        redisTemplate.delete("userPosts:" + post.getUser().getUserId());
     }
 
     @Transactional(readOnly = true)
@@ -74,12 +77,6 @@ public class LikeService {
                 like.getUser().getUserId().equals(likerId));
     }
 
-
-    @Transactional(readOnly = true)
-    public int getLikesCount(Long postId) {
-        Post post = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
-        return post.getLikes().size();
-    }
 
     @Transactional(readOnly = true)
     public List<PostDTO.Summary> getLikedPosts(Long userId) {

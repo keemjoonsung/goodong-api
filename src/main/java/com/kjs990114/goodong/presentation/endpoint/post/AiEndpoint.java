@@ -33,7 +33,7 @@ public class AiEndpoint {
         List<String> response = aiService.getDescription(filePng);
         PostDTO.AiResponse aiResponse = new PostDTO.AiResponse(response.get(0), response.get(1), List.of(response.get(2).split(",")));
         if(autoCreate) {
-            Long userId = userAuthService.getUserInfo(token).getUserId();
+            Long userId = userAuthService.getUserId(token);
             postService.createPost(
                     PostDTO.Create.builder()
                             .title(aiResponse.getTitle())

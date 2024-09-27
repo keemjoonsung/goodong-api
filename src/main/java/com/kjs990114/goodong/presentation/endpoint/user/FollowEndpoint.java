@@ -21,7 +21,7 @@ public class FollowEndpoint {
     @PostMapping
     public CommonResponseEntity<String> followUser(@RequestParam("userId") Long userId,
                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long followerId = userAuthService.getUserInfo(token).getUserId();
+        Long followerId = userAuthService.getUserId(token);
         followService.follow(userId, followerId);
         return new CommonResponseEntity<>("User followed successfully");
     }
@@ -30,7 +30,7 @@ public class FollowEndpoint {
     @DeleteMapping
     public CommonResponseEntity<String> unfollowUser(@RequestParam("userId") Long userId,
                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long followerId = userAuthService.getUserInfo(token).getUserId();
+        Long followerId = userAuthService.getUserId(token);
         followService.unfollow(userId, followerId);
         return new CommonResponseEntity<>("User unfollowed successfully");
     }

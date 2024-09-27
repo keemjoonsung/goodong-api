@@ -21,7 +21,7 @@ public class LikeEndpoint {
     @PostMapping
     public CommonResponseEntity<Void> likePost(@RequestParam("postId") Long postId,
                                                @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long likerId = userAuthService.getUserInfo(token).getUserId();
+        Long likerId = userAuthService.getUserId(token);
         likeService.likePost(postId, likerId);
         return new CommonResponseEntity<>("Like successfully");
     }
@@ -30,7 +30,7 @@ public class LikeEndpoint {
     @DeleteMapping
     public CommonResponseEntity<Void> unlikePost(@RequestParam("postId") Long postId,
                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long likerId = userAuthService.getUserInfo(token).getUserId();
+        Long likerId = userAuthService.getUserId(token);
         likeService.unlikePost(postId, likerId);
         return new CommonResponseEntity<>("Unlike successfully");
     }

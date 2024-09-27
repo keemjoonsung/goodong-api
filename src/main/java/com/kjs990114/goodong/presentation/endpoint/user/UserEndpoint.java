@@ -26,8 +26,8 @@ public class UserEndpoint {
     @GetMapping("/{userId}")
     public CommonResponseEntity<UserDTO.UserDetail> getUserProfile(@PathVariable("userId") Long userId,
                                                                    @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        Long viewerId = token == null ? null : userAuthService.getUserInfo(token).getUserId();
-        UserDTO.UserDetail userDetail = userService.getUserInfo(userId);
+        Long viewerId = token == null ? null : userAuthService.getUserId(token);
+        UserDTO.UserDetail userDetail = userService.getUserInfoDetail(userId);
         if (viewerId != null) {
             userDetail.setFollowed(followService.isFollowing(userId, viewerId));
         }
@@ -42,7 +42,7 @@ public class UserEndpoint {
                                                         UserDTO.UpdateUser update,
                                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
 
-        if (!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
+        if (!userAuthService.getUserId(token).equals(userId)) {
             throw new UnAuthorizedException("User authorization failed");
         }
         if(update.getNickname() != null && update.getProfileImage() != null) {
@@ -55,7 +55,7 @@ public class UserEndpoint {
     @DeleteMapping("/{userId}")
     public CommonResponseEntity<Void> deleteUserAccount(@PathVariable("userId") Long userId,
                                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if (!userAuthService.getUserInfo(token).getUserId().equals(userId)) {
+        if (!userAuthService.getUserId(token).equals(userId)) {
             throw new UnAuthorizedException("User authorization failed");
         }
         userService.deleteUser(userId);

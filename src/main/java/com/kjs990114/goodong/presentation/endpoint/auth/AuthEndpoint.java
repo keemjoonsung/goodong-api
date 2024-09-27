@@ -1,8 +1,9 @@
 package com.kjs990114.goodong.presentation.endpoint.auth;
 
 import com.kjs990114.goodong.application.auth.UserAuthService;
-import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.application.user.UserService;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
+import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.presentation.common.CommonResponseEntity;
 import com.kjs990114.goodong.presentation.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthEndpoint {
 
     private final UserAuthService userAuthService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public CommonResponseEntity<String> login(@RequestBody UserDTO.Login login) {
@@ -39,16 +42,18 @@ public class AuthEndpoint {
     public CommonResponseEntity<Boolean> checkPassword(@RequestBody UserDTO.Password password){
         return new CommonResponseEntity<>(userAuthService.isPasswordValid(password.getPassword()));
     }
+
     @GetMapping("/user-info")
     public CommonResponseEntity<UserDTO.UserSummary> getUserInfo(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
-        return new CommonResponseEntity<>("Token validation successful",userAuthService.getUserInfo(token));
+        Long userId = userAuthService.getUserId(token);
+        return new CommonResponseEntity<>("Token validation successful",userService.getUserInfoSummary(userId));
     }
 
     @PutMapping("/password")
     public CommonResponseEntity<Void> changePassword(@RequestParam("userId") Long userId,
                                                      @RequestBody UserDTO.Password password,
                                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
-        if(!userAuthService.getUserInfo(token).getUserId().equals(userId)){
+        if(!userAuthService.getUserId(token).equals(userId)){
             throw new UnAuthorizedException("User Authorization failed");
         }
         userAuthService.changePassword(userId,password.getPassword());

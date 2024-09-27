@@ -4,8 +4,6 @@ import com.kjs990114.goodong.common.time.BaseTimeEntity;
 import com.kjs990114.goodong.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +57,9 @@ public class Post extends BaseTimeEntity {
     public void updateStatus(PostStatus status) {
         if (status != null) this.status = status;
     }
-
+    public int getLikeCount(){
+        return likes.size();
+    }
     // 댓글 추가
     public void addComment(Comment comment) {
         comments.add(comment);
