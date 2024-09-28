@@ -1,23 +1,17 @@
 package com.kjs990114.goodong.domain.post;
 
-import com.kjs990114.goodong.common.time.BaseTimeEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
-@Builder
-public class Tag extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@NoArgsConstructor
+public class Tag {
+
     private Long tagId;
-
-    @ManyToOne
-    @JoinColumn(name = "post_id")
     private Post post;
-
     private String tag;
-
 }

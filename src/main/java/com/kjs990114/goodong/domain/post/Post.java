@@ -1,51 +1,25 @@
 package com.kjs990114.goodong.domain.post;
 
-import com.kjs990114.goodong.common.time.BaseTimeEntity;
 import com.kjs990114.goodong.domain.user.User;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "post")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "user_id"})})
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Post extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class Post {
+
     private Long postId;
-
-    @Column(nullable = false)
     private String title;
-
-    @Column(nullable = false)
     private String content;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
+    private User user;  // 도메인 객체로 참조
     private List<Model> models = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Like> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Tag> tags = new ArrayList<>();
-
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
     private PostStatus status = PostStatus.PUBLIC;
 
     public enum PostStatus {
@@ -57,9 +31,11 @@ public class Post extends BaseTimeEntity {
     public void updateStatus(PostStatus status) {
         if (status != null) this.status = status;
     }
-    public int getLikeCount(){
+
+    public int getLikeCount() {
         return likes.size();
     }
+
     // 댓글 추가
     public void addComment(Comment comment) {
         comments.add(comment);
@@ -96,14 +72,10 @@ public class Post extends BaseTimeEntity {
     public void addTagAll(List<String> tags) {
         if (tags != null) {
             for (String tag : tags) {
-                Tag newTag = Tag.builder()
-                        .tag(tag)
-                        .post(this)
-                        .build();
+                Tag newTag = new Tag(null, this, tag);
                 this.tags.add(newTag);
             }
         }
-
     }
 
     // 게시글에 모델 추가
@@ -118,12 +90,4 @@ public class Post extends BaseTimeEntity {
                 .max()
                 .orElse(0) + 1;
     }
-
-
 }
-
-
-
-
-
-

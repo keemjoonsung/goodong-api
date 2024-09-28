@@ -1,8 +1,8 @@
 package com.kjs990114.goodong.common.jwt.filter;
 
+import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
-import com.kjs990114.goodong.domain.user.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,14 +49,14 @@ public class jwtFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRole(token);
         String email = jwtUtil.getEmail(token);
 
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .nickname(nickname)
                 .email(email)
-                .role(User.Role.valueOf(role))
+                .role(UserEntity.Role.valueOf(role))
                 .password("")
                 .build();
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+        CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);

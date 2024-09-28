@@ -1,27 +1,18 @@
 package com.kjs990114.goodong.domain.post;
 
-import com.kjs990114.goodong.common.time.BaseTimeEntity;
 import com.kjs990114.goodong.domain.user.User;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity(name = "likes")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "post_id"})})
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
-@Builder
-public class Like extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@NoArgsConstructor
+public class Like {
+
     private Long likeId;
-
-    @ManyToOne
-    @JoinColumn(name = "post_id")
     private Post post;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
-
 }

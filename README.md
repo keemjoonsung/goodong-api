@@ -1,8 +1,8 @@
 ## goodong : Graduation Project - SKKU 2024
 
-3D model repository web - combine with Blender Add-on (https://github.com/kjs990114/goodong-blender-addon)<br>
-Blender Export and Import 3D model via website<br>
-AI-based posting (auto generate title, description and tags)
+3D modelEntity repository web - combine with Blender Add-on (https://github.com/kjs990114/goodong-blender-addon)<br>
+Blender Export and Import 3D modelEntity via website<br>
+AI-based posting (auto generate title, description and tagEntities)
 
   
   <br>
@@ -12,7 +12,7 @@ AI-based posting (auto generate title, description and tags)
 GitHub plays a significant role as a popular platform for software developers to
 store, manage, share code, or showcase their portfolios. However, in the field of
 3D modeling, there currently isn't a similarly popular platform now. By
-establishing a repository for 3D models, designers can effectively manage their
+establishing a repository for 3D modelEntities, designers can effectively manage their
 work and use it as a portfolio to showcase their creations. It is expected to
 provide innovative platforms for professionals in the 3D modeling field, thereby
 fostering advancement within the industry.
@@ -29,15 +29,15 @@ images will be uploaded soon
 
 2024.01.23 - implementation register & login using JWT and Spring Security  <br>
 
-2024.02.15 - User can upload 3D model ( .glb file) on website by making own repository<br>
+2024.02.15 - User can upload 3D modelEntity ( .glb file) on website by making own repository<br>
 
-2024.02.17 - User can view and interact rendered 3D model (implemented using Three.js)<br>
+2024.02.17 - User can view and interact rendered 3D modelEntity (implemented using Three.js)<br>
 
 2024.02.20 - Update login functionality - User can keep logged in<br>
 
-2024.05.09 - User can download uploaded 3D model<br>
+2024.05.09 - User can download uploaded 3D modelEntity<br>
 
-2024.05.26  - User can just export 3D model to website via blender, and OpenAI fills title and description automatically.<br>
+2024.05.26  - User can just export 3D modelEntity to website via blender, and OpenAI fills title and description automatically.<br>
 
 2024.06.25 - Separate repository of Backend source code and Frontend source code<br>
 
@@ -47,17 +47,17 @@ images will be uploaded soon
 
 2024.07.21 - deploy backend using Google Cloud Platform (cloud run, cloud build, cloud sql, cloude storage bucket), and CI / CD
 
-2024.09.05 - User can comment posts, like posts, follow users
+2024.09.05 - User can comment posts, likeEntity posts, followEntity users
 
 2024.09.08 - Version control of Repository
 
-2024.09.10 - User can generate title, contents and tags automatically with Gemini API
+2024.09.10 - User can generate title, contents and tagEntities automatically with Gemini API
 
 <br>
 
 ## Structure
 
-![goodong_struct](https://github.com/user-attachments/assets/143ae666-5c24-4d54-86e5-00582f86136b)
+![goodong_struct](https://github.com/userEntity-attachments/assets/143ae666-5c24-4d54-86e5-00582f86136b)
 
 
 <br>

@@ -1,27 +1,22 @@
 package com.kjs990114.goodong.domain.post;
 
-import com.kjs990114.goodong.common.time.BaseTimeEntity;
+
 import com.kjs990114.goodong.domain.user.User;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
-public class Comment extends BaseTimeEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+@AllArgsConstructor
+@NoArgsConstructor
+public class Comment {
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
+    private Long commentId;
+    private String content;
+    private User user;
     private Post post;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    private String content;
 
 }
