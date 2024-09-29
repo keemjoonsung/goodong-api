@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class PostCreationService implements CreatePostUseCase {
+public class CreatePostService implements CreatePostUseCase {
 
     private final SavePostPort savePostPort;
     private final StoreFilePort storeFilePort;

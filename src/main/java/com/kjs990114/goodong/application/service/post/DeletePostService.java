@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PostDeletionService implements DeletePostUseCase {
+public class DeletePostService implements DeletePostUseCase {
 
     private final DeletePostPort deletePostPort;
 

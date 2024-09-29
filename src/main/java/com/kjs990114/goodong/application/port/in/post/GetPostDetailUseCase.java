@@ -4,7 +4,7 @@ import com.kjs990114.goodong.adapter.in.web.dto.PostDTO.PostDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public interface GetPostUseCase {
+public interface GetPostDetailUseCase {
 
     PostDetailDTO getPostDetail(LoadPostDetailCommand loadPostDetailCommand);
 

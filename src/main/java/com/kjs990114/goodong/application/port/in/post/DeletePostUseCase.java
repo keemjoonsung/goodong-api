@@ -9,7 +9,7 @@ public interface DeletePostUseCase {
     @AllArgsConstructor
     @NoArgsConstructor
     class DeletePostCommand{
-        Long postId;
-        Long userId;
+        private Long postId;
+        private Long userId;
     }
 }

@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
+package com.kjs990114.goodong.adapter.out.persistence.elasticsearch;
 
 
 import jakarta.persistence.*;

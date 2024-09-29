@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class PostUpdateService implements UpdatePostUseCase {
+public class UpdatePostService implements UpdatePostUseCase {
     private final LoadPostPort loadPostPort;
     private final SavePostPort savePostPort;
     private final StoreFilePort storeFilePort;

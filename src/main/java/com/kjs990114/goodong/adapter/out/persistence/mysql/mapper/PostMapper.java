@@ -2,7 +2,6 @@ package com.kjs990114.goodong.adapter.out.persistence.mysql.mapper;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.*;
 import com.kjs990114.goodong.domain.post.*;
-import com.kjs990114.goodong.domain.user.User;
 
 import java.util.stream.Collectors;
 
@@ -13,7 +12,7 @@ public class PostMapper {
                 .postId(postEntity.getPostId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
-                .user(User.of(postEntity.getUser().getUserId()))
+                .user(UserMapper.toDomain(postEntity.getUser()))
                 .status(postEntity.getStatus())
                 .createdAt(postEntity.getCreatedAt())
                 .lastModifiedAt(postEntity.getLastModifiedAt())
@@ -32,12 +31,12 @@ public class PostMapper {
                                 .createdAt(commentEntity.getCreatedAt())
                                 .lastModifiedAt(commentEntity.getLastModifiedAt())
                                 .post(Post.of(commentEntity.getPost().getPostId()))
-                                .user(User.of(commentEntity.getUser().getUserId()))
+                                .user(UserMapper.toDomain(commentEntity.getUser()))
                                 .build()).collect(Collectors.toList()))
                 .likes(postEntity.getLikes().stream().map(
                         likeEntity -> Like.builder()
                                 .likeId(likeEntity.getLikeId())
-                                .user(User.of(likeEntity.getUser().getUserId()))
+                                .user(UserMapper.toDomain(likeEntity.getUser()))
                                 .post(Post.of(likeEntity.getPost().getPostId()))
                                 .build()).collect(Collectors.toList()))
                 .tags(postEntity.getTags().stream().map(

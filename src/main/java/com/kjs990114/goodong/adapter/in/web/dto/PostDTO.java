@@ -60,6 +60,20 @@ public class PostDTO {
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
         private int likes;
+
+        public static PostSummaryDTO of(Post post){
+            return PostSummaryDTO.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .userId(post.getUser().getUserId())
+                    .email(post.getUser().getEmail())
+                    .nickname(post.getUser().getNickname())
+                    .status(post.getStatus())
+                    .lastModifiedAt(post.getLastModifiedAt())
+                    .tags(post.getTags().stream().map(Tag::getTag).toList())
+                    .likes(post.getLikeCount())
+                    .build();
+        }
     }
 
     @Data
@@ -114,8 +128,8 @@ public class PostDTO {
                                     .lastModifiedAt(comment.getLastModifiedAt())
                                     .build())
                             .toList())
-                    .likes(post.getLikes().size())  // likes 수 계산
-                    .liked(liked)  // 현재 사용자가 좋아요를 눌렀는지 여부
+                    .likes(post.getLikes().size())
+                    .liked(liked)
                     .build();
         }
     }
