@@ -2,12 +2,14 @@ package com.kjs990114.goodong.domain.post;
 
 import com.kjs990114.goodong.domain.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
@@ -16,22 +18,33 @@ public class Post {
     private String title;
     private String content;
     private User user;  // 도메인 객체로 참조
+    @Builder.Default
     private List<Model> models = new ArrayList<>();
+    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
+    @Builder.Default
     private List<Like> likes = new ArrayList<>();
+    @Builder.Default
     private List<Tag> tags = new ArrayList<>();
+    @Builder.Default
     private PostStatus status = PostStatus.PUBLIC;
 
     public enum PostStatus {
         PUBLIC,
         PRIVATE,
     }
-
-    // 게시물의 공개 상태를 변경하는 메서드
-    public void updateStatus(PostStatus status) {
-        if (status != null) this.status = status;
+    public void updateTitle(String title){
+        this.title = title;
     }
-
+    public void updateContent(String content){
+        this.content = content;
+    }
+    public void updateStatus(PostStatus status) {
+         this.status = status;
+    }
+    public void updateOwner(User user){
+        this.user = user;
+    }
     public int getLikeCount() {
         return likes.size();
     }
@@ -57,11 +70,7 @@ public class Post {
         likes.remove(like);
     }
 
-    // 게시물 수정 (제목과 내용 수정)
-    public void updatePost(String title, String content) {
-        if (title != null) this.title = title;
-        if (content != null) this.content = content;
-    }
+
 
     // 게시물에 태그 clear
     public void removeTagAll() {

@@ -94,6 +94,7 @@ public class UserDTO {
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Password{
         private String password;
     }

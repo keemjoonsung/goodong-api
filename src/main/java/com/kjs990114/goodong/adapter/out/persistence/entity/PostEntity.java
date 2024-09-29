@@ -1,5 +1,7 @@
 package com.kjs990114.goodong.adapter.out.persistence.entity;
 import com.kjs990114.goodong.common.time.BaseTimeEntity;
+import com.kjs990114.goodong.domain.post.Post;
+import com.kjs990114.goodong.domain.post.Post.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,10 +49,7 @@ public class PostEntity extends BaseTimeEntity {
     @Builder.Default
     private PostStatus status = PostStatus.PUBLIC;
 
-    public enum PostStatus {
-        PUBLIC,
-        PRIVATE,
-    }
+
 
 
 }

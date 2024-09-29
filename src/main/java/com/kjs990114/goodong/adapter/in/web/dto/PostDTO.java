@@ -2,6 +2,7 @@ package com.kjs990114.goodong.adapter.in.web.dto;
 
 
 import com.kjs990114.goodong.adapter.out.persistence.entity.PostEntity;
+import com.kjs990114.goodong.domain.post.Post.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,7 @@ public class PostDTO {
         @NotBlank(message = "Content cannot be blank")
         private String content;
         private MultipartFile file;
-        private PostEntity.PostStatus status;
+        private PostStatus status;
         @Builder.Default
         private List<String> tags = new ArrayList<>();
     }
@@ -39,7 +40,7 @@ public class PostDTO {
         private MultipartFile file;
         @NotBlank(message = "commit message cannot be blank")
         private String commitMessage;
-        private PostEntity.PostStatus status;
+        private PostStatus status;
         @Builder.Default
         private List<String> tags = new ArrayList<>();
     }
@@ -54,7 +55,7 @@ public class PostDTO {
         private Long userId;
         private String email;
         private String nickname;
-        private PostEntity.PostStatus status;
+        private PostStatus status;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
         private int likes;
@@ -67,7 +68,7 @@ public class PostDTO {
         private Long postId;
         private String title;
         private String content;
-        private PostEntity.PostStatus status;
+        private PostStatus status;
         private List<ModelInfo> models;
         private Long userId;
         private String email;
@@ -123,7 +124,7 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     public static class PostInfo {
-        private PostEntity.PostStatus status;
+        private PostStatus status;
         private Long userId;
     }
 

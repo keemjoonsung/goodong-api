@@ -9,7 +9,6 @@ import com.kjs990114.goodong.application.port.in.auth.ChangePasswordUseCase.Pass
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
 import com.kjs990114.goodong.application.port.in.auth.LoginUseCase.LoginCommand;
 import com.kjs990114.goodong.application.port.in.auth.WithDrawUseCase.WithDrawCommand;
-import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -44,11 +43,8 @@ public class AuthEndpoint {
 
     // 회원 탈퇴
     @DeleteMapping("/withdraw")
-    public ApiResponse<Void> deleteUserAccount(@RequestParam Long userId,
-                                               @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if (!checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId().equals(userId)) {
-            throw new UnAuthorizedException("User Authorization failed");
-        }
+    public ApiResponse<Void> deleteUserAccount(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         withDrawUseCase.withdraw(new WithDrawCommand(userId));
         return new ApiResponse<>("User account deleted successfully");
     }
@@ -74,12 +70,9 @@ public class AuthEndpoint {
     }
 
     @PutMapping("/password")
-    public ApiResponse<Void> changePassword(@RequestParam("userId") Long userId,
-                                            @RequestBody Password password,
+    public ApiResponse<Void> changePassword(@RequestBody Password password,
                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        if (!checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId().equals(userId)) {
-            throw new UnAuthorizedException("User Authorization failed");
-        }
+        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         PasswordQuery passwordQuery = new PasswordQuery(userId, password.getPassword());
         changePasswordUseCase.changePassword(passwordQuery);
         return new ApiResponse<>("Password change success");

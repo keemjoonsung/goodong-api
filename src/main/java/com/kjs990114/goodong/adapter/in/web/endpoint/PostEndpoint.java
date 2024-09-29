@@ -1,5 +1,8 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
+import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
+import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
+import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase.CreatePostCommand;
 import com.kjs990114.goodong.application.service.*;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.adapter.out.persistence.entity.PostEntity;
@@ -23,18 +26,23 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
 public class PostEndpoint {
-
-    private final PostService postService;
-    private final UserAuthService userAuthService;
-    private final LikeService likeService;
-    private final CommentService commentService;
+    private final CheckTokenUseCase checkTokenUseCase;
+    private final CreatePostUseCase createPostUseCase;
 
     //포스트 생성
     @PostMapping
     public ApiResponse<Void> createPost(@Valid PostDTO.Create create,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        Long userId = userAuthService.getUserId(token);
-        postService.createPost(create, userId);
+        Long userId = checkTokenUseCase.checkToken(new CheckTokenUseCase.TokenQuery(token)).getUserId();
+        CreatePostCommand createPostCommand = CreatePostCommand.builder()
+                .userId(userId)
+                .title(create.getTitle())
+                .content(create.getContent())
+                .file(create.getFile())
+                .status(create.getStatus())
+                .tags(create.getTags())
+                .build();
+        createPostUseCase.createPost(createPostCommand);
         return new ApiResponse<>("Post created successfully");
     }
 
@@ -141,10 +149,11 @@ public class PostEndpoint {
                                            @RequestBody PostDTO.PostComment postComment, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         String email = jwtUtil.getEmail(token);
         String content = postComment.getContent();
-        commentService.updateComment(postId,commentId, email, content);
+        commentService.updateComment(postId, commentId, email, content);
         return new ApiResponse<>("Comment updated successfully");
 
     }
+
     // 포스트의 model 다운로드
     @GetMapping("/models")
     public ResponseEntity<Resource> downloadModel(@RequestParam("modelName") String modelName,
@@ -159,6 +168,7 @@ public class PostEndpoint {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "model.glb")
                 .body(resource);
     }
+
     //ai이용 포스트 생성
     @PostMapping("/ai")
     public ApiResponse<PostDTO.AiResponse> aiService(
@@ -166,12 +176,12 @@ public class PostEndpoint {
             @RequestParam(defaultValue = "PUBLIC") String status,
             PostDTO.files files,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token
-    ) throws Exception{
+    ) throws Exception {
         MultipartFile filePng = files.getFile();
         MultipartFile fileGlb = files.getFileGlb();
         List<String> response = aiService.getDescription(filePng);
         PostDTO.AiResponse aiResponse = new PostDTO.AiResponse(response.get(0), response.get(1), List.of(response.get(2).split(",")));
-        if(autoCreate) {
+        if (autoCreate) {
             Long userId = userAuthService.getUserId(token);
             postService.createPost(
                     PostDTO.Create.builder()
@@ -181,15 +191,14 @@ public class PostEndpoint {
                             .file(fileGlb)
                             .status(PostEntity.PostStatus.valueOf(status))
                             .build()
-                    ,userId
+                    , userId
             );
             return new ApiResponse<>("GEMINI API CREATED REPOSITORY SUCCESSFUL");
-        }else{
+        } else {
             return new ApiResponse<>("Gemini API response successful.", aiResponse);
         }
 
     }
-
 
 
 }

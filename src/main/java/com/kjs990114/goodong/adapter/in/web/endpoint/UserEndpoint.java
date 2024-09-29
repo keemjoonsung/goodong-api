@@ -1,7 +1,6 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
 import com.kjs990114.goodong.adapter.in.web.dto.PostDTO;
-import com.kjs990114.goodong.application.service.UserAuthService;
 import com.kjs990114.goodong.application.service.FollowService;
 import com.kjs990114.goodong.application.service.UserService;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
