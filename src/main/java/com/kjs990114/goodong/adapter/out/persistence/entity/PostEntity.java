@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.adapter.out.persistence.entity;
 import com.kjs990114.goodong.common.time.BaseTimeEntity;
-import com.kjs990114.goodong.domain.post.*;
 import jakarta.persistence.*;
 import lombok.*;
 

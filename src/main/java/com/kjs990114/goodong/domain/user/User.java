@@ -23,12 +23,18 @@ public class User {
     private String email;
     private String password;
     private String profileImage;
+    @Builder.Default
     private Role role = Role.USER;
+    @Builder.Default
     private List<Contribution> contributions = new ArrayList<>();
+    @Builder.Default
     private Set<Follow> followings = new HashSet<>();
+    @Builder.Default
     private Set<Follow> followers = new HashSet<>();
 
-
+    public static User of(Long userId){
+        return User.builder().userId(userId).build();
+    }
     // 팔로우 추가
     public void follow(Follow follow) {
         this.followings.add(follow);
@@ -61,7 +67,7 @@ public class User {
 
     // 비밀번호 변경
     public void changePassword(String newPassword) {
-        if (newPassword != null) this.password = newPassword;
+        this.password = newPassword;
     }
 
     // 기여도 추가 또는 카운트 증가

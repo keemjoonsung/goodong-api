@@ -51,23 +51,22 @@ public class AuthEndpoint {
 
     @GetMapping("/register/check-nickname")
     public ApiResponse<Boolean> checkNickname(@RequestParam(name = "nickname") String nickname) {
-        return new ApiResponse<>(userAuthService.isNicknameDuplicated(nickname));
+        return new ApiResponse<>(registerUseCase.isDuplicateNickname(nickname));
     }
 
     @GetMapping("/register/check-email")
     public ApiResponse<Boolean> checkEmail(@RequestParam(name = "email") String email) {
-        return new ApiResponse<>(userAuthService.isEmailDuplicated(email));
+        return new ApiResponse<>(registerUseCase.isDuplicateEmail(email));
     }
 
     @PostMapping("/register/check-password")
     public ApiResponse<Boolean> checkPassword(@RequestBody UserDTO.Password password) {
-        return new ApiResponse<>(userAuthService.isPasswordValid(password.getPassword()));
+        return new ApiResponse<>(registerUseCase.isValidPassword(password.getPassword()));
     }
 
-    @GetMapping("/user-info")
-    public ApiResponse<UserDTO.UserSummary> getUserInfo(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = userAuthService.getUserId(token);
-        return new ApiResponse<>("Token validation successful", userService.getUserInfoSummary(userId));
+    @GetMapping("/check-token")
+    public ApiResponse<UserDTO.UserSummary> checkToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return new ApiResponse<>("Token validation successful",.getUserInfoSummary(userId));
     }
 
     @PutMapping("/password")

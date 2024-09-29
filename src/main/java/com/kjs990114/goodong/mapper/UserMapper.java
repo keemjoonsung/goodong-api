@@ -25,8 +25,11 @@ public class UserMapper {
                 .contributions(user.getContributions()
                         .stream()
                         .map(cont -> ContributionEntity.builder()
-                                    .contId(cont.getContId())
-                                    .build()
+                                .contId(cont.getContId())
+                                .count(cont.getCount())
+                                .date(cont.getDate())
+                                .user(UserEntity.builder().userId(user.getUserId()).build())
+                                .build()
                         ).toList())
                 .followers(user.getFollowers()
                         .stream()
@@ -38,38 +41,39 @@ public class UserMapper {
     }
 
     public static User toDomain(UserEntity userEntity) {
-            return User.builder()
-                    .userId(userEntity.getUserId())
-                    .email(userEntity.getEmail())
-                    .nickname(userEntity.getNickname())
-                    .password(userEntity.getPassword())
-                    .role(userEntity.getRole())
-                    .profileImage(userEntity.getProfileImage())
-                    .contributions(userEntity.getContributions().stream()
-                            .map(contributionEntity -> Contribution.builder()
-                                    .contId(contributionEntity.getContId())
-                                    .count(contributionEntity.getCount())
-                                    .date(contributionEntity.getDate())
-                                    .user(User.builder().userId(contributionEntity.getUser().getUserId()).build())
-                                    .build()).toList())
-                    .followers(userEntity.getFollowers().stream().map(UserMapper::toFollowDomain).collect(Collectors.toSet()))
-                    .followings(userEntity.getFollowings().stream().map(UserMapper::toFollowDomain).collect(Collectors.toSet()))
-                    .build();
+        return User.builder()
+                .userId(userEntity.getUserId())
+                .email(userEntity.getEmail())
+                .nickname(userEntity.getNickname())
+                .password(userEntity.getPassword())
+                .role(userEntity.getRole())
+                .profileImage(userEntity.getProfileImage())
+                .contributions(userEntity.getContributions().stream()
+                        .map(contributionEntity -> Contribution.builder()
+                                .contId(contributionEntity.getContId())
+                                .count(contributionEntity.getCount())
+                                .date(contributionEntity.getDate())
+                                .user(User.of(contributionEntity.getUser().getUserId()))
+                                .build()).toList())
+                .followers(userEntity.getFollowers().stream().map(UserMapper::toFollowDomain).collect(Collectors.toSet()))
+                .followings(userEntity.getFollowings().stream().map(UserMapper::toFollowDomain).collect(Collectors.toSet()))
+                .build();
 
     }
-    private static Follow toFollowDomain(FollowEntity followEntity){
+
+    private static Follow toFollowDomain(FollowEntity followEntity) {
         return Follow.builder()
                 .id(followEntity.getId())
                 .follower(User.builder().userId(followEntity.getFollower().getUserId()).build())
                 .followee(User.builder().userId(followEntity.getFollowee().getUserId()).build())
                 .build();
     }
-    private static FollowEntity toFollowEntity(Follow follow){
+
+    private static FollowEntity toFollowEntity(Follow follow) {
         return FollowEntity.builder()
                 .id(follow.getId())
                 .follower(UserEntity.builder().userId(follow.getFollower().getUserId()).build())
                 .followee(UserEntity.builder().userId(follow.getFollowee().getUserId()).build())
                 .build();
     }
-
 }

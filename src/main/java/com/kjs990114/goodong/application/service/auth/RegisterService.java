@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.application.service.auth;
 
 import com.kjs990114.goodong.application.port.in.auth.RegisterUseCase;
-import com.kjs990114.goodong.application.port.out.CreateUserPort;
+import com.kjs990114.goodong.application.port.out.SaveUserPort;
 import com.kjs990114.goodong.application.port.out.LoadUserPort;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RegisterService implements RegisterUseCase {
 
-    private final CreateUserPort createUserPort;
+    private final SaveUserPort saveUserPort;
     private final LoadUserPort loadUserPort;
     private final PasswordEncoder passwordEncoder;
 
@@ -25,7 +25,7 @@ public class RegisterService implements RegisterUseCase {
                 .nickname(registerCommand.getNickname())
                 .build();
         user.changePassword(passwordEncoder.encode(registerCommand.getPassword()));
-        createUserPort.save(user);
+        saveUserPort.save(user);
     }
 
     @Override
