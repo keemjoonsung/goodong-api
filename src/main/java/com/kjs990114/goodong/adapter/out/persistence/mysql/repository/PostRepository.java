@@ -1,6 +1,6 @@
-package com.kjs990114.goodong.adapter.out.persistence.repository;
+package com.kjs990114.goodong.adapter.out.persistence.mysql.repository;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.PostEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

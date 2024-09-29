@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.common.userdetails;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
-import com.kjs990114.goodong.adapter.out.persistence.repository.UserRepository;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

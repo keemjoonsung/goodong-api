@@ -1,14 +1,14 @@
 package com.kjs990114.goodong.application.service;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
-import com.kjs990114.goodong.adapter.out.persistence.entity.ModelEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.PostEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.ModelEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.common.exception.NotFoundException;
-import com.kjs990114.goodong.adapter.out.persistence.repository.PostRepository;
-import com.kjs990114.goodong.adapter.out.persistence.entity.ContributionEntity;
-import com.kjs990114.goodong.adapter.out.persistence.repository.UserRepository;
-import com.kjs990114.goodong.adapter.out.persistence.entity.PostDocument;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.PostRepository;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.ContributionEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostDocument;
 import com.kjs990114.goodong.adapter.in.web.dto.DTOMapper;
 import com.kjs990114.goodong.adapter.in.web.dto.PostDTO;
 import com.kjs990114.goodong.adapter.in.web.dto.RestPage;

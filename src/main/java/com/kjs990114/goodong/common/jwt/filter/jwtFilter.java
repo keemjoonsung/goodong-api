@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.common.jwt.filter;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import jakarta.servlet.FilterChain;

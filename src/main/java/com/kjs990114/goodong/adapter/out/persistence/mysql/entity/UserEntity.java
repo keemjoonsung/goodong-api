@@ -1,9 +1,6 @@
-package com.kjs990114.goodong.adapter.out.persistence.entity;
+package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
 import com.kjs990114.goodong.common.time.BaseTimeEntity;
-import com.kjs990114.goodong.domain.user.Contribution;
-import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.mapper.UserMapper;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity(name = "user")
 @Getter
@@ -53,5 +49,7 @@ public class UserEntity extends BaseTimeEntity {
         USER,
         ADMIN
     }
-
+    public static UserEntity of(Long userId){
+        return UserEntity.builder().userId(userId).build();
+    }
 }

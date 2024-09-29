@@ -47,7 +47,7 @@ images will be uploaded soon
 
 2024.07.21 - deploy backend using Google Cloud Platform (cloud run, cloud build, cloud sql, cloude storage bucket), and CI / CD
 
-2024.09.05 - User can comment posts, likeEntity posts, followEntity users
+2024.09.05 - User can commentEntity posts, likeEntity posts, followEntity users
 
 2024.09.08 - Version control of Repository
 

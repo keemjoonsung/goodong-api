@@ -1,13 +1,13 @@
-package com.kjs990114.goodong.adapter.out.persistence;
+package com.kjs990114.goodong.adapter.out.persistence.mysql;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
-import com.kjs990114.goodong.adapter.out.persistence.repository.UserRepository;
-import com.kjs990114.goodong.application.port.out.DeleteUserPort;
-import com.kjs990114.goodong.application.port.out.SaveUserPort;
-import com.kjs990114.goodong.application.port.out.LoadUserPort;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
+import com.kjs990114.goodong.application.port.out.mysql.DeleteUserPort;
+import com.kjs990114.goodong.application.port.out.mysql.SaveUserPort;
+import com.kjs990114.goodong.application.port.out.mysql.LoadUserPort;
 import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.mapper.UserMapper;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

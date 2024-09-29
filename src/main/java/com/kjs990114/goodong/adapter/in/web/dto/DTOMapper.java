@@ -1,9 +1,9 @@
 package com.kjs990114.goodong.adapter.in.web.dto;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.ModelEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.PostEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.TagEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.ModelEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.TagEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;

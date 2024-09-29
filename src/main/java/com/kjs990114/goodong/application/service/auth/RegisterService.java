@@ -1,8 +1,8 @@
 package com.kjs990114.goodong.application.service.auth;
 
 import com.kjs990114.goodong.application.port.in.auth.RegisterUseCase;
-import com.kjs990114.goodong.application.port.out.SaveUserPort;
-import com.kjs990114.goodong.application.port.out.LoadUserPort;
+import com.kjs990114.goodong.application.port.out.mysql.SaveUserPort;
+import com.kjs990114.goodong.application.port.out.mysql.LoadUserPort;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

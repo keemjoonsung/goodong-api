@@ -1,8 +1,8 @@
-package com.kjs990114.goodong.mapper;
+package com.kjs990114.goodong.adapter.out.persistence.mysql.mapper;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.ContributionEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.FollowEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.ContributionEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.FollowEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.Follow;
 import com.kjs990114.goodong.domain.user.User;

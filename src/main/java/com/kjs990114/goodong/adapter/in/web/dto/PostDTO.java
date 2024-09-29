@@ -1,7 +1,6 @@
 package com.kjs990114.goodong.adapter.in.web.dto;
 
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.PostEntity;
 import com.kjs990114.goodong.domain.post.Post.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

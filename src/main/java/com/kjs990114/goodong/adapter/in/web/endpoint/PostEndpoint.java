@@ -5,7 +5,7 @@ import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
 import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase.CreatePostCommand;
 import com.kjs990114.goodong.application.service.*;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
-import com.kjs990114.goodong.adapter.out.persistence.entity.PostEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostEntity;
 import com.kjs990114.goodong.adapter.in.web.dto.ApiResponse;
 import com.kjs990114.goodong.adapter.in.web.dto.PostDTO;
 

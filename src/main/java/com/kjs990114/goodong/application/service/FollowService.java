@@ -1,9 +1,9 @@
 package com.kjs990114.goodong.application.service;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.FollowEntity;
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.FollowEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.common.exception.NotFoundException;
-import com.kjs990114.goodong.adapter.out.persistence.repository.UserRepository;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
 import com.kjs990114.goodong.adapter.in.web.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

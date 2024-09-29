@@ -1,6 +1,6 @@
-package com.kjs990114.goodong.adapter.out.persistence.repository;
+package com.kjs990114.goodong.adapter.out.persistence.mysql.repository;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

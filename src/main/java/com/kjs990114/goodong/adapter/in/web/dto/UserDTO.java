@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.adapter.in.web.dto;
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.ContributionEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.ContributionEntity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

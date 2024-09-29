@@ -1,27 +1,23 @@
-package com.kjs990114.goodong.adapter.out.persistence.entity;
+package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
 import com.kjs990114.goodong.common.time.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity(name = "post")
+@Entity(name = "tag")
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment extends BaseTimeEntity{
+@Builder
+public class TagEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long tagId;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     private PostEntity post;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    private String content;
+    private String tag;
 
 }

@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.domain.user;
 
 
-import com.kjs990114.goodong.adapter.out.persistence.entity.UserEntity.Role;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

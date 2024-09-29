@@ -1,6 +1,5 @@
-package com.kjs990114.goodong.adapter.out.persistence.entity;
+package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 import com.kjs990114.goodong.common.time.BaseTimeEntity;
-import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.post.Post.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,7 +34,7 @@ public class PostEntity extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Comment> comments = new ArrayList<>();
+    private List<CommentEntity> commentEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -49,7 +48,8 @@ public class PostEntity extends BaseTimeEntity {
     @Builder.Default
     private PostStatus status = PostStatus.PUBLIC;
 
-
-
+    public static PostEntity of(Long postId){
+        return PostEntity.builder().postId(postId).build();
+    }
 
 }
