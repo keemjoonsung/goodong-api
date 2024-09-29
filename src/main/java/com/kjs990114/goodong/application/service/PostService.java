@@ -41,7 +41,7 @@ public class PostService {
     private int pageSize;
 
     @Transactional
-    public void createPost(PostDTO.Create create, Long userId) throws IOException {
+    public void createPost(PostDTO.PostCreateDTO create, Long userId) throws IOException {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         ContributionEntity contributionEntity = new ContributionEntity();
         contributionEntity.setUser(userEntity);
@@ -78,7 +78,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostDTO.Summary> getMyPosts(Long userId) {
+    public List<PostDTO.PostSummaryDTO> getMyPosts(Long userId) {
         List<PostEntity> postEntity = postRepository.findUserPostsAll(userId);
         return postEntity.stream().map(DTOMapper::postToSummary).toList();
     }
@@ -90,29 +90,29 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public RestPage<PostDTO.Summary> getPosts(Long userId, int page, boolean isMyPosts) {
-        HashOperations<String, String, RestPage<PostDTO.Summary>> hashOp = redisTemplate.opsForHash();
+    public RestPage<PostDTO.PostSummaryDTO> getPosts(Long userId, int page, boolean isMyPosts) {
+        HashOperations<String, String, RestPage<PostDTO.PostSummaryDTO>> hashOp = redisTemplate.opsForHash();
         String key = cacheName + ":" + userId;
         String hashKey = page + ":" + isMyPosts;
-        RestPage<PostDTO.Summary> cachedPage = hashOp.get(key, hashKey);
+        RestPage<PostDTO.PostSummaryDTO> cachedPage = hashOp.get(key, hashKey);
         if (cachedPage != null) {
             return cachedPage;
         }
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
         Page<PostEntity> entityPage = isMyPosts ? postRepository.findUserPublicAndPrivatePosts(userId, pageable) : postRepository.findUserPublicPosts(userId, pageable);
-        RestPage<PostDTO.Summary> dbPage = new RestPage<>(entityPage.map(DTOMapper::postToSummary));
+        RestPage<PostDTO.PostSummaryDTO> dbPage = new RestPage<>(entityPage.map(DTOMapper::postToSummary));
         hashOp.put(key,hashKey,dbPage);
         return dbPage;
     }
 
     @Transactional(readOnly = true)
-    public PostDTO.PostDetail getPost(Long postId) {
+    public PostDTO.PostDetailDTO getPost(Long postId) {
         PostEntity postEntity = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return DTOMapper.postToDetail(postEntity);
     }
 
     @Transactional(readOnly = true)
-    public Page<PostDTO.Summary> searchPosts(String keyword, int page) {
+    public Page<PostDTO.PostSummaryDTO> searchPosts(String keyword, int page) {
         Pageable pageable = PageRequest.of(page, pageSize);
 
         NativeQuery searchQuery = NativeQuery.builder()
@@ -129,7 +129,7 @@ public class PostService {
         SearchHits<PostDocument> searchHits = elasticsearchOperations.search(searchQuery, PostDocument.class);
         List<Long> postIdList = searchHits.stream().map(hit -> hit.getContent().getPostId()).toList();
         List<PostEntity> postEntityList = postRepository.findAllById(postIdList);
-        List<PostDTO.Summary> summaries = postEntityList.stream()
+        List<PostDTO.PostSummaryDTO> summaries = postEntityList.stream()
                 .filter(post -> post.getStatus().equals(PostEntity.PostStatus.PUBLIC))
                 .map(DTOMapper::postToSummary)
                 .toList();
@@ -149,7 +149,7 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(Long postId, PostDTO.Update update) throws IOException {
+    public void updatePost(Long postId, PostDTO.PostUpdateDTO update) throws IOException {
         PostEntity postEntity = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exist"));
         UserEntity userEntity = postEntity.getUser();
         postEntity.updatePost(update.getTitle(), update.getContent());

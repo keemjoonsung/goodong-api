@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,6 +26,9 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     @Query("SELECT p FROM post p WHERE p.postId = :postId AND p.deletedAt IS NULL")
     Optional<PostEntity> findByPostId(@Param("postId") Long postId);
+
+    @Query("SELECT p FROM post p WHERE p.postId = :postId AND p.user.userId = :userId AND p.deletedAt IS NULL")
+    Optional<PostEntity> findByPostIdAndUserId(@Param("postId") Long postId ,@Param("userId") Long userId);
 
     @Query("SELECT p FROM post p WHERE p.user.userId = :userId AND p.deletedAt IS NULL")
     List<PostEntity> findUserPostsAll(@Param("userId") Long userId);

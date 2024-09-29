@@ -4,6 +4,8 @@ import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.*;
 import com.kjs990114.goodong.domain.post.*;
 import com.kjs990114.goodong.domain.user.User;
 
+import java.util.stream.Collectors;
+
 public class PostMapper {
 
     public static Post toDomain(PostEntity postEntity) {
@@ -13,6 +15,8 @@ public class PostMapper {
                 .content(postEntity.getContent())
                 .user(User.of(postEntity.getUser().getUserId()))
                 .status(postEntity.getStatus())
+                .createdAt(postEntity.getCreatedAt())
+                .lastModifiedAt(postEntity.getLastModifiedAt())
                 .models(postEntity.getModels().stream().map(
                         modelEntity -> Model.builder()
                                 .modelId(modelEntity.getModelId())
@@ -20,26 +24,28 @@ public class PostMapper {
                                 .fileName(modelEntity.getFileName())
                                 .commitMessage(modelEntity.getCommitMessage())
                                 .post(Post.of(modelEntity.getPost().getPostId()))
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                 .comments(postEntity.getCommentEntities().stream().map(
                         commentEntity -> Comment.builder()
                                 .commentId(commentEntity.getCommentId())
                                 .content(commentEntity.getContent())
+                                .createdAt(commentEntity.getCreatedAt())
+                                .lastModifiedAt(commentEntity.getLastModifiedAt())
                                 .post(Post.of(commentEntity.getPost().getPostId()))
                                 .user(User.of(commentEntity.getUser().getUserId()))
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                 .likes(postEntity.getLikes().stream().map(
                         likeEntity -> Like.builder()
                                 .likeId(likeEntity.getLikeId())
                                 .user(User.of(likeEntity.getUser().getUserId()))
                                 .post(Post.of(likeEntity.getPost().getPostId()))
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                 .tags(postEntity.getTags().stream().map(
                         tagEntity -> Tag.builder()
                                 .tagId(tagEntity.getTagId())
                                 .post(Post.of(tagEntity.getPost().getPostId()))
                                 .tag(tagEntity.getTag())
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                 .build();
     }
 

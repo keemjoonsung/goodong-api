@@ -1,22 +1,26 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
-import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
-import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
-import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase.CreatePostCommand;
-import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase;
-import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase.UpdatePostCommand;
-import com.kjs990114.goodong.application.service.*;
-import com.kjs990114.goodong.common.exception.UnAuthorizedException;
-import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostEntity;
 import com.kjs990114.goodong.adapter.in.web.dto.ApiResponse;
 import com.kjs990114.goodong.adapter.in.web.dto.PostDTO;
-
+import com.kjs990114.goodong.adapter.in.web.dto.PostDTO.PostDetailDTO;
 import com.kjs990114.goodong.adapter.in.web.dto.RestPage;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostEntity;
+import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
+import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
+import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
+import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase.CreatePostCommand;
+import com.kjs990114.goodong.application.port.in.post.DeletePostUseCase;
+import com.kjs990114.goodong.application.port.in.post.DeletePostUseCase.DeletePostCommand;
+import com.kjs990114.goodong.application.port.in.post.GetPostUseCase;
+import com.kjs990114.goodong.application.port.in.post.GetPostUseCase.LoadPostDetailCommand;
+import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase;
+import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase.UpdatePostCommand;
+import com.kjs990114.goodong.application.service.FileService;
+import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.PartialUpdate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,18 +36,20 @@ public class PostEndpoint {
     private final CheckTokenUseCase checkTokenUseCase;
     private final CreatePostUseCase createPostUseCase;
     private final UpdatePostUseCase updatePostUseCase;
+    private final DeletePostUseCase deletePostUseCase;
+    private final GetPostUseCase getPostUseCase;
     //게시글 Create
     @PostMapping
-    public ApiResponse<Void> createPost(@Valid PostDTO.Create create,
+    public ApiResponse<Void> createPost(@Valid PostDTO.PostCreateDTO postCreateDTO,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        Long userId = checkTokenUseCase.checkToken(new CheckTokenUseCase.TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         CreatePostCommand createPostCommand = CreatePostCommand.builder()
                 .userId(userId)
-                .title(create.getTitle())
-                .content(create.getContent())
-                .file(create.getFile())
-                .status(create.getStatus())
-                .tags(create.getTags())
+                .title(postCreateDTO.getTitle())
+                .content(postCreateDTO.getContent())
+                .file(postCreateDTO.getFile())
+                .status(postCreateDTO.getStatus())
+                .tags(postCreateDTO.getTags())
                 .build();
         createPostUseCase.createPost(createPostCommand);
         return new ApiResponse<>("Post created successfully");
@@ -52,8 +58,9 @@ public class PostEndpoint {
     // 게시글 Update
     @PatchMapping("/{postId}")
     public ApiResponse<Void> updatePost(@PathVariable("postId") Long postId,
-                                        PostDTO.Update postDTO,
+                                        PostDTO.PostUpdateDTO postDTO,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         UpdatePostCommand updatePostCommand = UpdatePostCommand.builder()
                 .title(postDTO.getTitle())
                 .content(postDTO.getContent())
@@ -62,62 +69,55 @@ public class PostEndpoint {
                 .file(postDTO.getFile())
                 .tags(postDTO.getTags())
                 .postId(postId)
+                .userId(userId)
                 .build();
         updatePostUseCase.updatePost(updatePostCommand);
         return new ApiResponse<>("Update success");
     }
-
-    @GetMapping(params = "userId")
-    public ApiResponse<RestPage<PostDTO.Summary>> getUserPosts(@RequestParam(name = "userId") Long userId,
-                                                               @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token,
-                                                               @RequestParam(name = "page", defaultValue = "0") int page) {
-        Long viewerId = token == null ? null : userAuthService.getUserId(token);
-        boolean isMyPosts = userId.equals(viewerId);
-        RestPage<PostDTO.Summary> response = postService.getPosts(userId, page, isMyPosts);
-        return new ApiResponse<>(response);
-    }
-
-    @GetMapping(params = "query")
-    public ApiResponse<Page<PostDTO.Summary>> searchPosts(@RequestParam("query") String keyword,
-                                                          @RequestParam(name = "page", defaultValue = "0") int page) {
-        return new ApiResponse<>(postService.searchPosts(keyword, page));
-    }
-
-    @GetMapping("/all")
-    public ApiResponse<List<PostDTO.Summary>> getUserPosts(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        Long viewerId = userAuthService.getUserId(token);
-        List<PostDTO.Summary> response = postService.getMyPosts(viewerId);
-        return new ApiResponse<>(response);
-    }
-
-    // 게시글 Delete
+    //게시글 Delete
     @DeleteMapping("/{postId}")
     public ApiResponse<Void> deletePost(@PathVariable("postId") Long postId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = userAuthService.getUserId(token);
-        if (!userId.equals(postService.getPost(postId).getUserId())) {
-            throw new UnAuthorizedException("UnAuthorized Exception");
-        }
-        postService.deletePost(postId);
+        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        DeletePostCommand deletePostCommand = new DeletePostCommand(postId, userId);
+        deletePostUseCase.deletePost(deletePostCommand);
         return new ApiResponse<>("Delete success");
     }
 
     // 특정 게시글 정보 가져오기
     @GetMapping("/{postId}")
-    public ApiResponse<PostDTO.PostDetail> getPost(@PathVariable("postId") Long postId,
-                                                   @RequestHeader(required = false, value = HttpHeaders.AUTHORIZATION) String token
+    public ApiResponse<PostDetailDTO> getPost(@PathVariable("postId") Long postId,
+                                              @RequestHeader(required = false, value = HttpHeaders.AUTHORIZATION) String token
     ) {
-        Long viewerId = token == null ? null : userAuthService.getUserId(token);
-        if (!postService.getPost(postId).getUserId().equals(viewerId) && postService.getPost(postId).getStatus().equals(PostEntity.PostStatus.PRIVATE)) {
-            throw new UnAuthorizedException("UnAuthorized Exception");
-        }
-        PostDTO.PostDetail postDetail = postService.getPost(postId);
-        if (viewerId != null) {
-            postDetail.setLiked(likeService.isLiked(postId, viewerId));
-        }
-        postDetail.setComments(commentService.getComments(postId));
-        return new ApiResponse<>(postDetail);
+        Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        PostDetailDTO response = getPostUseCase.getPostDetail(new LoadPostDetailCommand(postId,viewerId));
+
+        return new ApiResponse<>(response);
     }
+
+    @GetMapping(params = "userId")
+    public ApiResponse<RestPage<PostDTO.PostSummaryDTO>> getUserPosts(@RequestParam(name = "userId") Long userId,
+                                                                      @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token,
+                                                                      @RequestParam(name = "page", defaultValue = "0") int page) {
+        Long viewerId = token == null ? null : userAuthService.getUserId(token);
+        boolean isMyPosts = userId.equals(viewerId);
+        RestPage<PostDTO.PostSummaryDTO> response = postService.getPosts(userId, page, isMyPosts);
+        return new ApiResponse<>(response);
+    }
+
+    @GetMapping(params = "query")
+    public ApiResponse<Page<PostDTO.PostSummaryDTO>> searchPosts(@RequestParam("query") String keyword,
+                                                                 @RequestParam(name = "page", defaultValue = "0") int page) {
+        return new ApiResponse<>(postService.searchPosts(keyword, page));
+    }
+    @GetMapping("/all")
+    public ApiResponse<List<PostDTO.PostSummaryDTO>> getUserPosts(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        Long viewerId = userAuthService.getUserId(token);
+        List<PostDTO.PostSummaryDTO> response = postService.getMyPosts(viewerId);
+        return new ApiResponse<>(response);
+    }
+
+    // 게시글 Delete
 
     //중복체크
     @GetMapping("/check-title")
@@ -130,9 +130,9 @@ public class PostEndpoint {
     // 댓글 달기
     @PostMapping("/{postId}/comments")  // 댓글 달
     public ApiResponse<Void> addComment(@PathVariable("postId") Long postId,
-                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody PostDTO.PostComment postComment) {
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody PostDTO.CommentDTO commentDTO) {
         String email = jwtUtil.getEmail(token);
-        String content = postComment.getContent();
+        String content = commentDTO.getContent();
         commentService.addComment(postId, email, content);
 
         return new ApiResponse<>("Comment added successfully");
@@ -152,7 +152,7 @@ public class PostEndpoint {
     @PatchMapping("/{postId}/comments")
     public ApiResponse<Void> updateComment(@PathVariable("postId") Long postId,
                                            @RequestParam("commentId") Long commentId,
-                                           @RequestBody PostDTO.PostComment postComment, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+                                           @RequestBody PostDTO.CommentDTO postComment, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         String email = jwtUtil.getEmail(token);
         String content = postComment.getContent();
         commentService.updateComment(postId, commentId, email, content);
@@ -190,7 +190,7 @@ public class PostEndpoint {
         if (autoCreate) {
             Long userId = userAuthService.getUserId(token);
             postService.createPost(
-                    PostDTO.Create.builder()
+                    PostDTO.PostCreateDTO.builder()
                             .title(aiResponse.getTitle())
                             .content(aiResponse.getDescription())
                             .tags(aiResponse.getTags())

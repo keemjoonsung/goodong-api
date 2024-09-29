@@ -79,7 +79,7 @@ public class LikeService {
 
 
     @Transactional(readOnly = true)
-    public List<PostDTO.Summary> getLikedPosts(Long userId) {
+    public List<PostDTO.PostSummaryDTO> getLikedPosts(Long userId) {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         return userEntity.getLikes().stream()
                 .sorted(Comparator.comparing(LikeEntity::getCreatedAt))

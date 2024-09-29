@@ -2,8 +2,7 @@ package com.kjs990114.goodong.application.service.post;
 
 import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
 import com.kjs990114.goodong.application.port.out.gcp.StoreFilePort;
-import com.kjs990114.goodong.application.port.out.mysql.SavePostPort;
-import com.kjs990114.goodong.domain.post.Model;
+import com.kjs990114.goodong.application.port.out.db.SavePostPort;
 import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class PostCreationService implements CreatePostUseCase {
         newPost.updateContent(createPostCommand.getContent());
         newPost.updateStatus(createPostCommand.getStatus());
         newPost.updateOwner(User.of(createPostCommand.getUserId()));
-        newPost.addTagAll(createPostCommand.getTags());
+        newPost.updateTag(createPostCommand.getTags());
         String fileName = storeFilePort.storeGlbFile(createPostCommand.getFile());
         newPost.addModel(fileName, "First Commit");
         savePostPort.save(newPost);

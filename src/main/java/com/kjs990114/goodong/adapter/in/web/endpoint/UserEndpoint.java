@@ -110,7 +110,7 @@ public class UserEndpoint {
     }
     //좋아요 목록 반환
     @GetMapping("/likes")
-    public ApiResponse<List<PostDTO.Summary>> getLikedPosts(@RequestParam Long userId){
+    public ApiResponse<List<PostDTO.PostSummaryDTO>> getLikedPosts(@RequestParam Long userId){
         return new ApiResponse<>(likeService.getLikedPosts(userId));
     }
     public enum FollowType {

@@ -2,7 +2,7 @@ package com.kjs990114.goodong.application.service.auth;
 
 import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.UserSummary;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
-import com.kjs990114.goodong.application.port.out.mysql.LoadUserPort;
+import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;

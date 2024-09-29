@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,9 @@ public class Post {
     private List<Tag> tags = new ArrayList<>();
     @Builder.Default
     private PostStatus status = PostStatus.PUBLIC;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastModifiedAt;
+
 
     public enum PostStatus {
         PUBLIC,
@@ -72,17 +77,20 @@ public class Post {
     public void unLike(Like like) {
         likes.remove(like);
     }
-
+    public boolean isLikedBy(Long userId){
+        return this.likes.stream().anyMatch(like -> like.getUser().getUserId().equals(userId));
+    }
 
 
     // 게시물에 태그 clear
-    public void removeTagAll() {
+    private void removeTagAll() {
         this.tags.clear();
     }
 
     // 게시물에 태그 전체 추가
-    public void addTagAll(List<String> tags) {
+    public void updateTag(List<String> tags) {
         if (tags != null) {
+            removeTagAll();
             for (String tag : tags) {
                 Tag newTag = new Tag(null, this, tag);
                 this.tags.add(newTag);

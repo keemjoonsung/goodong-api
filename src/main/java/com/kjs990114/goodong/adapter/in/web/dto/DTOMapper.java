@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 
 public class DTOMapper {
 
-    public static PostDTO.Summary postToSummary(PostEntity postEntity) {
+    public static PostDTO.PostSummaryDTO postToSummary(PostEntity postEntity) {
         UserEntity userEntity = postEntity.getUser();
         List<TagEntity> tagEntities = postEntity.getTags();
-        return PostDTO.Summary.builder()
+        return PostDTO.PostSummaryDTO.builder()
                 .postId(postEntity.getPostId())
                 .title(postEntity.getTitle())
                 .userId(userEntity.getUserId())
@@ -26,17 +26,17 @@ public class DTOMapper {
                 .build();
     }
 
-    public static PostDTO.PostDetail postToDetail(PostEntity postEntity) {
+    public static PostDTO.PostDetailDTO postToDetail(PostEntity postEntity) {
         List<ModelEntity> modelEntities = postEntity.getModels();
         UserEntity userEntity = postEntity.getUser();
-        List<PostDTO.ModelInfo> model = modelEntities.stream().map(m ->
-                PostDTO.ModelInfo.builder()
+        List<PostDTO.ModelInfoDTO> model = modelEntities.stream().map(m ->
+                PostDTO.ModelInfoDTO.builder()
                         .version(m.getVersion())
                         .fileName(m.getFileName())
                         .commitMessage(m.getCommitMessage())
                         .build()
         ).toList();
-        return PostDTO.PostDetail.builder()
+        return PostDTO.PostDetailDTO.builder()
                 .postId(postEntity.getPostId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())

@@ -20,6 +20,7 @@ public interface UpdatePostUseCase {
     @AllArgsConstructor
     class UpdatePostCommand{
         private Long postId;
+        private Long userId;
         @NotBlank(message = "title cannot be blank")
         private String title;
         @NotBlank(message = "content cannot be blank")

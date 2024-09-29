@@ -1,7 +1,9 @@
 package com.kjs990114.goodong.adapter.in.web.dto;
 
 
+import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.post.Post.PostStatus;
+import com.kjs990114.goodong.domain.post.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +19,7 @@ public class PostDTO {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class Create{
+    public static class PostCreateDTO {
         @NotBlank(message = "title cannot be blank")
         private String title;
         @NotBlank(message = "Content cannot be blank")
@@ -31,7 +33,7 @@ public class PostDTO {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class Update{
+    public static class PostUpdateDTO {
         @NotBlank(message = "title cannot be blank")
         private String title;
         @NotBlank(message = "content cannot be blank")
@@ -48,7 +50,7 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Summary {
+    public static class PostSummaryDTO {
         private Long postId;
         private String title;
         private Long userId;
@@ -63,12 +65,12 @@ public class PostDTO {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class PostDetail {
+    public static class PostDetailDTO {
         private Long postId;
         private String title;
         private String content;
         private PostStatus status;
-        private List<ModelInfo> models;
+        private List<ModelInfoDTO> models;
         private Long userId;
         private String email;
         private String nickname;
@@ -79,6 +81,43 @@ public class PostDTO {
         private int likes;
         @Builder.Default
         private Boolean liked = false;
+
+        public static PostDetailDTO of(Post post, boolean liked){
+            return PostDetailDTO.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .status(post.getStatus())
+                    .models(post.getModels().stream()
+                            .map(model -> ModelInfoDTO.builder()
+                                    .version(model.getVersion())
+                                    .fileName(model.getFileName())
+                                    .commitMessage(model.getCommitMessage())
+                                    .build())
+                            .toList())
+                    .userId(post.getUser().getUserId())
+                    .email(post.getUser().getEmail())
+                    .nickname(post.getUser().getNickname())
+                    .createdAt(post.getCreatedAt())
+                    .lastModifiedAt(post.getLastModifiedAt())
+                    .tags(post.getTags().stream()
+                            .map(Tag::getTag)
+                            .toList())
+                    .comments(post.getComments().stream()
+                            .map(comment -> CommentInfo.builder()
+                                    .commentId(comment.getCommentId())
+                                    .userId(comment.getUser().getUserId())
+                                    .email(comment.getUser().getEmail())
+                                    .nickname(comment.getUser().getNickname())
+                                    .content(comment.getContent())
+                                    .createdAt(comment.getCreatedAt())
+                                    .lastModifiedAt(comment.getLastModifiedAt())
+                                    .build())
+                            .toList())
+                    .likes(post.getLikes().size())  // likes 수 계산
+                    .liked(liked)  // 현재 사용자가 좋아요를 눌렀는지 여부
+                    .build();
+        }
     }
 
     @Data
@@ -97,13 +136,13 @@ public class PostDTO {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class PostComment {
+    public static class CommentDTO {
         private String content;
     }
 
     @Getter
     @Builder
-    public static class ModelInfo {
+    public static class ModelInfoDTO {
         private Integer version;
         private String fileName;
         private String commitMessage;

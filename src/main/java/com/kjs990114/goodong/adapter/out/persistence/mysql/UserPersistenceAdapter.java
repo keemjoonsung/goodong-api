@@ -2,9 +2,9 @@ package com.kjs990114.goodong.adapter.out.persistence.mysql;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
-import com.kjs990114.goodong.application.port.out.mysql.DeleteUserPort;
-import com.kjs990114.goodong.application.port.out.mysql.SaveUserPort;
-import com.kjs990114.goodong.application.port.out.mysql.LoadUserPort;
+import com.kjs990114.goodong.application.port.out.db.DeleteUserPort;
+import com.kjs990114.goodong.application.port.out.db.SaveUserPort;
+import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.common.exception.NotFoundException;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.UserMapper;
@@ -23,7 +23,7 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
         return UserMapper.toDomain(userRepository.save(userEntity));
     }
     @Override
-    public void delete(Long userId){
+    public void deleteByUserId(Long userId){
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
         userEntity.softDelete();
         userRepository.save(userEntity);
