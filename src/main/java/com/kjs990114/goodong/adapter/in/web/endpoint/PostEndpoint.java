@@ -106,10 +106,11 @@ public class PostEndpoint {
                                                           @RequestParam(name = "all", defaultValue = "false") boolean allPage,
                                                           @RequestParam(name = "page", defaultValue = "0") int page) {
         Page<PostSummaryDTO> response;
-        Pageable pageable = allPage ? Pageable.unpaged(Sort.by("lastModifiedAt").descending()) : PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
         if(query != null && !query.isEmpty() && !query.isBlank()){
+            Pageable pageable = allPage ? Pageable.unpaged() : PageRequest.of(page, pageSize);
             response = searchPostsByPageUseCase.searchPostsByPage(new SearchPostsByPageQuery(query, pageable));
         }else {
+            Pageable pageable = allPage ? Pageable.unpaged(Sort.by("lastModifiedAt").descending()) : PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
             Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
             Long ownerId = userId == null ? viewerId : userId;
             response = getPostsByPageUseCase.getPostByPage(new LoadPostsByPageCommand(ownerId, viewerId, pageable));
