@@ -10,6 +10,7 @@ import java.util.List;
 @Entity(name = "post")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "user_id"})})
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

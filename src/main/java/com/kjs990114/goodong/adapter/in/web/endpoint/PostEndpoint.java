@@ -3,6 +3,8 @@ package com.kjs990114.goodong.adapter.in.web.endpoint;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
 import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
 import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase.CreatePostCommand;
+import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase;
+import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase.UpdatePostCommand;
 import com.kjs990114.goodong.application.service.*;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.PostEntity;
@@ -14,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.PartialUpdate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +31,8 @@ import java.util.List;
 public class PostEndpoint {
     private final CheckTokenUseCase checkTokenUseCase;
     private final CreatePostUseCase createPostUseCase;
-
-    //포스트 생성
+    private final UpdatePostUseCase updatePostUseCase;
+    //게시글 Create
     @PostMapping
     public ApiResponse<Void> createPost(@Valid PostDTO.Create create,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
@@ -46,7 +49,24 @@ public class PostEndpoint {
         return new ApiResponse<>("Post created successfully");
     }
 
-    // 유저의 posts
+    // 게시글 Update
+    @PatchMapping("/{postId}")
+    public ApiResponse<Void> updatePost(@PathVariable("postId") Long postId,
+                                        PostDTO.Update postDTO,
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
+        UpdatePostCommand updatePostCommand = UpdatePostCommand.builder()
+                .title(postDTO.getTitle())
+                .content(postDTO.getContent())
+                .commitMessage(postDTO.getCommitMessage())
+                .status(postDTO.getStatus())
+                .file(postDTO.getFile())
+                .tags(postDTO.getTags())
+                .postId(postId)
+                .build();
+        updatePostUseCase.updatePost(updatePostCommand);
+        return new ApiResponse<>("Update success");
+    }
+
     @GetMapping(params = "userId")
     public ApiResponse<RestPage<PostDTO.Summary>> getUserPosts(@RequestParam(name = "userId") Long userId,
                                                                @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token,
@@ -57,7 +77,6 @@ public class PostEndpoint {
         return new ApiResponse<>(response);
     }
 
-    // posts 검색
     @GetMapping(params = "query")
     public ApiResponse<Page<PostDTO.Summary>> searchPosts(@RequestParam("query") String keyword,
                                                           @RequestParam(name = "page", defaultValue = "0") int page) {
@@ -69,19 +88,6 @@ public class PostEndpoint {
         Long viewerId = userAuthService.getUserId(token);
         List<PostDTO.Summary> response = postService.getMyPosts(viewerId);
         return new ApiResponse<>(response);
-    }
-
-    // 게시글 Update
-    @PatchMapping("/{postId}")
-    public ApiResponse<Void> updatePost(@PathVariable("postId") Long postId,
-                                        PostDTO.Update postDTO,
-                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        Long userId = userAuthService.getUserId(token);
-        if (!userId.equals(postService.getPost(postId).getUserId())) {
-            throw new UnAuthorizedException("UnAuthorized Exception");
-        }
-        postService.updatePost(postId, postDTO);
-        return new ApiResponse<>("Update success");
     }
 
     // 게시글 Delete

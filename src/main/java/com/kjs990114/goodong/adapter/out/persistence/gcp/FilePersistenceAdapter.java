@@ -20,6 +20,7 @@ public class FilePersistenceAdapter implements StoreFilePort {
 
     @Override
     public String storeGlbFile(MultipartFile glbFile) throws IOException {
+        if(glbFile.isEmpty()) return "";
         String uuid = UUID.randomUUID().toString();
         storage.create(
                 BlobInfo.newBuilder(bucketName, uuid + ".glb").build(),

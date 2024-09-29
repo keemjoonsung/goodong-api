@@ -33,6 +33,9 @@ public class Post {
         PUBLIC,
         PRIVATE,
     }
+    public static Post of(Long postId){
+        return Post.builder().postId(postId).build();
+    }
     public void updateTitle(String title){
         this.title = title;
     }
@@ -88,12 +91,20 @@ public class Post {
     }
 
     // 게시글에 모델 추가
-    public void addModel(Model model) {
-        this.models.add(model);    // 모델 추가
+    public void addModel(String fileName, String commitMsg) {
+        if(fileName.isBlank() || fileName.isEmpty()) return;
+        int version = getNextModelVersion();
+        Model newModel = Model.builder()
+                .fileName(fileName)
+                .commitMessage(commitMsg)
+                .version(version)
+                .post(this)
+                .build();
+        this.models.add(newModel);    // 모델 추가
     }
 
     // 모델의 다음 버전 계산
-    public int getNextModelVersion() {
+    private int getNextModelVersion() {
         return models.stream()
                 .mapToInt(Model::getVersion)
                 .max()

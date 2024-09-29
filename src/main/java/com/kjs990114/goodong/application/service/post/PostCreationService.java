@@ -30,14 +30,7 @@ public class PostCreationService implements CreatePostUseCase {
         newPost.updateOwner(User.of(createPostCommand.getUserId()));
         newPost.addTagAll(createPostCommand.getTags());
         String fileName = storeFilePort.storeGlbFile(createPostCommand.getFile());
-        Model newModel = Model.builder()
-                .version(newPost.getNextModelVersion())
-                .commitMessage("First Commit")
-                .post(newPost)
-                .fileName(fileName)
-                .build();
-        newPost.addModel(newModel);
-
+        newPost.addModel(fileName, "First Commit");
         savePostPort.save(newPost);
     }
 }
