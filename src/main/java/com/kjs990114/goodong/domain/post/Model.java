@@ -7,7 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Model {
-
     private Long modelId;
     private Post post;
     private Integer version;

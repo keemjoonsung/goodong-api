@@ -11,4 +11,5 @@ public interface LoadPostPort {
     Post loadByPostId(Long postId);
     List<Post> loadByPostIds(List<Long> postIds);
     Page<Post> loadPageByUserIdBasedOnViewerId(Long userId, Long viewerId, Pageable pageable);
+    boolean existsByUserIdAndFileName(Long userId, String fileName);
 }

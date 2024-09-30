@@ -20,11 +20,10 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     public static class PostCreateDTO {
-        @NotBlank(message = "title cannot be blank")
         private String title;
-        @NotBlank(message = "Content cannot be blank")
         private String content;
-        private MultipartFile file;
+        private MultipartFile fileGlb;
+        private MultipartFile filePng;
         private PostStatus status;
         @Builder.Default
         private List<String> tags = new ArrayList<>();
@@ -96,7 +95,7 @@ public class PostDTO {
         @Builder.Default
         private Boolean liked = false;
 
-        public static PostDetailDTO of(Post post, boolean liked){
+        public static PostDetailDTO of(Post post, String storagePath ,boolean liked){
             return PostDetailDTO.builder()
                     .postId(post.getPostId())
                     .title(post.getTitle())
@@ -105,7 +104,7 @@ public class PostDTO {
                     .models(post.getModels().stream()
                             .map(model -> ModelInfoDTO.builder()
                                     .version(model.getVersion())
-                                    .fileName(model.getFileName())
+                                    .url(storagePath + model.getFileName())
                                     .commitMessage(model.getCommitMessage())
                                     .build())
                             .toList())
@@ -158,7 +157,7 @@ public class PostDTO {
     @Builder
     public static class ModelInfoDTO {
         private Integer version;
-        private String fileName;
+        private String url;
         private String commitMessage;
     }
 
@@ -166,9 +165,9 @@ public class PostDTO {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class AiResponse {
+    public static class PostMetadataDTO {
         private String title;
-        private String description;
+        private String content;
         private List<String> tags;
     }
 

@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.application.service.post;
 
 import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase;
-import com.kjs990114.goodong.application.port.out.gcp.StoreFilePort;
+import com.kjs990114.goodong.application.port.out.storage.StoreFilePort;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.application.port.out.db.SavePostPort;
 import com.kjs990114.goodong.domain.post.Post;
@@ -23,7 +23,7 @@ public class UpdatePostService implements UpdatePostUseCase {
         post.updateContent(updatePostCommand.getContent());
         post.updateStatus(updatePostCommand.getStatus());
         post.updateTag(updatePostCommand.getTags());
-        String fileName = storeFilePort.storeGlbFile(updatePostCommand.getFile());
+        String fileName = storeFilePort.storeFile(updatePostCommand.getFile());
         post.addModel(fileName, updatePostCommand.getCommitMessage());
         savePostPort.save(post);
     }

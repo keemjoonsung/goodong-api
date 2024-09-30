@@ -56,6 +56,11 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
     }
 
     @Override
+    public boolean existsByUserIdAndFileName(Long userId, String fileName) {
+        return postRepository.existsByUserIdAndFileName(userId, fileName);
+    }
+
+    @Override
     public void delete(Long postId, Long userId) {
         PostEntity postEntity = postRepository.findByPostIdAndUserId(postId, userId).orElseThrow(() -> new NotFoundException("User Not found"));
         postEntity.softDelete();

@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.application.service.post;
 
 import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
-import com.kjs990114.goodong.application.port.out.gcp.StoreFilePort;
+import com.kjs990114.goodong.application.port.out.storage.StoreFilePort;
 import com.kjs990114.goodong.application.port.out.db.SavePostPort;
 import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.user.User;
@@ -28,7 +28,7 @@ public class CreatePostService implements CreatePostUseCase {
         newPost.updateStatus(createPostCommand.getStatus());
         newPost.updateOwner(User.of(createPostCommand.getUserId()));
         newPost.updateTag(createPostCommand.getTags());
-        String fileName = storeFilePort.storeGlbFile(createPostCommand.getFile());
+        String fileName = storeFilePort.storeFile(createPostCommand.getFile());
         newPost.addModel(fileName, "First Commit");
         savePostPort.save(newPost);
     }

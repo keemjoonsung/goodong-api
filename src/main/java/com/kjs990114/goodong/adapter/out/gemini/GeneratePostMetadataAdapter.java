@@ -1,12 +1,13 @@
-package com.kjs990114.goodong.application.service;
+package com.kjs990114.goodong.adapter.out.gemini;
 
+import com.kjs990114.goodong.application.port.out.ai.GeneratePostMetadataPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatClient;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,14 +15,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-@Service
+@Repository
 @RequiredArgsConstructor
-public class AiService {
+public class GeneratePostMetadataAdapter implements GeneratePostMetadataPort {
 
     private final VertexAiGeminiChatClient geminiClient;
 
-    public List<String> getDescription(MultipartFile png_file) throws IOException {
-        byte[] imgBytes = png_file.getBytes();
+    @Override
+    public PostAttributes generatePost(MultipartFile filePng) throws IOException {
+        byte[] imgBytes = filePng.getBytes();
 
         UserMessage multiModalUserMessage = new UserMessage("""
                 You must give me three tagEntities, each composed of a noun.
@@ -42,10 +44,13 @@ public class AiService {
                 new Prompt(List.of(multiModalUserMessage))
         );
 
-        return Arrays.asList(response.getResult().getOutput().getContent().split("\\|"));
+        List<String> elements = Arrays.asList(response.getResult().getOutput().getContent().split("\\|"));
 
+        String title = elements.get(0);
+        String content = elements.get(1);
+        List<String> tags = Arrays.stream(elements.get(2).split(",")).toList();
+
+        return new PostAttributes(title,content,tags);
 
     }
-
 }
-

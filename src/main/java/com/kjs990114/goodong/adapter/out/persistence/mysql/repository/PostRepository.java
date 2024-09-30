@@ -46,18 +46,18 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     WHERE p.postId = :postId AND p.user.userId = :userId AND p.deletedAt IS NULL
     """)
     Optional<PostEntity> findByPostIdAndUserId(@Param("postId") Long postId, @Param("userId") Long userId);
-
-    @Query("""
-    SELECT p
-    FROM post p
-    WHERE p.user.userId = :userId AND p.deletedAt IS NULL
-    """)
-    List<PostEntity> findUserPostsAll(@Param("userId") Long userId);
-
+    
     @Query("""
     SELECT p
     FROM post p
     WHERE p.postId IN :postIds
     """)
     List<PostEntity> findAllByPostIds(@Param("postIds") List<Long> postIds);
+
+    @Query("""
+    SELECT COUNT(p) > 0
+    FROM post p, model m
+    WHERE m.post.postId = p.postId AND p.user.userId = :userId AND m.fileName = :fileName
+    """)
+    boolean existsByUserIdAndFileName(Long userId, String fileName);
 }

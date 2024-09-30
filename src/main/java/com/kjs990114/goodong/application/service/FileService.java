@@ -1,8 +1,8 @@
-//package com.kjs990114.goodong.application.service;
-//
-//import com.google.cloud.storage.Blob;
-//import com.google.cloud.storage.BlobInfo;
-//import com.google.cloud.storage.Storage;
+package com.kjs990114.goodong.application.service;
+
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 //import lombok.Getter;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.beans.factory.annotation.Value;
@@ -13,19 +13,20 @@
 //
 //import java.io.ByteArrayOutputStream;
 //import java.io.IOException;
+//import java.io.InputStream;
 //import java.util.UUID;
 //
 //@Service
 //@RequiredArgsConstructor
-//public class FileService {
+//public class FileService  {
 //    @Value("${spring.cloud.gcp.storage.bucket}")
 //    private String bucketName;
 //    private final Storage storage;
 //
-//    public Resource getFileResource(String fileName, Extension extension) {
-//        Blob blob = storage.get(bucketName, fileName + extension.getExtension());
+//    public Resource getFileResource(String fileName,) {
+//        Blob blob = storage.get(bucketName, fileName +".glb");
 //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        blob.downloadTo(outputStream);
+//        InputStream input = blob.reader();
 //
 //        return new ByteArrayResource(outputStream.toByteArray());
 //    }

@@ -2,9 +2,7 @@ package com.kjs990114.goodong.application.port.in.post;
 
 import com.kjs990114.goodong.domain.post.Post.PostStatus;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
