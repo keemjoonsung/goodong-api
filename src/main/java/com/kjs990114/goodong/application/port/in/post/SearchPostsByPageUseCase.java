@@ -12,7 +12,7 @@ public interface SearchPostsByPageUseCase {
     @Getter
     @AllArgsConstructor
     class SearchPostsByPageQuery{
-        String query;
-        Pageable pageable;
+        private String query;
+        private Pageable pageable;
     }
 }
