@@ -33,12 +33,9 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     public static class PostUpdateDTO {
-        @NotBlank(message = "title cannot be blank")
         private String title;
-        @NotBlank(message = "content cannot be blank")
         private String content;
-        private MultipartFile file;
-        @NotBlank(message = "commit message cannot be blank")
+        private MultipartFile fileGlb;
         private String commitMessage;
         private PostStatus status;
         @Builder.Default
@@ -179,12 +176,5 @@ public class PostDTO {
         private Long userId;
     }
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    public static class files {
-        private MultipartFile file;
-        private MultipartFile fileGlb;
-    }
 
 }

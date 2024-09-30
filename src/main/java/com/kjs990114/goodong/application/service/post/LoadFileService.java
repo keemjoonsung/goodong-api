@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 
@@ -18,6 +19,7 @@ public class LoadFileService implements GetFileResourceUseCase {
     private final LoadPostPort loadPostPort;
     private final LoadFilePort loadFilePort;
 
+    @Transactional
     @Override
     public Resource getFileResource(LoadFileResourceQuery loadFileResourceQuery) {
         Long userId = loadFileResourceQuery.getUserId();

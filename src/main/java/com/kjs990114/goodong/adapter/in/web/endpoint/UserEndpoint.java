@@ -1,41 +1,41 @@
-//package com.kjs990114.goodong.adapter.in.web.endpoint;
-//
-//import com.kjs990114.goodong.adapter.in.web.dto.PostDTO;
-//import com.kjs990114.goodong.application.service.FollowService;
-//import com.kjs990114.goodong.application.service.UserService;
-//import com.kjs990114.goodong.common.exception.UnAuthorizedException;
-//import com.kjs990114.goodong.adapter.in.web.dto.ApiResponse;
-//import com.kjs990114.goodong.adapter.in.web.dto.UserDTO;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.io.IOException;
-//import java.util.List;
-//
-//@RestController
-//@RequiredArgsConstructor
-//@RequestMapping("/api/users")
-//public class UserEndpoint {
-//
-//    private final UserAuthService userAuthService;
-//    private final UserService userService;
-//    private final FollowService followService;
-//
-//
-//    // 정보 반환
-//    @GetMapping("/{userId}")
-//    public ApiResponse<UserDTO.UserDetail> getUserProfile(@PathVariable("userId") Long userId,
-//                                                          @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
-//        Long viewerId = token == null ? null : userAuthService.getUserId(token);
-//        UserDTO.UserDetail userDetail = userService.getUserInfoDetail(userId);
-//        if (viewerId != null) {
-//            userDetail.setFollowed(followService.isFollowing(userId, viewerId));
-//        }
-//        userDetail.setFollowerCount(followService.getFollowerCount(userId));
-//        userDetail.setFollowingCount(followService.getFollowingCount(userId));
-//        return new ApiResponse<>(userDetail);
-//    }
+package com.kjs990114.goodong.adapter.in.web.endpoint;
+
+import com.kjs990114.goodong.adapter.in.web.dto.ApiResponse;
+import com.kjs990114.goodong.adapter.in.web.dto.UserDTO;
+import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.ContributionsDTO;
+import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.UserDetailDTO;
+import com.kjs990114.goodong.application.port.in.user.GetUserContributionUseCase;
+import com.kjs990114.goodong.application.port.in.user.GetUserContributionUseCase.LoadContributionQuery;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/users")
+public class UserEndpoint {
+
+    private final GetUserContributionUseCase getUserContributionUseCase;
+
+    @GetMapping("/{userId}/contributions")
+    public ApiResponse<ContributionsDTO> getContributionList(
+            @PathVariable("userId") Long userId
+    ) {
+        return new ApiResponse<>(getUserContributionUseCase.getContributions(new LoadContributionQuery(userId)));
+    }
+    // 정보 반환
+    @GetMapping("/{userId}")
+    public ApiResponse<UserDetailDTO> getUserProfile(@PathVariable("userId") Long userId,
+                                                     @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+        Long viewerId = token == null ? null : userAuthService.getUserId(token);
+        UserDTO.UserDetail userDetail = userService.getUserInfoDetail(userId);
+        if (viewerId != null) {
+            userDetail.setFollowed(followService.isFollowing(userId, viewerId));
+        }
+        userDetail.setFollowerCount(followService.getFollowerCount(userId));
+        userDetail.setFollowingCount(followService.getFollowingCount(userId));
+        return new ApiResponse<>(userDetail);
+    }
 //
 //    // 닉네임 혹은 프로필 이미지 변경
 //    @PatchMapping("/{userId}")
@@ -53,12 +53,6 @@
 //    }
 //
 //
-//    @GetMapping("/{userId}/contributions")
-//    public ApiResponse<List<UserDTO.UserContribution>> getContributionList(
-//            @PathVariable("userId") Long userId
-//    ) {
-//        return new ApiResponse<>(userService.getContributionList(userId));
-//    }
 //
 //    //팔로우
 //    @PostMapping("/follows")
@@ -117,6 +111,6 @@
 //        FOLLOWING,
 //        FOLLOWER
 //    }
-//
-//
-//}
+
+
+}

@@ -58,6 +58,7 @@ public class PostEndpoint {
         List<String> tags = postCreateDTO.getTags();
         if (autoCreate) {
             PostMetadataDTO postMetadata = generatePostMetadataUseCase.getPostMetadata(new GetPostMetadataQuery(postCreateDTO.getFilePng()));
+            System.out.println("postMetadata = " + postMetadata);
             title = postMetadata.getTitle();
             content = postMetadata.getContent();
             tags = postMetadata.getTags();
@@ -78,16 +79,16 @@ public class PostEndpoint {
     // 게시글 Update
     @PatchMapping("/{postId}")
     public ApiResponse<Void> updatePost(@PathVariable("postId") Long postId,
-                                        PostUpdateDTO postDTO,
+                                        PostUpdateDTO postUpdateDTO,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
         Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         UpdatePostCommand updatePostCommand = UpdatePostCommand.builder()
-                .title(postDTO.getTitle())
-                .content(postDTO.getContent())
-                .commitMessage(postDTO.getCommitMessage())
-                .status(postDTO.getStatus())
-                .file(postDTO.getFile())
-                .tags(postDTO.getTags())
+                .title(postUpdateDTO.getTitle())
+                .content(postUpdateDTO.getContent())
+                .commitMessage(postUpdateDTO.getCommitMessage())
+                .status(postUpdateDTO.getStatus())
+                .file(postUpdateDTO.getFileGlb())
+                .tags(postUpdateDTO.getTags())
                 .postId(postId)
                 .userId(userId)
                 .build();

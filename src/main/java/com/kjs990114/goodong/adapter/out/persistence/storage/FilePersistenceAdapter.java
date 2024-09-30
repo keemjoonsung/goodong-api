@@ -25,6 +25,7 @@ public class FilePersistenceAdapter implements StoreFilePort , LoadFilePort {
 
     @Override
     public String storeFile(MultipartFile file) throws IOException {
+        System.out.println("file: " + file);
         if(file == null || file.isEmpty() || file.getOriginalFilename() == null) return "";
         String fileExtension = "";
         String originalFileName = file.getOriginalFilename();

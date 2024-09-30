@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -71,16 +72,22 @@ public class User {
     }
 
     // 기여도 추가 또는 카운트 증가
-    public void updateContribution(Contribution contribution) {
+    public void updateContribution() {
         Contribution existedContribution = contributions.stream()
-                .filter(cont -> cont.getDate().equals(contribution.getDate()))
+                .filter(cont -> cont.getDate().equals(LocalDate.now()))
                 .findFirst()
                 .orElse(null);
 
         if (existedContribution != null) {
             existedContribution.setCount(existedContribution.getCount() + 1);
         } else {
-            contributions.add(contribution);
+            contributions.add(
+                    Contribution.builder()
+                            .user(this)
+                            .date(LocalDate.now())
+                            .count(1)
+                            .build()
+            );
         }
     }
 }

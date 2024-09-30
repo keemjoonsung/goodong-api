@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class LoadPostService implements GetPostDetailUseCase, GetPostsByPageUseC
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
+    @Transactional(readOnly = true)
     @Override
     public PostDetailDTO getPostDetail(LoadPostDetailCommand loadPostDetailCommand) {
         Long postId = loadPostDetailCommand.getPostId();
@@ -32,7 +34,7 @@ public class LoadPostService implements GetPostDetailUseCase, GetPostsByPageUseC
         return PostDetailDTO.of(post, url, isLiked);
     }
 
-
+    @Transactional(readOnly = true)
     @Override
     public Page<PostSummaryDTO> getPostByPage(LoadPostsByPageCommand loadPostsByPageCommand) {
         Long userId = loadPostsByPageCommand.getUserId();

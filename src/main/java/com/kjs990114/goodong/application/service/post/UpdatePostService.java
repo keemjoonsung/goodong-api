@@ -5,8 +5,10 @@ import com.kjs990114.goodong.application.port.out.storage.StoreFilePort;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.application.port.out.db.SavePostPort;
 import com.kjs990114.goodong.domain.post.Post;
+import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -16,6 +18,8 @@ public class UpdatePostService implements UpdatePostUseCase {
     private final LoadPostPort loadPostPort;
     private final SavePostPort savePostPort;
     private final StoreFilePort storeFilePort;
+
+    @Transactional
     @Override
     public void updatePost(UpdatePostCommand updatePostCommand) throws IOException {
         Post post = loadPostPort.loadByPostIdAndUserId(updatePostCommand.getPostId(), updatePostCommand.getUserId());

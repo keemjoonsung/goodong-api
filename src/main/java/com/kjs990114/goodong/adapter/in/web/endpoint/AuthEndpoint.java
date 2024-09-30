@@ -3,7 +3,7 @@ package com.kjs990114.goodong.adapter.in.web.endpoint;
 import com.kjs990114.goodong.adapter.in.web.dto.ApiResponse;
 import com.kjs990114.goodong.adapter.in.web.dto.UserDTO;
 import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.LoginDTO;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.Password;
+import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.PasswordDTO;
 import com.kjs990114.goodong.application.port.in.auth.*;
 import com.kjs990114.goodong.application.port.in.auth.ChangePasswordUseCase.PasswordQuery;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
@@ -35,8 +35,8 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/register")
-    public ApiResponse<Void> register(@Valid @RequestBody UserDTO.Register registerDTO) {
-        RegisterCommand registerCommand = new RegisterCommand(registerDTO.getEmail(), registerDTO.getNickname(), registerDTO.getPassword());
+    public ApiResponse<Void> register(@Valid @RequestBody UserDTO.UserRegisterDTO userRegisterDTO) {
+        RegisterCommand registerCommand = new RegisterCommand(userRegisterDTO.getEmail(), userRegisterDTO.getNickname(), userRegisterDTO.getPassword());
         registerUseCase.register(registerCommand);
         return new ApiResponse<>("Register Success");
     }
@@ -60,20 +60,20 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/register/check-password")
-    public ApiResponse<Boolean> checkPassword(@RequestBody Password password) {
-        return new ApiResponse<>(registerUseCase.isValidPassword(password.getPassword()));
+    public ApiResponse<Boolean> checkPassword(@RequestBody PasswordDTO passwordDTO) {
+        return new ApiResponse<>(registerUseCase.isValidPassword(passwordDTO.getPassword()));
     }
 
     @GetMapping("/check-token")
-    public ApiResponse<UserDTO.UserSummary> checkToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ApiResponse<UserDTO.UserSummaryDTO> checkToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return new ApiResponse<>("Token validation successful", checkTokenUseCase.checkToken(new TokenQuery(token)));
     }
 
     @PutMapping("/password")
-    public ApiResponse<Void> changePassword(@RequestBody Password password,
+    public ApiResponse<Void> changePassword(@RequestBody PasswordDTO passwordDTO,
                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
-        PasswordQuery passwordQuery = new PasswordQuery(userId, password.getPassword());
+        PasswordQuery passwordQuery = new PasswordQuery(userId, passwordDTO.getPassword());
         changePasswordUseCase.changePassword(passwordQuery);
         return new ApiResponse<>("Password change success");
     }

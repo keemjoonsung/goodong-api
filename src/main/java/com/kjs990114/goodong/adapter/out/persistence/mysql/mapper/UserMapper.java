@@ -28,7 +28,7 @@ public class UserMapper {
                                 .contId(cont.getContId())
                                 .count(cont.getCount())
                                 .date(cont.getDate())
-                                .user(UserEntity.builder().userId(user.getUserId()).build())
+                                .user(UserEntity.of(user.getUserId()))
                                 .build()
                         ).toList())
                 .followers(user.getFollowers()
@@ -54,7 +54,7 @@ public class UserMapper {
                                 .count(contributionEntity.getCount())
                                 .date(contributionEntity.getDate())
                                 .user(User.of(contributionEntity.getUser().getUserId()))
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                 .followers(userEntity.getFollowers().stream().map(UserMapper::toFollowDomain).collect(Collectors.toSet()))
                 .followings(userEntity.getFollowings().stream().map(UserMapper::toFollowDomain).collect(Collectors.toSet()))
                 .build();

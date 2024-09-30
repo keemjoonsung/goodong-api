@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.adapter.in.web.dto;
 
-import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.ContributionEntity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -16,7 +15,7 @@ public class UserDTO {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class Register {
+    public static class UserRegisterDTO {
         @Email(message = "Invalid email format")  // 이메일 형식 검사
         @NotBlank(message = "Email cannot be blank")  // 빈 값 허용하지 않음
         private String email;
@@ -37,7 +36,7 @@ public class UserDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class UserSummary {
+    public static class UserSummaryDTO {
         private Long userId;
         private String email;
         private String nickname;
@@ -48,7 +47,7 @@ public class UserDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class UserDetail {
+    public static class UserDetailDTO {
         private Long userId;
         private String email;
         private String nickname;
@@ -71,22 +70,24 @@ public class UserDTO {
 
     @Data
     @Builder
-    public static class UserContributionList {
-        List<ContributionEntity> contributionEntities;
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ContributionsDTO {
+        private List<UserContributionDTO> contributions;
     }
 
     @Data
     @Builder
     @AllArgsConstructor
-    public static class UserContribution {
-        LocalDate date;
-        int count;
+    public static class UserContributionDTO {
+        private LocalDate date;
+        private int count;
     }
 
     @Data
     @Builder
     @AllArgsConstructor
-    public static class UpdateUser {
+    public static class UpdateUserDTO {
         private MultipartFile profileImage;
         private String nickname;
     }
@@ -95,7 +96,7 @@ public class UserDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Password{
+    public static class PasswordDTO {
         private String password;
     }
 

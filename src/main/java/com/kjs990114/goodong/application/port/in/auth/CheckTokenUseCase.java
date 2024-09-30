@@ -5,7 +5,7 @@ import lombok.Getter;
 import static com.kjs990114.goodong.adapter.in.web.dto.UserDTO.*;
 
 public interface CheckTokenUseCase {
-    UserSummary checkToken(TokenQuery token);
+    UserSummaryDTO checkToken(TokenQuery token);
 
     @Getter
     @AllArgsConstructor

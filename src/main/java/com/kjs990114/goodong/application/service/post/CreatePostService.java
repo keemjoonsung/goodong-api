@@ -1,6 +1,7 @@
 package com.kjs990114.goodong.application.service.post;
 
 import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase;
+import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.application.port.out.storage.StoreFilePort;
 import com.kjs990114.goodong.application.port.out.db.SavePostPort;
 import com.kjs990114.goodong.domain.post.Post;
@@ -18,15 +19,17 @@ public class CreatePostService implements CreatePostUseCase {
 
     private final SavePostPort savePostPort;
     private final StoreFilePort storeFilePort;
+    private final LoadUserPort loadUserPort;
     @Transactional
     @Override
     public void createPost(CreatePostCommand createPostCommand) throws IOException {
 
         Post newPost = new Post();
+        User owner = loadUserPort.loadByUserId(createPostCommand.getUserId());
         newPost.updateTitle(createPostCommand.getTitle());
         newPost.updateContent(createPostCommand.getContent());
         newPost.updateStatus(createPostCommand.getStatus());
-        newPost.updateOwner(User.of(createPostCommand.getUserId()));
+        newPost.updateOwner(owner);
         newPost.updateTag(createPostCommand.getTags());
         String fileName = storeFilePort.storeFile(createPostCommand.getFile());
         newPost.addModel(fileName, "First Commit");

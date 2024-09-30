@@ -100,6 +100,8 @@ public class Post {
 
     // 게시글에 모델 추가
     public void addModel(String fileName, String commitMsg) {
+        System.out.println("실행");
+        System.out.println("fileName = " + fileName);
         if(fileName.isBlank() || fileName.isEmpty()) return;
         int version = getNextModelVersion();
         Model newModel = Model.builder()
@@ -108,9 +110,10 @@ public class Post {
                 .version(version)
                 .post(this)
                 .build();
-        this.models.add(newModel);    // 모델 추가
+        this.models.add(newModel);
+        this.user.updateContribution();
+        System.out.println("user의 contribution: " + user.getContributions());
     }
-
     // 모델의 다음 버전 계산
     private int getNextModelVersion() {
         return models.stream()
