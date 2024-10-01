@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.port.in.user;
 
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.ContributionsDTO;
+import com.kjs990114.goodong.application.dto.UserDTO.ContributionsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

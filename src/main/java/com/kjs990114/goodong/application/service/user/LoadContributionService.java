@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.application.service.user;
 
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.ContributionsDTO;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.UserContributionDTO;
+import com.kjs990114.goodong.application.dto.UserDTO.ContributionsDTO;
+import com.kjs990114.goodong.application.dto.UserDTO.UserContributionDTO;
 import com.kjs990114.goodong.application.port.in.user.GetUserContributionUseCase;
 import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.domain.user.Contribution;

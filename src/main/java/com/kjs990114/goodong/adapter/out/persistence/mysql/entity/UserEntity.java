@@ -37,14 +37,6 @@ public class UserEntity extends BaseTimeEntity {
     @Builder.Default
     private List<ContributionEntity> contributions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<FollowEntity> followings = new HashSet<>();
-
-    @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<FollowEntity> followers = new HashSet<>();
-
     public enum Role {
         USER,
         ADMIN

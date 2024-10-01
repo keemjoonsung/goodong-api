@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.adapter.in.web.dto;
+package com.kjs990114.goodong.application.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

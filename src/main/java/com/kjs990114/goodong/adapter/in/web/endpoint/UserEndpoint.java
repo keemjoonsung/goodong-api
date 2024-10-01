@@ -1,13 +1,10 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
-import com.kjs990114.goodong.adapter.in.web.dto.ApiResponse;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.ContributionsDTO;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.UserDetailDTO;
+import com.kjs990114.goodong.application.dto.ApiResponse;
+import com.kjs990114.goodong.application.dto.UserDTO.ContributionsDTO;
 import com.kjs990114.goodong.application.port.in.user.GetUserContributionUseCase;
 import com.kjs990114.goodong.application.port.in.user.GetUserContributionUseCase.LoadContributionQuery;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,18 +21,18 @@ public class UserEndpoint {
         return new ApiResponse<>(getUserContributionUseCase.getContributions(new LoadContributionQuery(userId)));
     }
     // 정보 반환
-    @GetMapping("/{userId}")
-    public ApiResponse<UserDetailDTO> getUserProfile(@PathVariable("userId") Long userId,
-                                                     @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        Long viewerId = token == null ? null : userAuthService.getUserId(token);
-        UserDTO.UserDetail userDetail = userService.getUserInfoDetail(userId);
-        if (viewerId != null) {
-            userDetail.setFollowed(followService.isFollowing(userId, viewerId));
-        }
-        userDetail.setFollowerCount(followService.getFollowerCount(userId));
-        userDetail.setFollowingCount(followService.getFollowingCount(userId));
-        return new ApiResponse<>(userDetail);
-    }
+//    @GetMapping("/{userId}")
+//    public ApiResponse<UserDetailDTO> getUserProfile(@PathVariable("userId") Long userId,
+//                                                     @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
+//        Long viewerId = token == null ? null : userAuthService.getUserId(token);
+//        UserDTO.UserDetail userDetail = userService.getUserInfoDetail(userId);
+//        if (viewerId != null) {
+//            userDetail.setFollowed(followService.isFollowing(userId, viewerId));
+//        }
+//        userDetail.setFollowerCount(followService.getFollowerCount(userId));
+//        userDetail.setFollowingCount(followService.getFollowingCount(userId));
+//        return new ApiResponse<>(userDetail);
+//    }
 //
 //    // 닉네임 혹은 프로필 이미지 변경
 //    @PatchMapping("/{userId}")

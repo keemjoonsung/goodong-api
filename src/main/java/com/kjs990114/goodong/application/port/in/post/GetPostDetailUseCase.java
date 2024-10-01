@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.port.in.post;
 
-import com.kjs990114.goodong.adapter.in.web.dto.PostDTO.PostDetailDTO;
+import com.kjs990114.goodong.application.dto.PostDTO.PostDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

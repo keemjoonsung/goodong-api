@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.service.post;
 
-import com.kjs990114.goodong.adapter.in.web.dto.PostDTO.PostMetadataDTO;
+import com.kjs990114.goodong.application.dto.PostDTO.PostMetadataDTO;
 import com.kjs990114.goodong.application.port.in.post.GeneratePostMetadataUseCase;
 import com.kjs990114.goodong.application.port.out.ai.GeneratePostMetadataPort;
 import com.kjs990114.goodong.application.port.out.ai.GeneratePostMetadataPort.PostAttributes;

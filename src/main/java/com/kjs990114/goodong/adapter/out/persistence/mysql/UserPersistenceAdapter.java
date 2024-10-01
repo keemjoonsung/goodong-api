@@ -6,10 +6,13 @@ import com.kjs990114.goodong.application.port.out.db.DeleteUserPort;
 import com.kjs990114.goodong.application.port.out.db.SaveUserPort;
 import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,9 +50,12 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
 
     }
 
+
     @Override
     public boolean existsByNickname(String nickname) {
         return userRepository.findByNickname(nickname).isPresent();
     }
+
+
 
 }

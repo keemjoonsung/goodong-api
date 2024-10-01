@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.service.post;
 
-import com.kjs990114.goodong.adapter.in.web.dto.PostDTO.PostSummaryDTO;
+import com.kjs990114.goodong.application.dto.PostDTO.PostSummaryDTO;
 import com.kjs990114.goodong.application.port.in.post.SearchPostsByPageUseCase;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.application.port.out.search.SearchPostPort;

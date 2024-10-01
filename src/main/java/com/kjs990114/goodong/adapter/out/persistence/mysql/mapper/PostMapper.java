@@ -24,7 +24,7 @@ public class PostMapper {
                                 .commitMessage(modelEntity.getCommitMessage())
                                 .post(Post.of(modelEntity.getPost().getPostId()))
                                 .build()).collect(Collectors.toList()))
-                .comments(postEntity.getCommentEntities().stream().map(
+                .comments(postEntity.getComments().stream().map(
                         commentEntity -> Comment.builder()
                                 .commentId(commentEntity.getCommentId())
                                 .content(commentEntity.getContent())
@@ -66,7 +66,7 @@ public class PostMapper {
                         .fileName(model.getFileName())
                         .build()).toList());
 
-        postEntity.setCommentEntities(post.getComments().stream().map(
+        postEntity.setComments(post.getComments().stream().map(
                 comment -> CommentEntity.builder()
                         .commentId(comment.getCommentId())
                         .post(postEntity)

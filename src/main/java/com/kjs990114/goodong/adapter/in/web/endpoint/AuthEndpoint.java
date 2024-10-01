@@ -1,9 +1,9 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
-import com.kjs990114.goodong.adapter.in.web.dto.ApiResponse;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.LoginDTO;
-import com.kjs990114.goodong.adapter.in.web.dto.UserDTO.PasswordDTO;
+import com.kjs990114.goodong.application.dto.ApiResponse;
+import com.kjs990114.goodong.application.dto.UserDTO;
+import com.kjs990114.goodong.application.dto.UserDTO.LoginDTO;
+import com.kjs990114.goodong.application.dto.UserDTO.PasswordDTO;
 import com.kjs990114.goodong.application.port.in.auth.*;
 import com.kjs990114.goodong.application.port.in.auth.ChangePasswordUseCase.PasswordQuery;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;

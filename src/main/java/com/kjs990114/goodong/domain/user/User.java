@@ -2,6 +2,7 @@ package com.kjs990114.goodong.domain.user;
 
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity.Role;
+import com.kjs990114.goodong.domain.social.Follow;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,32 +29,9 @@ public class User {
     private Role role = Role.USER;
     @Builder.Default
     private List<Contribution> contributions = new ArrayList<>();
-    @Builder.Default
-    private Set<Follow> followings = new HashSet<>();
-    @Builder.Default
-    private Set<Follow> followers = new HashSet<>();
 
     public static User of(Long userId){
         return User.builder().userId(userId).build();
-    }
-    // 팔로우 추가
-    public void follow(Follow follow) {
-        this.followings.add(follow);
-    }
-
-    // 팔로우 삭제
-    public void unfollow(Long followeeId) {
-        this.followings.removeIf(f -> f.getFollowee().getUserId().equals(followeeId));
-    }
-
-    // 팔로워 추가
-    public void addFollower(Follow follower) {
-        this.followers.add(follower);
-    }
-
-    // 팔로워 삭제
-    public void deleteFollower(Long followerId) {
-        this.followings.removeIf(f -> f.getFollower().getUserId().equals(followerId));
     }
 
     // 닉네임 변경
