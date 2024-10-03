@@ -1,8 +1,9 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
 import com.kjs990114.goodong.application.dto.ApiResponse;
-import com.kjs990114.goodong.application.dto.PostDTO;
+
 import com.kjs990114.goodong.application.dto.PostDTO.*;
+import com.kjs990114.goodong.application.dto.PostSummaryDTO;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
 import com.kjs990114.goodong.application.port.in.file.GetFileResourceUseCase;
@@ -59,12 +60,10 @@ public class PostEndpoint {
         List<String> tags = postCreateDTO.getTags();
         if (autoCreate) {
             PostMetadataDTO postMetadata = generatePostMetadataUseCase.getPostMetadata(new GetPostMetadataQuery(postCreateDTO.getFilePng()));
-            System.out.println("postMetadata = " + postMetadata);
             title = postMetadata.getTitle();
             content = postMetadata.getContent();
             tags = postMetadata.getTags();
         }
-        System.out.println("content : " + content);
         CreatePostCommand createPostCommand = CreatePostCommand.builder()
                 .userId(userId)
                 .title(title)
@@ -114,7 +113,6 @@ public class PostEndpoint {
     ) {
         Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         PostDetailDTO response = getPostDetailUseCase.getPostDetail(new LoadPostDetailCommand(postId, viewerId));
-
         return new ApiResponse<>(response);
     }
 

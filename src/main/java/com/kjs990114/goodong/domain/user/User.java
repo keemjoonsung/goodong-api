@@ -2,7 +2,6 @@ package com.kjs990114.goodong.domain.user;
 
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity.Role;
-import com.kjs990114.goodong.domain.social.Follow;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,9 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Builder
@@ -36,21 +33,27 @@ public class User {
 
     // 닉네임 변경
     public void updateNickname(String nickname) {
-        this.nickname = nickname;
+        if(nickname != null) {
+            this.nickname = nickname;
+        }
     }
 
     // 프로필 이미지 변경
     public void updateProfileImage(String profileImage) {
-        this.profileImage = profileImage;
+        if(profileImage != null) {
+            this.profileImage = profileImage;
+        }
     }
 
     // 비밀번호 변경
     public void changePassword(String newPassword) {
-        this.password = newPassword;
+        if(newPassword != null) {
+            this.password = newPassword;
+        }
     }
 
     // 기여도 추가 또는 카운트 증가
-    public void updateContribution() {
+    public void addContribution() {
         Contribution existedContribution = contributions.stream()
                 .filter(cont -> cont.getDate().equals(LocalDate.now()))
                 .findFirst()

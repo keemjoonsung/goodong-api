@@ -23,13 +23,10 @@ public class CreatePostService implements CreatePostUseCase {
     @Transactional
     @Override
     public void createPost(CreatePostCommand createPostCommand) throws IOException {
-
-        Post newPost = new Post();
-        User owner = loadUserPort.loadByUserId(createPostCommand.getUserId());
+        Post newPost = Post.of(null, createPostCommand.getUserId());
         newPost.updateTitle(createPostCommand.getTitle());
         newPost.updateContent(createPostCommand.getContent());
         newPost.updateStatus(createPostCommand.getStatus());
-        newPost.updateOwner(owner);
         newPost.updateTag(createPostCommand.getTags());
         String fileName = storeFilePort.storeFile(createPostCommand.getFile());
         newPost.addModel(fileName, "First Commit");

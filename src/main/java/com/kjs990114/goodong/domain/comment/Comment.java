@@ -1,6 +1,7 @@
-package com.kjs990114.goodong.domain.post;
+package com.kjs990114.goodong.domain.comment;
 
 
+import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.*;
 
@@ -15,9 +16,8 @@ public class Comment {
 
     private Long commentId;
     private String content;
-    private User user;
-    private Post post;
+    private Long userId;
+    private Long postId;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
-
 }

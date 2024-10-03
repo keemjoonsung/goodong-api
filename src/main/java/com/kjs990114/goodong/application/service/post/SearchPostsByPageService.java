@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.service.post;
 
-import com.kjs990114.goodong.application.dto.PostDTO.PostSummaryDTO;
+import com.kjs990114.goodong.application.dto.PostSummaryDTO;
 import com.kjs990114.goodong.application.port.in.post.SearchPostsByPageUseCase;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.application.port.out.search.SearchPostPort;
@@ -30,7 +30,8 @@ public class SearchPostsByPageService implements SearchPostsByPageUseCase {
         Page<Post> tmpPage = searchPostPort.searchPost(query,pageable);
         List<Long> postIdList = tmpPage.stream().map(Post::getPostId).toList();
         Page<Post> postsList = new PageImpl<>(loadPostPort.loadByPostIds(postIdList), pageable, tmpPage.getTotalElements());
-        return postsList.map(PostSummaryDTO::of);
+//        return postsList.map(PostSummaryDTO::of);
+        return null;
 
     }
 }

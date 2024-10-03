@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.mapper;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.FollowEntity;
-import com.kjs990114.goodong.domain.social.Follow;
+import com.kjs990114.goodong.domain.follow.Follow;
 
 public class FollowMapper {
 

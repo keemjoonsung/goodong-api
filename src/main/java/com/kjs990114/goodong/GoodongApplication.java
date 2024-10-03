@@ -14,5 +14,4 @@ public class GoodongApplication {
         SpringApplication.run(GoodongApplication.class, args);
     }
 
-
 }

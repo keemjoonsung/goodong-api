@@ -1,18 +1,15 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.UserMapper;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
 import com.kjs990114.goodong.application.port.out.db.DeleteUserPort;
-import com.kjs990114.goodong.application.port.out.db.SaveUserPort;
 import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
+import com.kjs990114.goodong.application.port.out.db.SaveUserPort;
 import com.kjs990114.goodong.common.exception.NotFoundException;
-import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
-import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,9 +18,9 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
     private final UserRepository userRepository;
 
     @Override
-    public User save(User user) {
+    public Long save(User user) {
         UserEntity userEntity = UserMapper.toEntity(user);
-        return UserMapper.toDomain(userRepository.save(userEntity));
+        return userRepository.save(userEntity).getUserId();
     }
     @Override
     public void deleteByUserId(Long userId){

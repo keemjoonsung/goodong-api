@@ -5,7 +5,6 @@ import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.domain.user.Contribution;
 import com.kjs990114.goodong.domain.user.User;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserMapper {
@@ -49,16 +48,5 @@ public class UserMapper {
                                 .build()).collect(Collectors.toList()))
                 .build();
 
-    }
-
-
-    public static List<Contribution> toContributionDomain(List<ContributionEntity> contributionEntities){
-        return contributionEntities.stream().map(
-                contributionEntity -> Contribution.builder()
-                        .contId(contributionEntity.getContId())
-                        .date(contributionEntity.getDate())
-                        .count(contributionEntity.getCount())
-                        .user(User.of(contributionEntity.getUser().getUserId()))
-                        .build()).toList();
     }
 }

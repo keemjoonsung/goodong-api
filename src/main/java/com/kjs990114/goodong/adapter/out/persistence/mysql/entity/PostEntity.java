@@ -1,6 +1,8 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
+
 import com.kjs990114.goodong.common.time.BaseTimeEntity;
 import com.kjs990114.goodong.domain.post.Post.PostStatus;
+import com.kjs990114.goodong.domain.post.Tag;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,37 +21,27 @@ public class PostEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
+    private Long userId;
+
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false,columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<ModelEntity> models = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<CommentEntity> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<LikeEntity> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<TagEntity> tags = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private PostStatus status = PostStatus.PUBLIC;
 
-    public static PostEntity of(Long postId){
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ModelEntity> models = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
+    @Builder.Default
+    private List<TagEntity> tags = new ArrayList<>();
+
+    public static PostEntity of(Long postId) {
         return PostEntity.builder().postId(postId).build();
     }
 

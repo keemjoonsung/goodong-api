@@ -1,5 +1,6 @@
-package com.kjs990114.goodong.domain.post;
+package com.kjs990114.goodong.domain.like;
 
+import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.*;
 
@@ -11,6 +12,6 @@ import lombok.*;
 public class Like {
 
     private Long likeId;
-    private Post post;
-    private User user;
+    private Long postId;
+    private Long userId;
 }

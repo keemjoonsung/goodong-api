@@ -1,7 +1,6 @@
-package com.kjs990114.goodong.domain.social;
+package com.kjs990114.goodong.domain.follow;
 
 
-import com.kjs990114.goodong.domain.user.User;
 import lombok.*;
 
 @Getter

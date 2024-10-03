@@ -32,10 +32,8 @@ public class SearchAdapter implements SearchPostPort {
                 )
                 .withPageable(pageable)
                 .build();
-        System.out.println("ㅇㅇ");
         SearchHits<PostDocument> searchHits = elasticsearchOperations.search(searchQuery, PostDocument.class);
-        System.out.println("ㅇㅇ1");
-        List<Post> postIdList = searchHits.stream().map(hit -> Post.of(hit.getContent().getPostId())).toList();
+        List<Post> postIdList = searchHits.stream().map(hit -> Post.of(hit.getContent().getPostId(),null)).toList();
         return new PageImpl<>(postIdList, pageable, searchHits.getTotalHits());
 
     }

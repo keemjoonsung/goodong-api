@@ -28,5 +28,4 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "WHERE user.userId = :userId AND user.deletedAt IS NULL")
     Optional<UserEntity> findByUserId(@Param("userId") Long userId);
 
-
 }

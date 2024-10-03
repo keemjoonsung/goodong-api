@@ -1,5 +1,7 @@
 package com.kjs990114.goodong.domain.post;
 
+import com.kjs990114.goodong.domain.comment.Comment;
+import com.kjs990114.goodong.domain.like.Like;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,13 +21,9 @@ public class Post {
     private Long postId;
     private String title;
     private String content;
-    private User user;  // 도메인 객체로 참조
+    private Long userId;  // 도메인 객체로 참조
     @Builder.Default
     private List<Model> models = new ArrayList<>();
-    @Builder.Default
-    private List<Comment> comments = new ArrayList<>();
-    @Builder.Default
-    private List<Like> likes = new ArrayList<>();
     @Builder.Default
     private List<Tag> tags = new ArrayList<>();
     @Builder.Default
@@ -38,55 +36,24 @@ public class Post {
         PUBLIC,
         PRIVATE,
     }
-    public static Post of(Long postId){
-        return Post.builder().postId(postId).build();
+    public static Post of(Long postId, Long userId){
+        return Post.builder().postId(postId).userId(userId).build();
     }
     public void updateTitle(String title){
-        this.title = title;
+        if(title != null) {
+            this.title = title;
+        }
     }
     public void updateContent(String content){
-        this.content = content;
+        if(content != null) {
+            this.content = content;
+        }
     }
     public void updateStatus(PostStatus status) {
-         this.status = status;
+        if(status != null) {
+            this.status = status;
+        }
     }
-    public void updateOwner(User user){
-        this.user = user;
-    }
-    public int getLikeCount() {
-        return likes.size();
-    }
-
-    // 댓글 추가
-    public void addComment(Comment comment) {
-        comments.add(comment);
-        comment.setPost(this);
-    }
-
-    // 댓글 삭제
-    public void deleteComment(Comment comment) {
-        comments.remove(comment);
-    }
-
-    // 좋아요 추가
-    public void like(Like like) {
-        likes.add(like);
-    }
-
-    // 좋아요 삭제
-    public void unLike(Like like) {
-        likes.remove(like);
-    }
-    public boolean isLikedBy(Long userId){
-        return this.likes.stream().anyMatch(like -> like.getUser().getUserId().equals(userId));
-    }
-
-
-    // 게시물에 태그 clear
-    private void removeTagAll() {
-        this.tags.clear();
-    }
-
     // 게시물에 태그 전체 추가
     public void updateTag(List<String> tags) {
         if (tags != null) {
@@ -100,8 +67,6 @@ public class Post {
 
     // 게시글에 모델 추가
     public void addModel(String fileName, String commitMsg) {
-        System.out.println("실행");
-        System.out.println("fileName = " + fileName);
         if(fileName.isBlank() || fileName.isEmpty()) return;
         int version = getNextModelVersion();
         Model newModel = Model.builder()
@@ -111,9 +76,13 @@ public class Post {
                 .post(this)
                 .build();
         this.models.add(newModel);
-        this.user.updateContribution();
-        System.out.println("user의 contribution: " + user.getContributions());
     }
+
+    // 게시물에 태그 clear
+    private void removeTagAll() {
+        this.tags.clear();
+    }
+
     // 모델의 다음 버전 계산
     private int getNextModelVersion() {
         return models.stream()
