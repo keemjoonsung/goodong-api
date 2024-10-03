@@ -4,6 +4,7 @@ import com.kjs990114.goodong.application.dto.ApiResponse;
 import com.kjs990114.goodong.application.dto.UserDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.LoginDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.PasswordDTO;
+import com.kjs990114.goodong.application.dto.UserDTO.UserRegisterDTO;
 import com.kjs990114.goodong.application.port.in.auth.*;
 import com.kjs990114.goodong.application.port.in.auth.ChangePasswordUseCase.PasswordQuery;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
@@ -35,7 +36,7 @@ public class AuthEndpoint {
     }
 
     @PostMapping("/register")
-    public ApiResponse<Void> register(@Valid @RequestBody UserDTO.UserRegisterDTO userRegisterDTO) {
+    public ApiResponse<Void> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
         RegisterCommand registerCommand = new RegisterCommand(userRegisterDTO.getEmail(), userRegisterDTO.getNickname(), userRegisterDTO.getPassword());
         registerUseCase.register(registerCommand);
         return new ApiResponse<>("Register Success");

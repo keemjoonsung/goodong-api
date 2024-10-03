@@ -1,4 +1,6 @@
 package com.kjs990114.goodong.application.port.in.auth;
+
+import com.kjs990114.goodong.application.dto.UserDTO.UserSummaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,7 +10,7 @@ public interface CheckTokenUseCase {
     @Getter
     @AllArgsConstructor
     class TokenQuery{
-        String jwt;
+        private String jwt;
 
 
     }

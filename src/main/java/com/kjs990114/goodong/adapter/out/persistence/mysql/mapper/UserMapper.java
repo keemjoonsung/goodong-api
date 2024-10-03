@@ -1,17 +1,13 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.mapper;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.ContributionEntity;
-import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.FollowEntity;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.domain.user.Contribution;
-import com.kjs990114.goodong.domain.social.Follow;
 import com.kjs990114.goodong.domain.user.User;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
 public class UserMapper {
 
     public static UserEntity toEntity(User user) {
@@ -55,21 +51,7 @@ public class UserMapper {
 
     }
 
-    private static Follow toFollowDomain(FollowEntity followEntity) {
-        return Follow.builder()
-                .followId(followEntity.getId())
-                .followerId(followEntity.getFollowerId())
-                .followeeId(followEntity.getFolloweeId())
-                .build();
-    }
 
-    private static FollowEntity toFollowEntity(Follow follow) {
-        return FollowEntity.builder()
-                .id(follow.getFollowId())
-                .followerId(follow.getFollowerId())
-                .followeeId(follow.getFolloweeId())
-                .build();
-    }
     public static List<Contribution> toContributionDomain(List<ContributionEntity> contributionEntities){
         return contributionEntities.stream().map(
                 contributionEntity -> Contribution.builder()

@@ -1,6 +1,8 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
 import com.kjs990114.goodong.application.dto.ApiResponse;
+import com.kjs990114.goodong.application.dto.PostDTO;
+import com.kjs990114.goodong.application.dto.PostDTO.*;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
 import com.kjs990114.goodong.application.port.in.file.GetFileResourceUseCase;
