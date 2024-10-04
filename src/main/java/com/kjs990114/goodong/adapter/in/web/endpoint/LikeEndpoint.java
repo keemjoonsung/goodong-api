@@ -22,6 +22,7 @@ public class LikeEndpoint {
     private final CheckTokenUseCase checkTokenUseCase;
     private final AddLikeUseCase addLikeUseCase;
     private final DeleteLikeUseCase deleteLikeUseCase;
+
     //좋아요 추가
     @PostMapping
     public ApiResponse<Void> likePost(@RequestParam("postId") Long postId,
@@ -40,9 +41,6 @@ public class LikeEndpoint {
         return new ApiResponse<>("Unlike successfully");
     }
 
-    public enum FollowType {
-        FOLLOWING,
-        FOLLOWER
-    }
+
 
 }

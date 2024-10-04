@@ -2,6 +2,7 @@ package com.kjs990114.goodong.application.service.post;
 
 import com.kjs990114.goodong.application.dto.PostDTO.PostDetailDTO;
 import com.kjs990114.goodong.application.dto.PostSummaryDTO;
+import com.kjs990114.goodong.application.port.in.post.CheckDuplicatePostTitleUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetLikedPostsUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetPostDetailUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetUserPostsUseCase;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCase, GetLikedPostsUseCase {
+public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCase, GetLikedPostsUseCase , CheckDuplicatePostTitleUseCase {
 
     private final LoadPostPort loadPostPort;
     private final LoadCommentPort loadCommentPort;
@@ -50,11 +51,18 @@ public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCas
         return loadPostPort.loadPageByUserIdBasedOnViewerId(userId, viewerId, pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<PostSummaryDTO> getLikedPosts(LoadLikedPostsQuery loadLikedPostsQuery) {
         Long likerId = loadLikedPostsQuery.getLikerId();
         Long viewerId = loadLikedPostsQuery.getViewerId();
         Pageable pageable = loadLikedPostsQuery.getPageable();
         return loadPostPort.loadPageByLikerIdBasedOnViewerId(likerId,viewerId,pageable);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean checkTitle(CheckPostTitleQuery checkPostTitleQuery) {
+        return loadPostPort.existsByTitleAndUserId(checkPostTitleQuery.getTitle(), checkPostTitleQuery.getUserId());
     }
 }

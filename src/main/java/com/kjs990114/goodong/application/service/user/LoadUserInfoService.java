@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.service.user;
 
-import com.kjs990114.goodong.application.dto.UserInfoDTO;
+import com.kjs990114.goodong.application.dto.UserDetailDTO;
 import com.kjs990114.goodong.application.port.in.user.GetUserInfoUseCase;
 import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +20,9 @@ public class LoadUserInfoService implements GetUserInfoUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public UserInfoDTO getUserInfo(LoadUserInfoQuery loadUserInfoQuery) {
+    public UserDetailDTO getUserInfo(LoadUserInfoQuery loadUserInfoQuery) {
         String url = storagePath + bucketName + "/";
-        UserInfoDTO response = loadUserPort.loadUserInfoByUserIdBasedOnViewerId(loadUserInfoQuery.getUserId(), loadUserInfoQuery.getViewerId());
+        UserDetailDTO response = loadUserPort.loadUserInfoByUserIdBasedOnViewerId(loadUserInfoQuery.getUserId(), loadUserInfoQuery.getViewerId());
         response.setProfileImage(url + response.getProfileImage());
         return response;
     }

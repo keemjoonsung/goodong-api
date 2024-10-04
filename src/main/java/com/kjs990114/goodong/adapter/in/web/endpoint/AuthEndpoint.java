@@ -1,10 +1,10 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
 import com.kjs990114.goodong.application.dto.ApiResponse;
-import com.kjs990114.goodong.application.dto.UserDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.LoginDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.PasswordDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.UserRegisterDTO;
+import com.kjs990114.goodong.application.dto.UserSummaryDTO;
 import com.kjs990114.goodong.application.port.in.auth.*;
 import com.kjs990114.goodong.application.port.in.auth.ChangePasswordUseCase.PasswordQuery;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
@@ -66,7 +66,7 @@ public class AuthEndpoint {
     }
 
     @GetMapping("/check-token")
-    public ApiResponse<UserDTO.UserSummaryDTO> checkToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ApiResponse<UserSummaryDTO> checkToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return new ApiResponse<>("Token validation successful", checkTokenUseCase.checkToken(new TokenQuery(token)));
     }
 

@@ -38,10 +38,10 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
     }
 
     @Override
-    public Post loadByPostId(Long postId) {
-        PostEntity postEntity = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exists"));
-        return PostMapper.toDomain(postEntity);
+    public boolean existsByTitleAndUserId(String title, Long userId) {
+        return postRepository.existsByTitleAndUserId(title,userId);
     }
+
 
     @Override
     public PostDetailDTO loadDetailByPostIdBasedOnViewerId(Long postId, Long viewerId) {

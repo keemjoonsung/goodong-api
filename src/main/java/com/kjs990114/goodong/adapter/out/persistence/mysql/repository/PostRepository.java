@@ -123,5 +123,11 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     """)
     boolean existsByUserIdAndFileName(@Param("userId") Long userId, @Param("fileName") String fileName);
 
+    @Query("""
+    SELECT COUNT(p) > 0
+    FROM post p
+    WHERE p.title = :title AND p.userId = :userId AND p.deletedAt IS NULL
+    """)
+    boolean existsByTitleAndUserId(@Param("title") String title , @Param("userId") Long userId);
 
 }

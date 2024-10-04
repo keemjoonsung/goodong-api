@@ -1,12 +1,12 @@
 package com.kjs990114.goodong.application.port.in.user;
 
-import com.kjs990114.goodong.application.dto.UserInfoDTO;
+import com.kjs990114.goodong.application.dto.UserDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public interface GetUserInfoUseCase {
 
-    UserInfoDTO getUserInfo(LoadUserInfoQuery loadUserInfoQuery);
+    UserDetailDTO getUserInfo(LoadUserInfoQuery loadUserInfoQuery);
 
     @Getter
     @AllArgsConstructor

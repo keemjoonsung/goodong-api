@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface LoadPostPort {
     Post loadByPostIdAndUserId(Long postId, Long userId);
-    Post loadByPostId(Long postId);
+    boolean existsByTitleAndUserId(String title, Long userId);
     PostDetailDTO loadDetailByPostIdBasedOnViewerId(Long postId, Long viewerId);
     List<Post> loadByPostIds(List<Long> postIds);
     Page<PostSummaryDTO> loadPageByUserIdBasedOnViewerId(Long userId, Long viewerId, Pageable pageable);

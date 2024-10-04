@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.application.port.in.auth;
 
-import com.kjs990114.goodong.application.dto.UserDTO.UserSummaryDTO;
+import com.kjs990114.goodong.application.dto.UserSummaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

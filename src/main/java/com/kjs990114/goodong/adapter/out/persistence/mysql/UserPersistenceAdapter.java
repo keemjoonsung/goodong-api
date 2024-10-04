@@ -3,7 +3,7 @@ package com.kjs990114.goodong.adapter.out.persistence.mysql;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.UserMapper;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
-import com.kjs990114.goodong.application.dto.UserInfoDTO;
+import com.kjs990114.goodong.application.dto.UserDetailDTO;
 import com.kjs990114.goodong.application.port.out.db.DeleteUserPort;
 import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.application.port.out.db.SaveUserPort;
@@ -48,15 +48,18 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
 
     }
 
-
     @Override
     public boolean existsByNickname(String nickname) {
         return userRepository.findByNickname(nickname).isPresent();
     }
 
     @Override
-    public UserInfoDTO loadUserInfoByUserIdBasedOnViewerId(Long userId, Long viewerId) {
-        return userRepository.findUserInfoByUserIdAndViewerId(userId,viewerId);
+    public UserDetailDTO loadUserInfoByUserIdBasedOnViewerId(Long userId, Long viewerId) {
+        UserDetailDTO response =  userRepository.findUserInfoByUserIdAndViewerId(userId,viewerId);
+        if(response.getUserId() == null){
+            throw new NotFoundException("User not found");
+        }
+        return response;
     }
 
 

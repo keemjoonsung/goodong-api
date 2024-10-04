@@ -8,6 +8,7 @@ import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
 import com.kjs990114.goodong.application.port.in.file.GetFileResourceUseCase;
 import com.kjs990114.goodong.application.port.in.post.*;
+import com.kjs990114.goodong.application.port.in.post.CheckDuplicatePostTitleUseCase.CheckPostTitleQuery;
 import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase.CreatePostCommand;
 import com.kjs990114.goodong.application.port.in.post.DeletePostUseCase.DeletePostCommand;
 import com.kjs990114.goodong.application.port.in.post.GeneratePostMetadataUseCase.GetPostMetadataQuery;
@@ -47,6 +48,7 @@ public class PostEndpoint {
     private final SearchPostsByPageUseCase searchPostsByPageUseCase;
     private final GeneratePostMetadataUseCase generatePostMetadataUseCase;
     private final GetFileResourceUseCase getFileResourceUseCase;
+    private final CheckDuplicatePostTitleUseCase checkDuplicatePostTitleUseCase;
 
     @Value("${spring.page.size}")
     private int pageSize;
@@ -137,8 +139,6 @@ public class PostEndpoint {
         }else{
             Pageable pageable = allPage ? Pageable.unpaged(Sort.by("lastModifiedAt").descending()) : PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
             Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
-            System.out.println("likerId = " + likerId);
-            System.out.println("viewerId = " + viewerId);
             response = getLikedPostsUseCase.getLikedPosts(new LoadLikedPostsQuery(likerId,viewerId,pageable));
         }
 
@@ -163,14 +163,14 @@ public class PostEndpoint {
                 .body(resource);
     }
 
-//    //중복체크
-//    @GetMapping("/check-title")
-//    public ApiResponse<Boolean> isDuplicateTitle(@RequestParam("title") String title,
-//                                                 @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-//        Long userId = userAuthService.getUserId(token);
-//        return new ApiResponse<>(postService.checkDuplicatedTitle(title, userId));
-//    }
-//
+    //중복체크
+    @GetMapping("/check-title")
+    public ApiResponse<Boolean> isDuplicateTitle(@RequestParam("title") String title,
+                                                 @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
+        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        return new ApiResponse<>(checkDuplicatePostTitleUseCase.checkTitle(new CheckPostTitleQuery(title, userId)));
+    }
+
 
 
 }

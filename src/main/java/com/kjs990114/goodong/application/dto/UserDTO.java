@@ -32,33 +32,6 @@ public class UserDTO {
         private String nickname;
     }
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UserSummaryDTO {
-        private Long userId;
-        private String email;
-        private String nickname;
-        private String profileImage;
-    }
-    //유저 상세 정보
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UserDetailDTO {
-        private Long userId;
-        private String email;
-        private String nickname;
-        private String profileImage;
-        @Builder.Default
-        private int followerCount = 0;
-        @Builder.Default
-        private int followingCount = 0;
-        @Builder.Default
-        private Boolean followed = false;
-    }
 
     @Data
     @Builder
