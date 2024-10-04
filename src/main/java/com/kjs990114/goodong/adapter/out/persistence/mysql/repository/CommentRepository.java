@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<CommentEntity,Long> {
 
@@ -18,4 +19,17 @@ public interface CommentRepository extends JpaRepository<CommentEntity,Long> {
     AND c.deletedAt IS NULL
     """)
     List<CommentInfoDTO> getCommentInfoDTOByPostId(@Param("postId") Long postId);
+    @Query("""
+    SELECT c
+    FROM comment c
+    WHERE c.commentId = :commentId AND c.deletedAt IS NULL
+    """)
+    Optional<CommentEntity> findByCommentId(@Param("commentId") Long commentId);
+
+    @Query("""
+    SELECT c
+    FROM comment c
+    WHERE c.commentId = :commentId AND c.userId = :userId AND c.deletedAt IS NULL
+    """)
+    Optional<CommentEntity> findByCommentIdAndUserId(@Param("commentId") Long commentId, @Param("userId") Long userId);
 }

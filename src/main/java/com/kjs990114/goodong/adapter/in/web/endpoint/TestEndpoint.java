@@ -2,10 +2,11 @@ package com.kjs990114.goodong.adapter.in.web.endpoint;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.CommentRepository;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.PostRepository;
-import com.kjs990114.goodong.application.dto.CommentInfoDTO;
-import com.kjs990114.goodong.application.dto.ModelInfoDTO;
-import com.kjs990114.goodong.application.dto.PostInfoDTO;
+import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.UserRepository;
+import com.kjs990114.goodong.application.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +20,7 @@ import java.util.List;
 public class TestEndpoint {
     private final CommentRepository postDetailQueryDao;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     @GetMapping("/1")
     public List<CommentInfoDTO> t1(){
@@ -31,5 +33,13 @@ public class TestEndpoint {
     @GetMapping("/3")
     public List<ModelInfoDTO> t3(@RequestParam(value = "postId", defaultValue = "1") Long postId){
         return postRepository.findModelInfosByPostId(postId);
+    }
+    @GetMapping("/4")
+    public UserInfoDTO t4(){
+        return userRepository.findUserInfoByUserIdAndViewerId(1L,1L);
+    }
+    @GetMapping("/5")
+    public Page<PostSummaryDTO> t5(){
+        return postRepository.loadPageByLikerIdBasedOnViewerId(1L,1L, Pageable.unpaged());
     }
 }

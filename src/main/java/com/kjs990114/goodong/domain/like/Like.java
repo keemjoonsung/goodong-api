@@ -14,4 +14,11 @@ public class Like {
     private Long likeId;
     private Long postId;
     private Long userId;
+
+    public static Like of(Long postId, Long userId){
+        return Like.builder()
+                .postId(postId)
+                .userId(userId)
+                .build();
+    }
 }

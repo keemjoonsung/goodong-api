@@ -63,6 +63,11 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
     }
 
     @Override
+    public Page<PostSummaryDTO> loadPageByLikerIdBasedOnViewerId(Long likerId, Long viewerId, Pageable pageable) {
+        return postRepository.loadPageByLikerIdBasedOnViewerId(likerId,viewerId,pageable);
+    }
+
+    @Override
     public boolean existsByUserIdAndFileName(Long userId, String fileName) {
         return postRepository.existsByUserIdAndFileName(userId, fileName);
     }

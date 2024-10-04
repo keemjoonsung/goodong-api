@@ -3,15 +3,14 @@ package com.kjs990114.goodong.application.port.in.social;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public interface AddCommentUseCase {
+public interface DeleteLikeUseCase {
 
-    void addComment(AddCommentCommand addCommentCommand);
+    void deleteLike(DeleteLikeCommand deleteLikeCommand);
 
     @Getter
     @AllArgsConstructor
-    class AddCommentCommand{
+    class DeleteLikeCommand{
         private Long postId;
         private Long userId;
-        private String content;
     }
 }

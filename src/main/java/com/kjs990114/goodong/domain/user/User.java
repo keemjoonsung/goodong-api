@@ -40,7 +40,7 @@ public class User {
 
     // 프로필 이미지 변경
     public void updateProfileImage(String profileImage) {
-        if(profileImage != null) {
+        if(!profileImage.isBlank()) {
             this.profileImage = profileImage;
         }
     }

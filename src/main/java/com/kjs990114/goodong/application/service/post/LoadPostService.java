@@ -2,8 +2,9 @@ package com.kjs990114.goodong.application.service.post;
 
 import com.kjs990114.goodong.application.dto.PostDTO.PostDetailDTO;
 import com.kjs990114.goodong.application.dto.PostSummaryDTO;
+import com.kjs990114.goodong.application.port.in.post.GetLikedPostsUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetPostDetailUseCase;
-import com.kjs990114.goodong.application.port.in.post.GetPostsByPageUseCase;
+import com.kjs990114.goodong.application.port.in.post.GetUserPostsUseCase;
 import com.kjs990114.goodong.application.port.out.db.LoadCommentPort;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class LoadPostService implements GetPostDetailUseCase, GetPostsByPageUseCase {
+public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCase, GetLikedPostsUseCase {
 
     private final LoadPostPort loadPostPort;
     private final LoadCommentPort loadCommentPort;
@@ -42,11 +43,18 @@ public class LoadPostService implements GetPostDetailUseCase, GetPostsByPageUseC
 
     @Transactional(readOnly = true)
     @Override
-    public Page<PostSummaryDTO> getPostByPage(LoadPostsByPageCommand loadPostsByPageCommand) {
+    public Page<PostSummaryDTO> getUserPosts(LoadPostsByPageCommand loadPostsByPageCommand) {
         Long userId = loadPostsByPageCommand.getUserId();
         Long viewerId = loadPostsByPageCommand.getViewerId();
         Pageable pageable = loadPostsByPageCommand.getPageable();
         return loadPostPort.loadPageByUserIdBasedOnViewerId(userId, viewerId, pageable);
     }
 
+    @Override
+    public Page<PostSummaryDTO> getLikedPosts(LoadLikedPostsQuery loadLikedPostsQuery) {
+        Long likerId = loadLikedPostsQuery.getLikerId();
+        Long viewerId = loadLikedPostsQuery.getViewerId();
+        Pageable pageable = loadLikedPostsQuery.getPageable();
+        return loadPostPort.loadPageByLikerIdBasedOnViewerId(likerId,viewerId,pageable);
+    }
 }

@@ -12,8 +12,9 @@ import com.kjs990114.goodong.application.port.in.post.CreatePostUseCase.CreatePo
 import com.kjs990114.goodong.application.port.in.post.DeletePostUseCase.DeletePostCommand;
 import com.kjs990114.goodong.application.port.in.post.GeneratePostMetadataUseCase.GetPostMetadataQuery;
 import com.kjs990114.goodong.application.port.in.file.GetFileResourceUseCase.LoadFileResourceQuery;
+import com.kjs990114.goodong.application.port.in.post.GetLikedPostsUseCase.LoadLikedPostsQuery;
 import com.kjs990114.goodong.application.port.in.post.GetPostDetailUseCase.LoadPostDetailCommand;
-import com.kjs990114.goodong.application.port.in.post.GetPostsByPageUseCase.LoadPostsByPageCommand;
+import com.kjs990114.goodong.application.port.in.post.GetUserPostsUseCase.LoadPostsByPageCommand;
 import com.kjs990114.goodong.application.port.in.post.SearchPostsByPageUseCase.SearchPostsByPageQuery;
 import com.kjs990114.goodong.application.port.in.post.UpdatePostUseCase.UpdatePostCommand;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,8 @@ public class PostEndpoint {
     private final UpdatePostUseCase updatePostUseCase;
     private final DeletePostUseCase deletePostUseCase;
     private final GetPostDetailUseCase getPostDetailUseCase;
-    private final GetPostsByPageUseCase getPostsByPageUseCase;
+    private final GetUserPostsUseCase getUserPostsUseCase;
+    private final GetLikedPostsUseCase getLikedPostsUseCase;
     private final SearchPostsByPageUseCase searchPostsByPageUseCase;
     private final GeneratePostMetadataUseCase generatePostMetadataUseCase;
     private final GetFileResourceUseCase getFileResourceUseCase;
@@ -119,18 +121,25 @@ public class PostEndpoint {
     @GetMapping
     public ApiResponse<Page<PostSummaryDTO>> getUserPosts(@RequestParam(required = false, name = "userId") Long userId,
                                                           @RequestParam(required = false, name = "query") String query,
-                                                          @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token,
                                                           @RequestParam(name = "all", defaultValue = "false") boolean allPage,
-                                                          @RequestParam(name = "page", defaultValue = "0") int page) {
+                                                          @RequestParam(required = false, name = "likerId") Long likerId,
+                                                          @RequestParam(name = "page", defaultValue = "0") int page,
+                                                          @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
         Page<PostSummaryDTO> response;
-        if (query != null && !query.isEmpty() && !query.isBlank()) {
+        if (query != null && !query.isBlank()) {
             Pageable pageable = allPage ? Pageable.unpaged() : PageRequest.of(page, pageSize);
             response = searchPostsByPageUseCase.searchPostsByPage(new SearchPostsByPageQuery(query, pageable));
-        } else {
+        } else if(likerId == null) {
             Pageable pageable = allPage ? Pageable.unpaged(Sort.by("lastModifiedAt").descending()) : PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
             Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
             Long ownerId = userId == null ? viewerId : userId;
-            response = getPostsByPageUseCase.getPostByPage(new LoadPostsByPageCommand(ownerId, viewerId, pageable));
+            response = getUserPostsUseCase.getUserPosts(new LoadPostsByPageCommand(ownerId, viewerId, pageable));
+        }else{
+            Pageable pageable = allPage ? Pageable.unpaged(Sort.by("lastModifiedAt").descending()) : PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
+            Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+            System.out.println("likerId = " + likerId);
+            System.out.println("viewerId = " + viewerId);
+            response = getLikedPostsUseCase.getLikedPosts(new LoadLikedPostsQuery(likerId,viewerId,pageable));
         }
 
         return new ApiResponse<>(response);
@@ -160,39 +169,6 @@ public class PostEndpoint {
 //                                                 @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
 //        Long userId = userAuthService.getUserId(token);
 //        return new ApiResponse<>(postService.checkDuplicatedTitle(title, userId));
-//    }
-//
-//    // 댓글 달기
-//    @PostMapping("/{postId}/comments")  // 댓글 달
-//    public ApiResponse<Void> addComment(@PathVariable("postId") Long postId,
-//                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody PostDTO.CommentDTO commentDTO) {
-//        String email = jwtUtil.getEmail(token);
-//        String content = commentDTO.getContent();
-//        commentService.addComment(postId, email, content);
-//
-//        return new ApiResponse<>("Comment added successfully");
-//    }
-//
-//    //댓글 삭제 하기
-//    @DeleteMapping("/{postId}/comments")
-//    public ApiResponse<Void> deleteComment(@PathVariable("postId") Long postId,
-//                                           @RequestParam("commentId") Long commentId,
-//                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-//        String email = jwtUtil.getEmail(token);
-//        commentService.deleteComment(postId, commentId, email);
-//        return new ApiResponse<>("Comment deleted successfully");
-//    }
-//
-//    //댓글 업데이트 하기
-//    @PatchMapping("/{postId}/comments")
-//    public ApiResponse<Void> updateComment(@PathVariable("postId") Long postId,
-//                                           @RequestParam("commentId") Long commentId,
-//                                           @RequestBody PostDTO.CommentDTO postComment, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-//        String email = jwtUtil.getEmail(token);
-//        String content = postComment.getContent();
-//        commentService.updateComment(postId, commentId, email, content);
-//        return new ApiResponse<>("Comment updated successfully");
-//
 //    }
 //
 

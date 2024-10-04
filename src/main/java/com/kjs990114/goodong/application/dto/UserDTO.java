@@ -88,7 +88,7 @@ public class UserDTO {
     @Builder
     @AllArgsConstructor
     public static class UpdateUserDTO {
-        private MultipartFile profileImage;
+        private MultipartFile filePng;
         private String nickname;
     }
 

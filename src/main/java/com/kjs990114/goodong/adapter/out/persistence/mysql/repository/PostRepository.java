@@ -23,10 +23,10 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
         p.postId, p.title, u.userId, u.email, u.nickname,
         p.status, p.lastModifiedAt,
         GROUP_CONCAT(t.tag),
-        count(likes)
+        COUNT(DISTINCT l)
     )
     FROM post p
-    LEFT JOIN user u ON p.userId = :userId
+    LEFT JOIN user u ON p.userId = u.userId
     LEFT JOIN p.tags t
     LEFT JOIN likes l ON l.postId = p.postId
     WHERE p.userId = :userId
@@ -34,11 +34,25 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     AND p.deletedAt IS NULL
     GROUP BY p.postId, u.userId
     """)
-    Page<PostSummaryDTO> findUserPostsBasedOnViewer(
-            @Param("userId") Long userId,
-            @Param("viewerId") Long viewerId,
-            Pageable pageable
-    );
+    Page<PostSummaryDTO> findUserPostsBasedOnViewer(@Param("userId") Long userId, @Param("viewerId") Long viewerId, Pageable pageable);
+
+    @Query("""
+    SELECT new com.kjs990114.goodong.application.dto.PostSummaryDTO(
+        p.postId, p.title, u.userId, u.email, u.nickname,
+        p.status, p.lastModifiedAt,
+        GROUP_CONCAT(t.tag),
+        COUNT(DISTINCT l)
+    )
+    FROM post p
+    LEFT JOIN user u ON p.userId = u.userId
+    LEFT JOIN p.tags t
+    LEFT JOIN likes l ON l.postId = p.postId
+    WHERE l.userId = :likerId
+    AND (p.status = 'PUBLIC' OR p.userId = :viewerId)
+    AND p.deletedAt IS NULL
+    GROUP BY p.postId, u.userId
+    """)
+    Page<PostSummaryDTO> loadPageByLikerIdBasedOnViewerId(@Param("likerId") Long likerId, @Param("viewerId") Long viewerId, Pageable pageable);
 
     @Query("""
     SELECT new com.kjs990114.goodong.application.dto.PostInfoDTO(
@@ -46,7 +60,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
         u.userId, u.email, u.nickname,
         p.createdAt, p.lastModifiedAt,
         GROUP_CONCAT(t.tag),
-        COUNT(l),
+        COUNT(DISTINCT l),
         CASE WHEN COUNT(l2) > 0 THEN TRUE ELSE FALSE END
     )
     FROM post p
