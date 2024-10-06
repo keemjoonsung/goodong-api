@@ -67,8 +67,8 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
     }
 
     @Override
-    public boolean existsByUserIdAndFileName(Long userId, String fileName) {
-        return postRepository.existsByUserIdAndFileName(userId, fileName);
+    public boolean isAccessibleByUserId(Long userId, String fileName) {
+        return postRepository.isAccessibleByUserId(userId, fileName);
     }
 
     @Override

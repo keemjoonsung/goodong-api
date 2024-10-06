@@ -24,7 +24,7 @@ public class LoadFileService implements GetFileResourceUseCase {
     public Resource getFileResource(LoadFileResourceQuery loadFileResourceQuery) {
         Long userId = loadFileResourceQuery.getUserId();
         String fileName = loadFileResourceQuery.getFileName();
-        if(!loadPostPort.existsByUserIdAndFileName(userId,fileName)){
+        if(!loadPostPort.isAccessibleByUserId(userId,fileName)){
             throw new UnAuthorizedException("Unauthorized for file");
         }
         InputStream inputStream = loadFilePort.loadFile(fileName);

@@ -128,9 +128,9 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     @Query("""
     SELECT COUNT(p) > 0
     FROM post p, model m
-    WHERE m.post.postId = p.postId AND p.userId = :userId AND m.fileName = :fileName
+    WHERE m.post.postId = p.postId AND m.fileName = :fileName AND (p.userId = :userId OR p.status = 'PUBLIC') AND p.deletedAt IS NULL
     """)
-    boolean existsByUserIdAndFileName(@Param("userId") Long userId, @Param("fileName") String fileName);
+    boolean isAccessibleByUserId(@Param("userId") Long userId, @Param("fileName") String fileName);
 
     @Query("""
     SELECT COUNT(p) > 0
