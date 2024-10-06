@@ -1,7 +1,6 @@
-package com.kjs990114.goodong.common.jwt.filter;
+package com.kjs990114.goodong.common.jwt;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.UserEntity;
-import com.kjs990114.goodong.common.jwt.util.JwtUtil;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,7 +19,6 @@ public class jwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     public jwtFilter(JwtUtil jwtUtil) {
-
         this.jwtUtil = jwtUtil;
     }
 
@@ -38,10 +36,8 @@ public class jwtFilter extends OncePerRequestFilter {
 //        System.out.println("authorization now");
 
         if (jwtUtil.isExpired(token)) {
-
             System.out.println("token expired");
             filterChain.doFilter(request, response);
-
             return;
         }
 

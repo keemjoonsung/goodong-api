@@ -1,20 +1,18 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
-import com.kjs990114.goodong.common.time.BaseTimeEntity;
+import com.kjs990114.goodong.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity(name = "user")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntity extends BaseTimeEntity {
+public class UserEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;

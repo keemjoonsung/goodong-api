@@ -1,16 +1,15 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
-import com.kjs990114.goodong.common.time.BaseTimeEntity;
+import com.kjs990114.goodong.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 
 @Entity(name = "tag")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TagEntity extends BaseTimeEntity {
+public class TagEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;

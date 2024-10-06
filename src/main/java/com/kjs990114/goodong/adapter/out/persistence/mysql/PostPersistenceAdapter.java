@@ -38,28 +38,32 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
     }
 
     @Override
-    public Post loadByPostId(Long postId) {
-        PostEntity postEntity = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post does not exists"));
-        return PostMapper.toDomain(postEntity);
+    public boolean existsByTitleAndUserId(String title, Long userId) {
+        return postRepository.existsByTitleAndUserId(title,userId);
     }
 
+
     @Override
-    public PostDetailDTO loadDetailByPostIdBasedOnViewerId(Long postId, Long viewerId) {
-        PostInfoDTO postInfoDTO = postRepository.findPostInfoByPostIdAndViewerId(postId, viewerId).orElseThrow(()-> new NotFoundException("Post not Found"));
-        List<ModelInfoDTO> modelInfoDTOs = postRepository.findModelInfosByPostId(postId);
+    public PostDetailDTO postDetailDTOByPostIdBasedOnViewerId(Long postId, Long viewerId) {
+        PostInfoDTO postInfoDTO = postRepository.postInfoDTOsByPostIdAndViewerId(postId, viewerId).orElseThrow(()-> new NotFoundException("Post not Found"));
+        List<ModelInfoDTO> modelInfoDTOs = postRepository.modelInfoDTOsByPostId(postId);
         List<CommentInfoDTO> commentInfoDTOs = commentRepository.getCommentInfoDTOByPostId(postId);
         return PostDetailDTO.of(postInfoDTO,modelInfoDTOs,commentInfoDTOs);
     }
 
     @Override
-    public List<Post> loadByPostIds(List<Long> postIds) {
-        List<PostEntity> postEntities = postRepository.findAllByPostIds(postIds);
-        return postEntities.stream().map(PostMapper::toDomain).toList();
+    public List<PostSummaryDTO> postSummaryDTOListByPostIds(List<Long> postIds) {
+        return postRepository.postSummaryDTOsByPostIds(postIds);
     }
 
     @Override
-    public Page<PostSummaryDTO> loadPageByUserIdBasedOnViewerId(Long userId, Long viewerId, Pageable pageable) {
-        return postRepository.findUserPostsBasedOnViewer(userId,viewerId,pageable);
+    public Page<PostSummaryDTO> postSummaryDTOPageByUserIdBasedOnViewerId(Long userId, Long viewerId, Pageable pageable) {
+        return postRepository.postSummaryDTOsByUserIdBasedOnViewerId(userId,viewerId,pageable);
+    }
+
+    @Override
+    public Page<PostSummaryDTO> postSummaryDTOPageByLikerIdBasedOnViewerId(Long likerId, Long viewerId, Pageable pageable) {
+        return postRepository.postSummaryDTOsByLikerIdBasedOnViewerId(likerId,viewerId,pageable);
     }
 
     @Override

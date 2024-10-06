@@ -89,6 +89,7 @@ public class PostDTO {
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class CommentDTO {
         private String content;
     }

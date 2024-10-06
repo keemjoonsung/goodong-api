@@ -1,8 +1,5 @@
 package com.kjs990114.goodong.domain.post;
 
-import com.kjs990114.goodong.domain.comment.Comment;
-import com.kjs990114.goodong.domain.like.Like;
-import com.kjs990114.goodong.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +18,7 @@ public class Post {
     private Long postId;
     private String title;
     private String content;
-    private Long userId;  // 도메인 객체로 참조
+    private Long userId;
     @Builder.Default
     private List<Model> models = new ArrayList<>();
     @Builder.Default

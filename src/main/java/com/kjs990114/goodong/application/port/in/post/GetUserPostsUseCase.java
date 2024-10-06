@@ -6,9 +6,9 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface GetPostsByPageUseCase {
+public interface GetUserPostsUseCase {
 
-    Page<PostSummaryDTO> getPostByPage(LoadPostsByPageCommand loadPostsByPageCommand);
+    Page<PostSummaryDTO> getUserPosts(LoadPostsByPageCommand loadPostsByPageCommand);
 
     @Getter
     @AllArgsConstructor
