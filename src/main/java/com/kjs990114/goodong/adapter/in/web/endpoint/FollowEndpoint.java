@@ -34,7 +34,7 @@ public class FollowEndpoint {
     private int pageSize;
     //팔로우
     @PostMapping
-    public ApiResponse<String> followUser(@RequestParam("followeeId") Long followeeId,
+    public ApiResponse<String> followUser(@RequestParam("userId") Long followeeId,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long followerId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         addFollowUseCase.addFollow(new AddFollowCommand(followerId,followeeId));
@@ -42,7 +42,7 @@ public class FollowEndpoint {
     }
     //언팔로우
     @DeleteMapping
-    public ApiResponse<String> unfollowUser(@RequestParam("followeeId") Long followeeId,
+    public ApiResponse<String> unfollowUser(@RequestParam("userId") Long followeeId,
                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         Long followerId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
         deleteFollowUseCase.deleteFollow(new DeleteFollowCommand(followerId,followeeId));
