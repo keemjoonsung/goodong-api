@@ -25,14 +25,12 @@ public class FilePersistenceAdapter implements StoreFilePort , LoadFilePort {
 
     @Override
     public String storeFile(MultipartFile file) throws IOException {
-        System.out.println("file: " + file);
         if(file == null || file.isEmpty() || file.getOriginalFilename() == null) return "";
         String fileExtension = "";
         String originalFileName = file.getOriginalFilename();
         if (originalFileName.contains(".")) {
             fileExtension = file.getOriginalFilename().substring(originalFileName.lastIndexOf("."));
         }
-
         String fileName = UUID.randomUUID() + fileExtension;
         storage.create(
                 BlobInfo.newBuilder(bucketName, fileName).build(),
