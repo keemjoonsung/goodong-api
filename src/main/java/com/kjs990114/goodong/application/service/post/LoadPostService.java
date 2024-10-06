@@ -6,7 +6,6 @@ import com.kjs990114.goodong.application.port.in.post.CheckDuplicatePostTitleUse
 import com.kjs990114.goodong.application.port.in.post.GetLikedPostsUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetPostDetailUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetUserPostsUseCase;
-import com.kjs990114.goodong.application.port.out.db.LoadCommentPort;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.common.exception.UnAuthorizedException;
 import com.kjs990114.goodong.domain.post.Post;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCase, GetLikedPostsUseCase , CheckDuplicatePostTitleUseCase {
 
     private final LoadPostPort loadPostPort;
-    private final LoadCommentPort loadCommentPort;
     @Value("${spring.cloud.gcp.storage.path}")
     private String storagePath;
     @Value("${spring.cloud.gcp.storage.bucket}")
@@ -33,7 +31,7 @@ public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCas
     public PostDetailDTO getPostDetail(LoadPostDetailCommand loadPostDetailCommand) {
         Long postId = loadPostDetailCommand.getPostId();
         Long viewerId = loadPostDetailCommand.getViewerId();
-        PostDetailDTO postDetailDTO = loadPostPort.loadDetailByPostIdBasedOnViewerId(postId,viewerId);
+        PostDetailDTO postDetailDTO = loadPostPort.postDetailDTOByPostIdBasedOnViewerId(postId,viewerId);
         if(postDetailDTO.getStatus().equals(Post.PostStatus.PRIVATE) && !postDetailDTO.getUserId().equals(viewerId)){
             throw new UnAuthorizedException("UnAuthorized for post");
         }
@@ -48,7 +46,7 @@ public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCas
         Long userId = loadPostsByPageCommand.getUserId();
         Long viewerId = loadPostsByPageCommand.getViewerId();
         Pageable pageable = loadPostsByPageCommand.getPageable();
-        return loadPostPort.loadPageByUserIdBasedOnViewerId(userId, viewerId, pageable);
+        return loadPostPort.postSummaryDTOPageByUserIdBasedOnViewerId(userId, viewerId, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +55,7 @@ public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCas
         Long likerId = loadLikedPostsQuery.getLikerId();
         Long viewerId = loadLikedPostsQuery.getViewerId();
         Pageable pageable = loadLikedPostsQuery.getPageable();
-        return loadPostPort.loadPageByLikerIdBasedOnViewerId(likerId,viewerId,pageable);
+        return loadPostPort.postSummaryDTOPageByLikerIdBasedOnViewerId(likerId,viewerId,pageable);
     }
 
     @Transactional(readOnly = true)

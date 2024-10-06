@@ -1,7 +1,7 @@
 package com.kjs990114.goodong.common.config;
 
-import com.kjs990114.goodong.common.jwt.filter.jwtFilter;
-import com.kjs990114.goodong.common.jwt.util.JwtUtil;
+import com.kjs990114.goodong.common.jwt.jwtFilter;
+import com.kjs990114.goodong.common.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

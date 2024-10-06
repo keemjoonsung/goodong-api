@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.common.jwt.util;
+package com.kjs990114.goodong.common.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -26,7 +26,6 @@ public class JwtUtil {
 
     public String getEmail(String bearer) {
         String token = bearer.split(" ")[1];
-
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
 

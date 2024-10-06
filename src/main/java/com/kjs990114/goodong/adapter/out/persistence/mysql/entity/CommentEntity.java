@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
-import com.kjs990114.goodong.common.time.BaseTimeEntity;
+import com.kjs990114.goodong.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentEntity extends BaseTimeEntity{
+public class CommentEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;

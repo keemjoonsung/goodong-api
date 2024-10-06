@@ -1,7 +1,6 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
-import com.kjs990114.goodong.application.dto.ApiResponse;
-import com.kjs990114.goodong.application.dto.PostSummaryDTO;
+import com.kjs990114.goodong.adapter.in.web.ApiResponse;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase;
 import com.kjs990114.goodong.application.port.in.auth.CheckTokenUseCase.TokenQuery;
 import com.kjs990114.goodong.application.port.in.social.AddLikeUseCase;
@@ -11,8 +10,6 @@ import com.kjs990114.goodong.application.port.in.social.DeleteLikeUseCase.Delete
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

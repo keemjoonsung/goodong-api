@@ -30,11 +30,11 @@ public class TestEndpoint {
     }
     @GetMapping("/2")
     public PostInfoDTO t2(){
-        return postRepository.findPostInfoByPostIdAndViewerId(2L,1L).orElse(null);
+        return postRepository.postInfoDTOsByPostIdAndViewerId(2L,1L).orElse(null);
     }
     @GetMapping("/3")
     public List<ModelInfoDTO> t3(@RequestParam(value = "postId", defaultValue = "1") Long postId){
-        return postRepository.findModelInfosByPostId(postId);
+        return postRepository.modelInfoDTOsByPostId(postId);
     }
     @GetMapping("/4")
     public UserDetailDTO t4(){
@@ -42,14 +42,14 @@ public class TestEndpoint {
     }
     @GetMapping("/5")
     public Page<PostSummaryDTO> t5(){
-        return postRepository.loadPageByLikerIdBasedOnViewerId(1L,1L, Pageable.unpaged());
+        return postRepository.postSummaryDTOsByLikerIdBasedOnViewerId(1L,1L, Pageable.unpaged());
     }
     @GetMapping("/6")
     public Page<UserSummaryDTO> t6(){
         return followRepository.findFollowingsByUserId(1L, Pageable.unpaged());
     }
     @GetMapping("/7")
-    public Page<UserSummaryDTO> t7(){
-        return followRepository.findFollowersByUserId(1L, Pageable.unpaged());
+    public List<PostSummaryDTO> t7(){
+        return postRepository.postSummaryDTOsByPostIds(List.of(1L,2L,3L,4L,5L,6L));
     }
 }

@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
-import com.kjs990114.goodong.application.dto.ApiResponse;
+import com.kjs990114.goodong.adapter.in.web.ApiResponse;
 import com.kjs990114.goodong.application.dto.UserDTO.ContributionsDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.UpdateUserDTO;
 import com.kjs990114.goodong.application.dto.UserDetailDTO;

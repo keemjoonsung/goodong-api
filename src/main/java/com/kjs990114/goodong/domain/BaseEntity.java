@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.common.time;
+package com.kjs990114.goodong.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseTimeEntity {
+public abstract class BaseEntity {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

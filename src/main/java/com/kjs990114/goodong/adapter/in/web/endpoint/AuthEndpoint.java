@@ -1,6 +1,6 @@
 package com.kjs990114.goodong.adapter.in.web.endpoint;
 
-import com.kjs990114.goodong.application.dto.ApiResponse;
+import com.kjs990114.goodong.adapter.in.web.ApiResponse;
 import com.kjs990114.goodong.application.dto.UserDTO.LoginDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.PasswordDTO;
 import com.kjs990114.goodong.application.dto.UserDTO.UserRegisterDTO;

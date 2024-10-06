@@ -29,9 +29,7 @@ public class SearchPostsByPageService implements SearchPostsByPageUseCase {
 
         Page<Post> tmpPage = searchPostPort.searchPost(query,pageable);
         List<Long> postIdList = tmpPage.stream().map(Post::getPostId).toList();
-        Page<Post> postsList = new PageImpl<>(loadPostPort.loadByPostIds(postIdList), pageable, tmpPage.getTotalElements());
-//        return postsList.map(PostSummaryDTO::of);
-        return null;
+        return  new PageImpl<>(loadPostPort.postSummaryDTOListByPostIds(postIdList), pageable, tmpPage.getTotalElements());
 
     }
 }

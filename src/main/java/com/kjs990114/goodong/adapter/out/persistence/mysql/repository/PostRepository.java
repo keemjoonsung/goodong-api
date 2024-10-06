@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     AND p.deletedAt IS NULL
     GROUP BY p.postId, u.userId
     """)
-    Page<PostSummaryDTO> findUserPostsBasedOnViewer(@Param("userId") Long userId, @Param("viewerId") Long viewerId, Pageable pageable);
+    Page<PostSummaryDTO> postSummaryDTOsByUserIdBasedOnViewerId(@Param("userId") Long userId, @Param("viewerId") Long viewerId, Pageable pageable);
 
     @Query("""
     SELECT new com.kjs990114.goodong.application.dto.PostSummaryDTO(
@@ -52,7 +51,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     AND p.deletedAt IS NULL
     GROUP BY p.postId, u.userId
     """)
-    Page<PostSummaryDTO> loadPageByLikerIdBasedOnViewerId(@Param("likerId") Long likerId, @Param("viewerId") Long viewerId, Pageable pageable);
+    Page<PostSummaryDTO> postSummaryDTOsByLikerIdBasedOnViewerId(@Param("likerId") Long likerId, @Param("viewerId") Long viewerId, Pageable pageable);
 
     @Query("""
     SELECT new com.kjs990114.goodong.application.dto.PostInfoDTO(
@@ -72,7 +71,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     GROUP BY p.postId, p.title, p.content, p.status, u.userId, u.email, u.nickname,
              p.createdAt, p.lastModifiedAt
     """)
-    Optional<PostInfoDTO> findPostInfoByPostIdAndViewerId(@Param("postId") Long postId, @Param("viewerId") Long viewerId);
+    Optional<PostInfoDTO> postInfoDTOsByPostIdAndViewerId(@Param("postId") Long postId, @Param("viewerId") Long viewerId);
 
 
     @Query("""
@@ -82,7 +81,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     FROM model m
     WHERE m.post.postId = :postId
     """)
-    List<ModelInfoDTO> findModelInfosByPostId(@Param("postId")Long postId);
+    List<ModelInfoDTO> modelInfoDTOsByPostId(@Param("postId")Long postId);
 
     @Query("""
     SELECT DISTINCT m.post
@@ -109,12 +108,22 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     Optional<PostEntity> findByPostIdAndUserId(@Param("postId") Long postId, @Param("userId") Long userId);
 
     @Query("""
-    SELECT DISTINCT p
+    SELECT new com.kjs990114.goodong.application.dto.PostSummaryDTO(
+        p.postId, p.title, u.userId, u.email, u.nickname,
+        p.status, p.lastModifiedAt,
+        GROUP_CONCAT(t.tag),
+        COUNT(DISTINCT l)
+    )
     FROM post p
-    LEFT JOIN FETCH p.models
+    LEFT JOIN user u ON p.userId = u.userId
+    LEFT JOIN p.tags t
+    LEFT JOIN likes l ON l.postId = p.postId
     WHERE p.postId IN :postIds
+    AND p.status = 'PUBLIC'
+    AND p.deletedAt IS NULL
+    GROUP BY p.postId, u.userId
     """)
-    List<PostEntity> findAllByPostIds(@Param("postIds") List<Long> postIds);
+    List<PostSummaryDTO> postSummaryDTOsByPostIds(@Param("postIds") List<Long> postIds);
 
     @Query("""
     SELECT COUNT(p) > 0
