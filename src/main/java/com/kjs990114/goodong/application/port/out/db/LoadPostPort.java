@@ -15,5 +15,5 @@ public interface LoadPostPort {
     List<PostSummaryDTO> postSummaryDTOListByPostIds(List<Long> postIds);
     Page<PostSummaryDTO> postSummaryDTOPageByUserIdBasedOnViewerId(Long userId, Long viewerId, Pageable pageable);
     Page<PostSummaryDTO> postSummaryDTOPageByLikerIdBasedOnViewerId(Long likerId, Long viewerId, Pageable pageable);
-    boolean existsByUserIdAndFileName(Long userId, String fileName);
+    boolean isAccessibleByUserId(Long userId, String fileName);
 }
