@@ -5,7 +5,7 @@ import lombok.Getter;
 
 public interface UpdateCommentUseCase {
 
-    Long updateComment(UpdateCommentCommand updateCommentCommand);
+    void updateComment(UpdateCommentCommand updateCommentCommand);
 
     @Getter
     @AllArgsConstructor
