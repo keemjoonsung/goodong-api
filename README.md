@@ -1,11 +1,11 @@
 ## goodong : Graduation Project - SKKU 2024
 
-3D modelEntity repository web - combine with Blender Add-on (https://github.com/kjs990114/goodong-blender-addon)<br>
-Blender Export and Import 3D modelEntity via website<br>
-AI-based posting (auto generate title, description and tagEntities)
+3D model repository web - combine with [Blender Add-on](https://github.com/kjs990114/goodong-blender-addon)<br>
+Blender Export and Import 3D model via website[(front-end repository)](https://github.com/keemjoonsung/goodong-fe) <br>
+AI-based posting (auto generate title, description and tag)
 
   
-  <br>
+<br>
 
 ## Project Objective
 
@@ -29,15 +29,15 @@ images will be uploaded soon
 
 2024.01.23 - implementation register & login using JWT and Spring Security  <br>
 
-2024.02.15 - User can upload 3D modelEntity ( .glb file) on website by making own repository<br>
+2024.02.15 - User can upload 3D models ( .glb file) on website by making own repository<br>
 
-2024.02.17 - User can view and interact rendered 3D modelEntity (implemented using Three.js)<br>
+2024.02.17 - User can view and interact rendered 3D model (implemented using Three.js)<br>
 
 2024.02.20 - Update login functionality - User can keep logged in<br>
 
-2024.05.09 - User can download uploaded 3D modelEntity<br>
+2024.05.09 - User can download uploaded 3D model<br>
 
-2024.05.26  - User can just export 3D modelEntity to website via blender, and OpenAI fills title and description automatically.<br>
+2024.05.26  - User can just export 3D model to website via blender, and OpenAI fills title and description automatically.<br>
 
 2024.06.25 - Separate repository of Backend source code and Frontend source code<br>
 
@@ -47,7 +47,7 @@ images will be uploaded soon
 
 2024.07.21 - deploy backend using Google Cloud Platform (cloud run, cloud build, cloud sql, cloude storage bucket), and CI / CD
 
-2024.09.05 - User can commentEntity posts, likeEntity posts, followEntity users
+2024.09.05 - User can comment posts, like posts, follow users
 
 2024.09.08 - Version control of Repository
 
@@ -89,9 +89,9 @@ security - Spring Security, JWT
 
 api - Google Vertex AI (Gemini 1.5 flash)
 
-infrastructure - Google Cloud Platform
+infrastructure - Google Cloud Platform (Cloud run, Cloud build, Compute Engine)
 
 <br>
 
-## ERD
+## DATABASE(ERD)
 [ERD CLOUD](https://www.erdcloud.com/d/M9LBJgsyBpjDeoR3r)
