@@ -1,6 +1,6 @@
 ## goodong : Graduation Project - SKKU 2024
 
-3D model repository web - combine with [Blender Add-on](https://github.com/kjs990114/goodong-blender-addon)<br>
+3D model repository web - combine with Blender Add-on[(blender add-on repository)](https://github.com/kjs990114/goodong-blender-addon)<br>
 Blender Export and Import 3D model via website[(front-end repository)](https://github.com/keemjoonsung/goodong-fe) <br>
 AI-based posting (auto generate title, description and tag)
 
