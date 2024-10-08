@@ -57,8 +57,8 @@ images will be uploaded soon
 
 ## Structure
 
-![goodong_struct](https://github.com/userEntity-attachments/assets/143ae666-5c24-4d54-86e5-00582f86136b)
 
+![goodong_struct](https://github.com/user-attachments/assets/bf5130b8-866d-46bc-8a60-4e77bb017f93)
 
 <br>
 
@@ -70,10 +70,11 @@ images will be uploaded soon
 
 ## Members
 
-2018312075, Software Department, Kim joon sung (Back-end)<br>
-2018311813, Software Department, Kim min jae (Front-end)
+2018312075, SKKU Software Department, Kim joon sung (Back-end)<br>
+2018311813, SKKU Software Department, Kim min jae (Front-end)
 
 <br>
+
 
 
 ## Technical Stacks
