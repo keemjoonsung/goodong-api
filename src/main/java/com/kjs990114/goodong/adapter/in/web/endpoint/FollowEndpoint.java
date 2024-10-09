@@ -36,7 +36,7 @@ public class FollowEndpoint {
     @PostMapping
     public ApiResponse<String> followUser(@RequestParam("userId") Long followeeId,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long followerId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long followerId = checkTokenUseCase.getUserId(new TokenQuery(token));
         addFollowUseCase.addFollow(new AddFollowCommand(followerId,followeeId));
         return new ApiResponse<>("User followed successfully");
     }
@@ -44,7 +44,7 @@ public class FollowEndpoint {
     @DeleteMapping
     public ApiResponse<String> unfollowUser(@RequestParam("userId") Long followeeId,
                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long followerId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long followerId = checkTokenUseCase.getUserId(new TokenQuery(token));
         deleteFollowUseCase.deleteFollow(new DeleteFollowCommand(followerId,followeeId));
         return new ApiResponse<>("User unfollowed successfully");
     }

@@ -38,18 +38,18 @@ public class UserEndpoint {
     @GetMapping("/{userId}")
     public ApiResponse<UserDetailDTO> getUserProfile(@PathVariable("userId") Long userId,
                                                      @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long viewerId = token == null ? null : checkTokenUseCase.getUserId(new TokenQuery(token));
         UserDetailDTO response = getUserInfoUseCase.getUserInfo(new LoadUserInfoQuery(userId,viewerId));
         return new ApiResponse<>(response);
     }
 
     // 닉네임 혹은 프로필 이미지 변경
     @PatchMapping
-    public ApiResponse<Void> updateUserProfile(UpdateUserDTO update,
+    public ApiResponse<String> updateUserProfile(UpdateUserDTO update,
                                                @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
-        updateUserProfileUseCase.updateUserProfile(new UpdateUserProfileCommand(userId,update.getFilePng(), update.getNickname()));
-        return new ApiResponse<>("User profile updated successfully");
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
+        String jwt = updateUserProfileUseCase.updateUserProfile(new UpdateUserProfileCommand(userId,update.getFilePng(), update.getNickname()));
+        return new ApiResponse<>("User profile updated successfully",jwt);
     }
 
 

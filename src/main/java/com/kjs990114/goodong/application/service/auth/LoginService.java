@@ -7,13 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +24,7 @@ public class LoginService implements LoginUseCase {
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String nickname = customUserDetails.getUsername();
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
-        return jwtUtil.createJwt(loginCommand.getEmail(), nickname, role, 60 * 60 * 60 * 60 * 60 * 10L);
+        Long userId = Long.parseLong(customUserDetails.getUsername());
+        return jwtUtil.createJwt(userId);
     }
 }

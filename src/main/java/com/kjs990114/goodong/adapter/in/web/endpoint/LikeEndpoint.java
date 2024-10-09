@@ -24,7 +24,7 @@ public class LikeEndpoint {
     @PostMapping
     public ApiResponse<Void> likePost(@RequestParam("postId") Long postId,
                                       @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         addLikeUseCase.addLike(new AddLikeCommand(postId,userId));
         return new ApiResponse<>("Like successfully");
     }
@@ -33,11 +33,9 @@ public class LikeEndpoint {
     @DeleteMapping
     public ApiResponse<Void> unlikePost(@RequestParam("postId") Long postId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         deleteLikeUseCase.deleteLike(new DeleteLikeCommand(postId,userId));
         return new ApiResponse<>("Unlike successfully");
     }
-
-
 
 }

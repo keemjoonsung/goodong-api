@@ -36,11 +36,6 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
         return UserMapper.toDomain(userEntity);
     }
 
-    @Override
-    public User loadByUserEmail(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User does not exists"));
-        return UserMapper.toDomain(userEntity);
-    }
 
     @Override
     public boolean existsByEmail(String email) {

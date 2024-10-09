@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public interface UpdateUserProfileUseCase {
 
-    void updateUserProfile(UpdateUserProfileCommand updateUserProfileCommand) throws IOException;
+    String updateUserProfile(UpdateUserProfileCommand updateUserProfileCommand) throws IOException;
 
     @Getter
     @AllArgsConstructor

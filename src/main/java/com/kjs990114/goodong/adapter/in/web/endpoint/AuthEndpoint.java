@@ -45,7 +45,7 @@ public class AuthEndpoint {
     // 회원 탈퇴
     @DeleteMapping("/withdraw")
     public ApiResponse<Void> deleteUserAccount(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         withDrawUseCase.withdraw(new WithDrawCommand(userId));
         return new ApiResponse<>("User account deleted successfully");
     }
@@ -73,7 +73,7 @@ public class AuthEndpoint {
     @PutMapping("/password")
     public ApiResponse<Void> changePassword(@RequestBody PasswordDTO passwordDTO,
                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         PasswordQuery passwordQuery = new PasswordQuery(userId, passwordDTO.getPassword());
         changePasswordUseCase.changePassword(passwordQuery);
         return new ApiResponse<>("Password change success");
