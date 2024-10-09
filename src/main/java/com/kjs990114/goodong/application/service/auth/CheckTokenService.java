@@ -24,7 +24,6 @@ public class CheckTokenService implements CheckTokenUseCase {
         Long userId = jwtUtil.getUserId(token.getJwt());
         UserSummaryDTO cached = loadUserCachePort.loadUserDTO(userId, token.getJwt());
         if(cached != null) return cached;
-        System.out.println("캐시미스");
         User user = loadUserPort.loadByUserId(userId);
         UserSummaryDTO stored =  UserSummaryDTO.builder()
                 .email(user.getEmail())
