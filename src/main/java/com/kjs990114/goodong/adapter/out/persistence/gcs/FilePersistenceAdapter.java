@@ -1,4 +1,4 @@
-package com.kjs990114.goodong.adapter.out.persistence.storage;
+package com.kjs990114.goodong.adapter.out.persistence.gcs;
 
 import com.google.cloud.ReadChannel;
 import com.google.cloud.storage.Blob;

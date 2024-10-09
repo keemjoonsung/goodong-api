@@ -41,16 +41,9 @@ public class jwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String nickname = jwtUtil.getNickname(token);
-        String role = jwtUtil.getRole(token);
-        String email = jwtUtil.getEmail(token);
+        Long userId = jwtUtil.getUserId(token);
 
-        UserEntity userEntity = UserEntity.builder()
-                .nickname(nickname)
-                .email(email)
-                .role(UserEntity.Role.valueOf(role))
-                .password("")
-                .build();
+        UserEntity userEntity = UserEntity.of(userId);
 
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
 

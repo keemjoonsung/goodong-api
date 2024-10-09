@@ -26,7 +26,7 @@ public class CommentEndpoint {
     public ApiResponse<Void> addComment(@RequestParam("postId") Long postId,
                                         @RequestBody CommentDTO commentDTO,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         addCommentUseCase.addComment(new AddCommentUseCase.AddCommentCommand(postId, userId, commentDTO.getContent()));
         return new ApiResponse<>("Comment added successfully");
     }
@@ -35,7 +35,7 @@ public class CommentEndpoint {
     @DeleteMapping("/{commentId}")
     public ApiResponse<Void> deleteComment(@PathVariable("commentId") Long commentId,
                                            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         deleteCommentUseCase.deleteComment(new DeleteCommentCommand(commentId,userId));
         return new ApiResponse<>("Comment deleted successfully");
     }
@@ -44,7 +44,7 @@ public class CommentEndpoint {
     @PatchMapping("/{commentId}")
     public ApiResponse<Void> updateComment(@PathVariable("commentId") Long commentId,
                                            @RequestBody CommentDTO postComment, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         updateCommentUseCase.updateComment(new UpdateCommentUseCase.UpdateCommentCommand(commentId,userId,postComment.getContent()));
         return new ApiResponse<>("Comment updated successfully");
 

@@ -104,7 +104,7 @@ public class PostEndpoint {
     @DeleteMapping("/{postId}")
     public ApiResponse<Void> deletePost(@PathVariable("postId") Long postId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         DeletePostCommand deletePostCommand = new DeletePostCommand(postId, userId);
         deletePostUseCase.deletePost(deletePostCommand);
         return new ApiResponse<>("Delete success");
@@ -115,7 +115,7 @@ public class PostEndpoint {
     public ApiResponse<PostDetailDTO> getPost(@PathVariable("postId") Long postId,
                                               @RequestHeader(required = false, value = HttpHeaders.AUTHORIZATION) String token
     ) {
-        Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long viewerId = token == null ? null : checkTokenUseCase.getUserId(new TokenQuery(token));
         PostDetailDTO response = getPostDetailUseCase.getPostDetail(new LoadPostDetailCommand(postId, viewerId));
         return new ApiResponse<>(response);
     }
@@ -133,12 +133,12 @@ public class PostEndpoint {
             response = searchPostsByPageUseCase.searchPostsByPage(new SearchPostsByPageQuery(query, pageable));
         } else if(likerId == null) {
             Pageable pageable = allPage ? Pageable.unpaged(Sort.by("lastModifiedAt").descending()) : PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
-            Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+            Long viewerId = token == null ? null : checkTokenUseCase.getUserId(new TokenQuery(token));
             Long ownerId = userId == null ? viewerId : userId;
             response = getUserPostsUseCase.getUserPosts(new LoadPostsByPageCommand(ownerId, viewerId, pageable));
         }else{
             Pageable pageable = allPage ? Pageable.unpaged(Sort.by("lastModifiedAt").descending()) : PageRequest.of(page, pageSize, Sort.by("lastModifiedAt").descending());
-            Long viewerId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+            Long viewerId = token == null ? null : checkTokenUseCase.getUserId(new TokenQuery(token));
             response = getLikedPostsUseCase.getLikedPosts(new LoadLikedPostsQuery(likerId,viewerId,pageable));
         }
 
@@ -156,7 +156,7 @@ public class PostEndpoint {
     @GetMapping("/models")
     public ResponseEntity<Resource> downloadModel(@RequestParam("fileName") String fileName,
                                                                               @RequestHeader(required = false, name = HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = token == null ? null : checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = token == null ? null : checkTokenUseCase.getUserId(new TokenQuery(token));
         Resource resource = getFileResourceUseCase.getFileResource(new LoadFileResourceQuery(userId, fileName));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename())
@@ -167,7 +167,7 @@ public class PostEndpoint {
     @GetMapping("/check-title")
     public ApiResponse<Boolean> isDuplicateTitle(@RequestParam("title") String title,
                                                  @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        Long userId = checkTokenUseCase.checkToken(new TokenQuery(token)).getUserId();
+        Long userId = checkTokenUseCase.getUserId(new TokenQuery(token));
         return new ApiResponse<>(checkDuplicatePostTitleUseCase.checkTitle(new CheckPostTitleQuery(title, userId)));
     }
 
