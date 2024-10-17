@@ -14,6 +14,7 @@ public class CommentInfoDTO {
     private Long userId;
     private String email;
     private String nickname;
+    private String profileImage;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;

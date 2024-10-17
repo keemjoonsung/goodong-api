@@ -21,10 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCase, GetLikedPostsUseCase , CheckDuplicatePostTitleUseCase {
 
     private final LoadPostPort loadPostPort;
-    @Value("${spring.cloud.gcp.storage.path}")
-    private String storagePath;
-    @Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName;
+    @Value("${spring.cloud.gcp.storage.path}${spring.cloud.gcp.storage.bucket}/")
+    private String baseUrl;
+
 
     @Transactional(readOnly = true)
     @Override
@@ -35,8 +34,9 @@ public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCas
         if(postDetailDTO.getStatus().equals(Post.PostStatus.PRIVATE) && !postDetailDTO.getUserId().equals(viewerId)){
             throw new UnAuthorizedException("UnAuthorized for post");
         }
-        String url = storagePath + bucketName + "/";
-        postDetailDTO.getModels().forEach(modelInfoDTO -> modelInfoDTO.setUrl(url + modelInfoDTO.getUrl()));
+        postDetailDTO.setProfileImage(baseUrl + postDetailDTO.getProfileImage());
+        postDetailDTO.getComments().forEach(commentInfoDTO -> commentInfoDTO.setProfileImage(baseUrl + commentInfoDTO.getProfileImage()));
+        postDetailDTO.getModels().forEach(modelInfoDTO -> modelInfoDTO.setUrl(baseUrl + modelInfoDTO.getUrl()));
         return postDetailDTO;
     }
 

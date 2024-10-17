@@ -56,7 +56,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     @Query("""
     SELECT new com.kjs990114.goodong.application.dto.PostInfoDTO(
         p.postId, p.title, p.content, p.status,
-        u.userId, u.email, u.nickname,
+        u.userId, u.email, u.nickname,u.profileImage,
         p.createdAt, p.lastModifiedAt,
         GROUP_CONCAT(t.tag),
         COUNT(DISTINCT l),

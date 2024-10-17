@@ -56,6 +56,7 @@ public class PostDTO {
         private Long userId;
         private String email;
         private String nickname;
+        private String profileImage;
         private LocalDateTime createdAt;
         private LocalDateTime lastModifiedAt;
         private List<String> tags;
@@ -74,6 +75,7 @@ public class PostDTO {
                     .userId(post.getUserId())
                     .email(post.getEmail())
                     .nickname(post.getNickname())
+                    .profileImage(post.getProfileImage())
                     .createdAt(post.getCreatedAt())
                     .lastModifiedAt(post.getLastModifiedAt())
                     .likes(post.getLikes())
