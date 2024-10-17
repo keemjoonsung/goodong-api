@@ -8,6 +8,7 @@ import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.common.jwt.JwtUtil;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,9 @@ public class CheckTokenService implements CheckTokenUseCase {
     private final LoadUserPort loadUserPort;
     private final LoadUserCachePort loadUserCachePort;
     private final SaveUserCachePort saveUserCachePort;
+    @Value("${spring.cloud.gcp.storage.path}${spring.cloud.gcp.storage.bucket}/")
+    private String baseUrl;
+
     @Transactional(readOnly = true)
     @Override
     public UserSummaryDTO checkToken(TokenQuery token) {
@@ -28,7 +32,7 @@ public class CheckTokenService implements CheckTokenUseCase {
         UserSummaryDTO stored =  UserSummaryDTO.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .profileImage(user.getProfileImage())
+                .profileImage(baseUrl + user.getProfileImage())
                 .userId(user.getUserId())
                 .build();
         saveUserCachePort.saveUserDTO(userId,token.getJwt(),stored);

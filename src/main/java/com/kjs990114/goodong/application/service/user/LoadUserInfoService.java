@@ -13,17 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoadUserInfoService implements GetUserInfoUseCase {
 
     private final LoadUserPort loadUserPort;
-    @Value("${spring.cloud.gcp.storage.path}")
-    private String storagePath;
-    @Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName;
+    @Value("${spring.cloud.gcp.storage.path}${spring.cloud.gcp.storage.bucket}/")
+    private String baseUrl;
+
 
     @Transactional(readOnly = true)
     @Override
     public UserDetailDTO getUserInfo(LoadUserInfoQuery loadUserInfoQuery) {
-        String url = storagePath + bucketName + "/";
         UserDetailDTO response = loadUserPort.loadUserInfoByUserIdBasedOnViewerId(loadUserInfoQuery.getUserId(), loadUserInfoQuery.getViewerId());
-        response.setProfileImage(url + response.getProfileImage());
+        response.setProfileImage(baseUrl + response.getProfileImage());
         return response;
     }
 }

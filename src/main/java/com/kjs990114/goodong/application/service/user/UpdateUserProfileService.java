@@ -26,8 +26,8 @@ public class UpdateUserProfileService implements UpdateUserProfileUseCase {
     public String updateUserProfile(UpdateUserProfileCommand updateUserProfileCommand) throws IOException {
         User user = loadUserPort.loadByUserId(updateUserProfileCommand.getUserId());
         String fileName = storeFilePort.storeFile(updateUserProfileCommand.getFilePng());
-        user.updateNickname(updateUserProfileCommand.getNickname());
-        user.updateProfileImage(fileName);
+        user.changeNickname(updateUserProfileCommand.getNickname());
+        user.changeProfileImage(fileName);
         saveUserPort.save(user);
         deleteUserCachePort.deleteUserDTO(user.getUserId());
         return jwtUtil.createJwt(user.getUserId());
