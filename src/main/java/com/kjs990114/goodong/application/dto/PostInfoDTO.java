@@ -17,6 +17,7 @@ public class PostInfoDTO {
     private Long userId;
     private String email;
     private String nickname;
+    private String profileImage;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
     private List<String> tags;
@@ -24,7 +25,7 @@ public class PostInfoDTO {
     private Boolean liked;
 
     public PostInfoDTO(Long postId, String title, String content, Post.PostStatus status,
-                       Long userId, String email, String nickname,
+                       Long userId, String email, String nickname,String profileImage,
                        LocalDateTime createdAt, LocalDateTime lastModifiedAt,
                        Object tags, Long likes, Boolean liked) {
         this.postId = postId;
@@ -34,6 +35,7 @@ public class PostInfoDTO {
         this.userId = userId;
         this.email = email;
         this.nickname = nickname;
+        this.profileImage = profileImage;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
         this.tags = tags != null ? Arrays.stream(((String)tags).split(",")).sorted().toList() : new ArrayList<>();
