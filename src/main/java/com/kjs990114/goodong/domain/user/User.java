@@ -32,14 +32,14 @@ public class User {
     }
 
     // 닉네임 변경
-    public void updateNickname(String nickname) {
+    public void changeNickname(String nickname) {
         if(nickname != null) {
             this.nickname = nickname;
         }
     }
 
     // 프로필 이미지 변경
-    public void updateProfileImage(String profileImage) {
+    public void changeProfileImage(String profileImage) {
         if(!profileImage.isBlank()) {
             this.profileImage = profileImage;
         }

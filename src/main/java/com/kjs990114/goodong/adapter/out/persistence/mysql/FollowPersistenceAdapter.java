@@ -2,7 +2,6 @@ package com.kjs990114.goodong.adapter.out.persistence.mysql;
 
 import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.FollowMapper;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.FollowRepository;
-import com.kjs990114.goodong.application.dto.PostSummaryDTO;
 import com.kjs990114.goodong.application.dto.UserSummaryDTO;
 import com.kjs990114.goodong.application.port.out.db.DeleteFollowPort;
 import com.kjs990114.goodong.application.port.out.db.LoadFollowPort;
