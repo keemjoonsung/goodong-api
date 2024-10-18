@@ -18,7 +18,6 @@ public class UpdateCommentService implements UpdateCommentUseCase {
 
     @Override
     public void updateComment(UpdateCommentCommand updateCommentCommand) {
-        System.out.println("updateCommentCommand.getCommentId() = " + updateCommentCommand.getCommentId());
         Comment comment = loadCommentPort.loadByCommentId(updateCommentCommand.getCommentId()).orElseThrow(()-> new ErrorException(Error.COMMENT_NOT_FOUND));
         if(!comment.getUserId().equals(updateCommentCommand.getUserId())){
             throw new ErrorException(Error.UNAUTHORIZED_ACCESS);
