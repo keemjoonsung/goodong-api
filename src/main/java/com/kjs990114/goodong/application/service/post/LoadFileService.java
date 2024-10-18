@@ -3,7 +3,8 @@ package com.kjs990114.goodong.application.service.post;
 import com.kjs990114.goodong.application.port.in.file.GetFileResourceUseCase;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.application.port.out.storage.LoadFilePort;
-import com.kjs990114.goodong.common.exception.UnAuthorizedException;
+import com.kjs990114.goodong.common.exception.Error;
+import com.kjs990114.goodong.common.exception.ErrorException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -25,7 +26,7 @@ public class LoadFileService implements GetFileResourceUseCase {
         Long userId = loadFileResourceQuery.getUserId();
         String fileName = loadFileResourceQuery.getFileName();
         if(!loadPostPort.isAccessibleByUserId(userId,fileName)){
-            throw new UnAuthorizedException("Unauthorized for file");
+            throw new ErrorException(Error.UNAUTHORIZED_ACCESS);
         }
         InputStream inputStream = loadFilePort.loadFile(fileName);
         return new InputStreamResource(inputStream);

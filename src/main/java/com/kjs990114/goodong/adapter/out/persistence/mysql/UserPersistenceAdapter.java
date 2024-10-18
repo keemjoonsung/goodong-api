@@ -7,7 +7,8 @@ import com.kjs990114.goodong.application.dto.UserDetailDTO;
 import com.kjs990114.goodong.application.port.out.db.DeleteUserPort;
 import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.application.port.out.db.SaveUserPort;
-import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.common.exception.Error;
+import com.kjs990114.goodong.common.exception.ErrorException;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,19 +22,18 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
     @Override
     public Long save(User user) {
         UserEntity userEntity = UserMapper.toEntity(user);
-        System.out.println("userEntity.getIsAvailable() = " + userEntity.getIsAvailable());
         return userRepository.save(userEntity).getUserId();
     }
     @Override
     public void deleteByUserId(Long userId){
-        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         userEntity.softDelete();
         userRepository.save(userEntity);
     }
 
     @Override
     public User loadByUserId(Long userId) {
-        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("User does not exists"));
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         return UserMapper.toDomain(userEntity);
     }
 
@@ -51,11 +51,8 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
 
     @Override
     public UserDetailDTO loadUserInfoByUserIdBasedOnViewerId(Long userId, Long viewerId) {
-        UserDetailDTO response =  userRepository.findUserInfoByUserIdAndViewerId(userId,viewerId);
-        if(response.getUserId() == null){
-            throw new NotFoundException("User not found");
-        }
-        return response;
+        return userRepository.findUserInfoByUserIdAndViewerId(userId,viewerId).orElseThrow(() ->new ErrorException(Error.USER_NOT_FOUND));
+
     }
 
 

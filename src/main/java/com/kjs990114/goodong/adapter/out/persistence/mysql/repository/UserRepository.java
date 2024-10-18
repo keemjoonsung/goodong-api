@@ -46,5 +46,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     GROUP BY u.userId
     """)
 
-    UserDetailDTO findUserInfoByUserIdAndViewerId(@Param("userId") Long userId, @Param("viewerId") Long viewerId);
+    Optional<UserDetailDTO> findUserInfoByUserIdAndViewerId(@Param("userId") Long userId, @Param("viewerId") Long viewerId);
 }

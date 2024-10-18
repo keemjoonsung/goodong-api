@@ -5,7 +5,8 @@ import com.kjs990114.goodong.application.port.out.db.LoadUserPort;
 import com.kjs990114.goodong.application.port.out.db.SaveUserPort;
 import com.kjs990114.goodong.application.port.out.storage.StoreFilePort;
 import com.kjs990114.goodong.application.port.out.db.SavePostPort;
-import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.common.exception.Error;
+import com.kjs990114.goodong.common.exception.ErrorException;
 import com.kjs990114.goodong.domain.post.Post;
 import com.kjs990114.goodong.domain.user.User;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class CreatePostService implements CreatePostUseCase {
         newPost.updateTag(createPostCommand.getTags());
         user.addContribution();
         String fileName = storeFilePort.storeFile(createPostCommand.getFile());
-        if(fileName == null) throw new NotFoundException("File Not Found");
+        if(fileName == null) throw new ErrorException(Error.INVALID_FILE);
         newPost.addModel(fileName, "First Commit");
         saveUserPort.save(user);
         savePostPort.save(newPost);

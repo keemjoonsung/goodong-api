@@ -7,7 +7,8 @@ import com.kjs990114.goodong.application.dto.CommentInfoDTO;
 import com.kjs990114.goodong.application.port.out.db.DeleteCommentPort;
 import com.kjs990114.goodong.application.port.out.db.LoadCommentPort;
 import com.kjs990114.goodong.application.port.out.db.SaveCommentPort;
-import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.common.exception.Error;
+import com.kjs990114.goodong.common.exception.ErrorException;
 import com.kjs990114.goodong.domain.comment.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -38,7 +39,7 @@ public class CommentPersistenceAdapter implements LoadCommentPort, SaveCommentPo
 
     @Override
     public void delete(Long commentId, Long userId) {
-        CommentEntity commentEntity = commentRepository.findByCommentIdAndUserId(commentId,userId).orElseThrow(()-> new NotFoundException("Comment not Found"));
+        CommentEntity commentEntity = commentRepository.findByCommentIdAndUserId(commentId,userId).orElseThrow(()-> new ErrorException(Error.COMMENT_NOT_FOUND));
         commentEntity.softDelete();
         commentRepository.save(commentEntity);
     }

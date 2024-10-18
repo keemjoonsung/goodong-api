@@ -36,10 +36,6 @@ public class TestEndpoint {
     public List<ModelInfoDTO> t3(@RequestParam(value = "postId", defaultValue = "1") Long postId){
         return postRepository.modelInfoDTOsByPostId(postId);
     }
-    @GetMapping("/4")
-    public UserDetailDTO t4(){
-        return userRepository.findUserInfoByUserIdAndViewerId(1L,1L);
-    }
     @GetMapping("/5")
     public Page<PostSummaryDTO> t5(){
         return postRepository.postSummaryDTOsByLikerIdBasedOnViewerId(1L,1L, Pageable.unpaged());

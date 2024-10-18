@@ -9,7 +9,8 @@ import com.kjs990114.goodong.application.dto.PostDTO.PostDetailDTO;
 import com.kjs990114.goodong.application.port.out.db.DeletePostPort;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
 import com.kjs990114.goodong.application.port.out.db.SavePostPort;
-import com.kjs990114.goodong.common.exception.NotFoundException;
+import com.kjs990114.goodong.common.exception.Error;
+import com.kjs990114.goodong.common.exception.ErrorException;
 import com.kjs990114.goodong.domain.post.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
 
     @Override
     public Post loadByPostIdAndUserId(Long postId, Long viewerId) {
-        PostEntity postEntity = postRepository.findByPostId(postId).orElseThrow(() -> new NotFoundException("Post Not Founded"));
+        PostEntity postEntity = postRepository.findByPostId(postId).orElseThrow(() -> new ErrorException(Error.POST_NOT_FOUND));
         return PostMapper.toDomain(postEntity);
     }
 
@@ -45,7 +46,7 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
 
     @Override
     public PostDetailDTO postDetailDTOByPostIdBasedOnViewerId(Long postId, Long viewerId) {
-        PostInfoDTO postInfoDTO = postRepository.postInfoDTOsByPostIdAndViewerId(postId, viewerId).orElseThrow(()-> new NotFoundException("Post not Found"));
+        PostInfoDTO postInfoDTO = postRepository.postInfoDTOsByPostIdAndViewerId(postId, viewerId).orElseThrow(()-> new ErrorException(Error.POST_NOT_FOUND));
         List<ModelInfoDTO> modelInfoDTOs = postRepository.modelInfoDTOsByPostId(postId);
         List<CommentInfoDTO> commentInfoDTOs = commentRepository.getCommentInfoDTOByPostId(postId);
         return PostDetailDTO.of(postInfoDTO,modelInfoDTOs,commentInfoDTOs);
@@ -73,7 +74,7 @@ public class PostPersistenceAdapter implements SavePostPort, LoadPostPort, Delet
 
     @Override
     public void delete(Long postId, Long userId) {
-        PostEntity postEntity = postRepository.findByPostIdAndUserId(postId, userId).orElseThrow(() -> new NotFoundException("User Not found"));
+        PostEntity postEntity = postRepository.findByPostIdAndUserId(postId, userId).orElseThrow(() -> new ErrorException(Error.USER_NOT_FOUND));
         postEntity.softDelete();
         postRepository.save(postEntity);
     }

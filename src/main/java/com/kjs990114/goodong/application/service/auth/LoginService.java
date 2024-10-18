@@ -1,6 +1,8 @@
 package com.kjs990114.goodong.application.service.auth;
 
 import com.kjs990114.goodong.application.port.in.auth.LoginUseCase;
+import com.kjs990114.goodong.common.exception.Error;
+import com.kjs990114.goodong.common.exception.ErrorException;
 import com.kjs990114.goodong.common.jwt.JwtUtil;
 import com.kjs990114.goodong.common.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,15 @@ public class LoginService implements LoginUseCase {
     @Transactional(readOnly = true)
     @Override
     public String login(LoginCommand loginCommand) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginCommand.getEmail(), loginCommand.getPassword());
-        Authentication authentication = authenticationManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = Long.parseLong(customUserDetails.getUsername());
-        return jwtUtil.createJwt(userId);
+        try {
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginCommand.getEmail(), loginCommand.getPassword());
+            Authentication authentication = authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+            Long userId = Long.parseLong(customUserDetails.getUsername());
+            return jwtUtil.createJwt(userId);
+        }catch (Exception e){
+            throw new ErrorException(Error.LOGIN_FAILED);
+        }
     }
 }

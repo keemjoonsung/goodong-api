@@ -3,10 +3,7 @@ package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -29,16 +26,17 @@ public abstract class BaseEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    @Column
-    private Boolean isAvailable = true;
+    /**
+     alter table user add is_available BOOLEAN GENERATED ALWAYS AS ( CASE WHEN deleted_at IS NULL THEN 1 ELSE NULL END);
+     **/
+    @Column(insertable = false, updatable = false)
+    private Boolean isAvailable;
 
     public void softDelete(){
         deletedAt = LocalDateTime.now();
-        isAvailable = null;
     }
 
     public void undoDelete(){
         deletedAt = null;
-        isAvailable = true;
     }
 }
