@@ -21,7 +21,6 @@ public class UserPersistenceAdapter implements SaveUserPort, LoadUserPort , Dele
     @Override
     public Long save(User user) {
         UserEntity userEntity = UserMapper.toEntity(user);
-        System.out.println("userEntity.getIsAvailable() = " + userEntity.getIsAvailable());
         return userRepository.save(userEntity).getUserId();
     }
     @Override
