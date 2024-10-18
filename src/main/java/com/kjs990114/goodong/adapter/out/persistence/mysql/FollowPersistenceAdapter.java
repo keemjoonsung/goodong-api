@@ -1,5 +1,6 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql;
 
+import com.kjs990114.goodong.adapter.out.persistence.mysql.entity.FollowEntity;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.mapper.FollowMapper;
 import com.kjs990114.goodong.adapter.out.persistence.mysql.repository.FollowRepository;
 import com.kjs990114.goodong.application.dto.UserSummaryDTO;

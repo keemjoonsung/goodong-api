@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
-import com.kjs990114.goodong.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "user")
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"email", "is_available"}),
+                @UniqueConstraint(columnNames = {"nickname", "is_available"})
+        })
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,10 +21,10 @@ public class UserEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -39,7 +43,8 @@ public class UserEntity extends BaseEntity {
         USER,
         ADMIN
     }
-    public static UserEntity of(Long userId){
+
+    public static UserEntity of(Long userId) {
         return UserEntity.builder().userId(userId).build();
     }
 }

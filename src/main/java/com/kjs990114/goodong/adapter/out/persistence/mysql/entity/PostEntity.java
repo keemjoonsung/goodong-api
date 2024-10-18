@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
-import com.kjs990114.goodong.domain.BaseEntity;
 import com.kjs990114.goodong.domain.post.Post.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "post")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "user_id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "user_id","is_available"})})
 @Getter
 @Setter
 @AllArgsConstructor

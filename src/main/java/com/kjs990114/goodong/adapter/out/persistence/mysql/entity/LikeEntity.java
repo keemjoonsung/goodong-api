@@ -1,11 +1,10 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
-import com.kjs990114.goodong.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity(name = "likes")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "post_id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "post_id","is_available"})})
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
