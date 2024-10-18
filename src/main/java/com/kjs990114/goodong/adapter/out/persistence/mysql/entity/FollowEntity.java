@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FollowEntity {
+public class FollowEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

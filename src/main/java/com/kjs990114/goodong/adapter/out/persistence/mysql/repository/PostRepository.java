@@ -66,7 +66,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     LEFT JOIN tag t ON t.post.postId = p.postId
     LEFT JOIN likes l ON l.postId = p.postId
     LEFT JOIN likes l2 ON l2.postId = p.postId AND l2.userId = :viewerId
-    LEFT JOIN user u ON u.userId = p.userId
+    INNER JOIN user u ON u.userId = p.userId AND u.deletedAt IS NULL
     WHERE p.postId = :postId AND p.deletedAt IS NULL
     GROUP BY p.postId, p.title, p.content, p.status, u.userId, u.email, u.nickname,
              p.createdAt, p.lastModifiedAt

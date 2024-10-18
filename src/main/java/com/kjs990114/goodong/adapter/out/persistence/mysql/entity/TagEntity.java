@@ -1,6 +1,5 @@
 package com.kjs990114.goodong.adapter.out.persistence.mysql.entity;
 
-import com.kjs990114.goodong.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

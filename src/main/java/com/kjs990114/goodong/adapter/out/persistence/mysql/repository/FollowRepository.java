@@ -38,5 +38,4 @@ public interface FollowRepository extends JpaRepository<FollowEntity, Long> {
     AND u.deletedAt IS NULL
     """)
     Page<UserSummaryDTO> findFollowersByUserId(@Param("userId") Long userId, Pageable pageable);
-
 }
