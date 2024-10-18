@@ -7,7 +7,8 @@ import com.kjs990114.goodong.application.port.in.post.GetLikedPostsUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetPostDetailUseCase;
 import com.kjs990114.goodong.application.port.in.post.GetUserPostsUseCase;
 import com.kjs990114.goodong.application.port.out.db.LoadPostPort;
-import com.kjs990114.goodong.common.exception.UnAuthorizedException;
+import com.kjs990114.goodong.common.exception.Error;
+import com.kjs990114.goodong.common.exception.ErrorException;
 import com.kjs990114.goodong.domain.post.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,7 @@ public class LoadPostService implements GetPostDetailUseCase, GetUserPostsUseCas
         Long viewerId = loadPostDetailCommand.getViewerId();
         PostDetailDTO postDetailDTO = loadPostPort.postDetailDTOByPostIdBasedOnViewerId(postId,viewerId);
         if(postDetailDTO.getStatus().equals(Post.PostStatus.PRIVATE) && !postDetailDTO.getUserId().equals(viewerId)){
-            throw new UnAuthorizedException("UnAuthorized for post");
+            throw new ErrorException(Error.UNAUTHORIZED_ACCESS);
         }
         postDetailDTO.setProfileImage(baseUrl + postDetailDTO.getProfileImage());
         postDetailDTO.getComments().forEach(commentInfoDTO -> commentInfoDTO.setProfileImage(baseUrl + commentInfoDTO.getProfileImage()));

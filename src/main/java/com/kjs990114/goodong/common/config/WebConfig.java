@@ -64,4 +64,5 @@ public class WebConfig implements WebMvcConfigurer {
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
+
 }

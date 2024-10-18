@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 
 
@@ -17,7 +18,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ExceptionResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
 
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(error -> {
@@ -28,59 +29,38 @@ public class ExceptionHandler {
                     }
                 }).toList();
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
+        ErrorDTO errorDTO = new ErrorDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "입력 필드가 유효하지 않습니다",
-                errors
+                "1"
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ExceptionResponse> handleGlobalException(NotFoundException ex) {
-
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Goodong Global Exception",
-                ex.getMessage()
+    @org.springframework.web.bind.annotation.ExceptionHandler(ErrorException.class)
+    public ResponseEntity<ErrorDTO> handleCustomErrorException(ErrorException e) {
+        Error error = e.getErrorCode();
+        ErrorDTO errorDTO = new ErrorDTO(
+                error.getStatus(),
+                error.getMsg(),
+                error.getCode()
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    @org.springframework.web.bind.annotation.ExceptionHandler(UnAuthorizedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<ExceptionResponse> handleAuthorizeException(UnAuthorizedException ex) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Goodong UnAuthorized Exception",
-                ex.getMessage()
-        );
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
+        return ResponseEntity.status(error.getStatus()).body(errorDTO);
     }
 
     @Setter
     @Getter
-    public static class ExceptionResponse {
+    public static class ErrorDTO {
         private int status;
-        private String message;
-        private String error;
-        private List<String> errors;
+        private String code;
+        private String msg;
 
-        public ExceptionResponse(int status, String message, String error) {
+        public ErrorDTO(int status, String msg, String code) {
             this.status = status;
-            this.message = message;
-            this.error = error;
+            this.msg = msg;
+            this.code = code;
         }
-
-        public ExceptionResponse(int status, String message, List<String> errors) {
-            this.status = status;
-            this.message = message;
-            this.errors = errors;
-        }
-
     }
 }

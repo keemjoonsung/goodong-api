@@ -3,6 +3,7 @@ package com.kjs990114.goodong.common.config;
 import com.kjs990114.goodong.common.jwt.jwtFilter;
 import com.kjs990114.goodong.common.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,22 +11,31 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 @EnableWebSecurity
 @Configuration
-@RequiredArgsConstructor
+
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final HandlerExceptionResolver resolver;
+
+    public WebSecurityConfig(JwtUtil jwtUtil, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        this.jwtUtil = jwtUtil;
+        this.resolver = resolver;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -59,8 +69,6 @@ public class WebSecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/models/**","/api/auth/register/**","/api/auth/**","/api/test/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/api/posts/**","/api/follows/**","/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/likes/**","/api/auth/**","/api/test/**", "/api/ai/**").permitAll()
                         .anyRequest().authenticated());
         //세션 설정
         http
@@ -68,7 +76,7 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http
-                .addFilterBefore(new jwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new jwtFilter(jwtUtil, resolver), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session) -> session
@@ -77,13 +85,24 @@ public class WebSecurityConfig {
 
         return http.build();
     }
-
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> {
+            web.ignoring()
+                    .requestMatchers(HttpMethod.POST, "/api/likes/**", "/api/auth/**", "/api/test/**", "/api/ai/**")
+                    .requestMatchers(HttpMethod.GET, "/error/**", "/api/models/**", "/api/auth/register/**", "/api/auth/**", "/api/test/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api/posts/**", "/api/follows/**", "/api/users/**");
+        };
+    }
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception { return configuration.getAuthenticationManager(); }
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+
 }
 
