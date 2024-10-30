@@ -6,11 +6,13 @@ import lombok.Data;
 public class ModelInfoDTO {
     private int version;
     private String url;
+    private String fileName;
     private String commitMessage;
 
-    public ModelInfoDTO(int version, String url, String commitMessage){
+    public ModelInfoDTO(int version, String fileName, String commitMessage){
         this.version = version;
-        this.url = url;
+        this.url = fileName;
+        this.fileName = fileName;
         this.commitMessage = commitMessage;
     }
 }
