@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TagEntity extends BaseEntity {
+public class TagEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;

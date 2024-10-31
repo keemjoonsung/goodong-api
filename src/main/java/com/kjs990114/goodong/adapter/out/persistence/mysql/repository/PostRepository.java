@@ -121,6 +121,7 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
     WHERE p.postId IN :postIds
     AND p.status = 'PUBLIC'
     AND p.deletedAt IS NULL
+    AND u.deletedAt IS NULL
     GROUP BY p.postId, u.userId
     """)
     List<PostSummaryDTO> postSummaryDTOsByPostIds(@Param("postIds") List<Long> postIds);

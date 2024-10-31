@@ -39,6 +39,13 @@ public class PostEntity extends BaseEntity {
     @Builder.Default
     private List<TagEntity> tags = new ArrayList<>();
 
+    /**
+     alter table user add is_available BOOLEAN GENERATED ALWAYS AS ( CASE WHEN deleted_at IS NULL THEN 1 ELSE NULL END);
+     **/
+    @Column(insertable = false, updatable = false)
+    private Boolean isAvailable;
+
+
     public static PostEntity of(Long postId) {
         return PostEntity.builder().postId(postId).build();
     }
