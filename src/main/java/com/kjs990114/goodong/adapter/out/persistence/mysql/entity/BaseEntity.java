@@ -26,11 +26,6 @@ public abstract class BaseEntity {
     @Column
     private LocalDateTime deletedAt;
 
-    /**
-     alter table user add is_available BOOLEAN GENERATED ALWAYS AS ( CASE WHEN deleted_at IS NULL THEN 1 ELSE NULL END);
-     **/
-    @Column(insertable = false, updatable = false)
-    private Boolean isAvailable;
 
     public void softDelete(){
         deletedAt = LocalDateTime.now();
