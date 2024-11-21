@@ -19,9 +19,7 @@ fostering advancement within the industry.
 
 <br>
 
-## Preview
 
-images will be uploaded soon 
 
 <br>
 
@@ -63,9 +61,6 @@ images will be uploaded soon
 <br>
 
 
-## Budget
--
-<br>
 
 
 ## Members
@@ -80,10 +75,10 @@ images will be uploaded soon
 ## Technical Stacks
 
 frontend - React.js , Axios , Three.js
+ 
+server - Spring boot/Java , JPA/Hibernate
 
-backend - Spring boot , JPA/Hibernate
-
-databse - MySQL
+databse - MySQL , Redis
 
 security - Spring Security, JWT
 
