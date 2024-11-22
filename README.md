@@ -55,8 +55,7 @@ fostering advancement within the industry.
 
 ## Structure
 
-
-![goodong_struct](https://github.com/user-attachments/assets/bf5130b8-866d-46bc-8a60-4e77bb017f93)
+![goodong_structure (1)](https://github.com/user-attachments/assets/3d3f41de-56ce-4bee-bdb0-25724c9e1a38)
 
 <br>
 
